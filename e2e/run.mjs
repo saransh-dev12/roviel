@@ -195,18 +195,29 @@ try {
   await page.click('.dash-side-nav [data-view="overview"]');
   const beforeSpend = money(await page.locator('#total-expenses').innerText());
   await page.click('#open-transaction');
+  const todayEntryDate = await page.evaluate(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; });
+  check('transaction date defaults to today', (await page.locator('#transaction-date').inputValue()) === todayEntryDate, await page.locator('#transaction-date').inputValue());
+  const entryDate = await page.evaluate(() => {
+    const d = new Date();
+    d.setDate(Math.max(1, d.getDate() - 1));
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  });
   await page.fill('#transaction-name', 'E2E Flat 250');
   await page.fill('#transaction-amount', '250');
   await page.selectOption('#transaction-type', 'expense');
+  await page.fill('#transaction-date', entryDate);
   await page.click('.tx-submit');
   await page.waitForTimeout(900);
   const afterSpend = money(await page.locator('#total-expenses').innerText());
   check('expense of 250 raises spending by exactly 250', near(afterSpend - beforeSpend, 250, 1), `${beforeSpend} -> ${afterSpend}`);
+  check('latest activity previews the new entry', (await page.locator('#latest-activity-list').innerText()).includes('E2E Flat 250'));
 
   // the close button must work (regression: a cloned form used to kill it)
   await page.click('#open-transaction');
   await page.waitForTimeout(300);
   check('transaction modal opens', (await page.locator('#transaction-modal.open').count()) === 1);
+  check('transaction modal uses native dialog semantics', await page.evaluate(() => { const modal = document.querySelector('#transaction-modal'); return modal.tagName === 'DIALOG' && modal.open; }));
+  check('transaction modal focuses the first field', await page.evaluate(() => document.activeElement?.id) === 'transaction-name');
   await page.click('#close-transaction');
   await page.waitForTimeout(400);
   check('modal close button works', (await page.locator('#transaction-modal.open').count()) === 0);
@@ -223,6 +234,13 @@ try {
   await page.click('.tx-submit');
   await page.waitForTimeout(400);
   check('invalid transaction rejected', (await page.locator('#transaction-error').innerText()).length > 5, await page.locator('#transaction-error').innerText());
+  await page.fill('#transaction-name', 'E2E date check');
+  await page.fill('#transaction-amount', '5');
+  await page.selectOption('#transaction-type', 'expense');
+  await page.fill('#transaction-date', '');
+  await page.click('.tx-submit');
+  await page.waitForTimeout(400);
+  check('missing transaction date rejected', (await page.locator('#transaction-error').innerText()).includes('Choose the date'), await page.locator('#transaction-error').innerText());
   await page.click('#close-transaction');
   await page.waitForTimeout(300);
 
@@ -246,6 +264,12 @@ try {
   check('type filter works', !/Uber|Apartment rent|Groceries/.test(incomeOnly), incomeOnly.slice(0, 40));
   await page.selectOption('#transaction-filter', 'all');
   await page.fill('#transaction-search', '');
+  await page.waitForTimeout(400);
+  await page.selectOption('#transaction-sort', 'date-asc');
+  await page.waitForTimeout(400);
+  const oldestName = await page.locator('#transaction-list .dash-transaction-name').first().innerText();
+  check('oldest-first sorting works', oldestName === 'Dinner with friends', oldestName);
+  await page.selectOption('#transaction-sort', 'date-desc');
   await page.waitForTimeout(400);
 
   // formula-like descriptions must be neutralized in the CSV export
@@ -272,6 +296,34 @@ try {
   await page.waitForTimeout(900);
   const summary = await api(page, '/api/summary?months=6');
   check('summary endpoint returns', summary.status === 200 && summary.body.totals, JSON.stringify(summary.body.totals || {}).slice(0, 90));
+
+  await page.click('#open-transaction');
+  await page.waitForTimeout(300);
+  const accountOptions = await page.locator('#transaction-account option').count();
+  check('transaction dialog exposes the account selector', (await page.locator('#transaction-account-field').isVisible()) && accountOptions > 0, `${accountOptions} accounts`);
+  const cloudToday = await page.evaluate(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; });
+  check('cloud transaction exposes the date control', (await page.locator('#transaction-date').isVisible()) && (await page.locator('#transaction-date').inputValue()) === cloudToday, await page.locator('#transaction-date').inputValue());
+  await page.click('#close-transaction');
+
+  // command palette navigates with the keyboard
+  await page.click('#open-command');
+  await page.waitForSelector('#command-palette.open');
+  check('command palette uses dialog semantics', await page.evaluate(() => document.querySelector('#command-palette').getAttribute('role') === 'dialog' && !document.querySelector('#command-palette').hidden));
+  await page.fill('#command-input', 'budget');
+  await page.waitForTimeout(300);
+  check('command palette filters commands', (await page.locator('#command-list .command-item').count()) >= 1 && (await page.locator('#command-list').innerText()).toLowerCase().includes('budget'));
+  await page.keyboard.press('Enter');
+  await page.waitForSelector('#view-budgets.active');
+  await page.waitForFunction(() => document.querySelector('#command-palette').hidden, { timeout: 2000 });
+  check('command palette opens the selected view', (await page.locator('#view-budgets.active').count()) === 1);
+  check('command palette hides after running', await page.locator('#command-palette').isHidden());
+  await page.click('.dash-side-nav [data-view="overview"]');
+  await page.waitForSelector('#view-overview.active');
+  await page.click('#open-command');
+  await page.waitForSelector('#command-palette.open');
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(300);
+  check('command palette closes on Escape', await page.locator('#command-palette').isHidden());
 
   const shownBalance = money(await page.locator('#total-balance').innerText());
   check('balance matches server', near(shownBalance, summary.body.totals.balanceMajor, 2), `${shownBalance} vs ${summary.body.totals.balanceMajor.toFixed(0)}`);
@@ -338,6 +390,7 @@ try {
   await page.click('#drawer-close');
   await page.waitForTimeout(400);
   check('drawer closes', (await page.locator('#detail-drawer.open').count()) === 0);
+  check('drawer returns focus to the spending card', await page.evaluate(() => document.activeElement?.closest?.('[data-metric="expense"]')?.dataset.metric === 'expense'));
 
   // budgets: exact percentage maths
   await page.click('.dash-side-nav [data-view="budgets"]');
@@ -348,6 +401,10 @@ try {
   const budgetText = await page.locator('#budget-list .budget-row').first().innerText();
   check('budget shows spent of limit', budgetText.includes(String(Math.round(firstBudget.spentMajor)).replace(/\B(?=(\d{3})+(?!\d))/g, ',')) || budgetText.includes(String(Math.round(firstBudget.spentMajor))), budgetText.replace(/\n/g, ' ').slice(0, 70));
   check('budget percentage is exact', budgetText.includes(`${firstBudget.pct}%`), budgetText.replace(/\n/g, ' ').slice(0, 70));
+  const expectedBudgetMonth = await page.evaluate(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; });
+  check('budget month defaults to the current month', (await page.locator('#new-budget-month').inputValue()) === expectedBudgetMonth, await page.locator('#new-budget-month').inputValue());
+  const existingBudgetCategory = await page.locator('#budget-list .budget-row strong').first().innerText().catch(() => '');
+  check('budget category suggestions use ledger data', existingBudgetCategory.length > 0 && (await page.locator('#budget-category-suggestions option').allInnerTexts()).includes(existingBudgetCategory.trim()), existingBudgetCategory);
 
   // create a budget with an exact limit and verify the reported number
   const cat = 'E2E Cat ' + Date.now().toString(36);
@@ -378,10 +435,12 @@ try {
   const goalTitle = 'E2E Goal ' + Date.now().toString(36);
   await page.fill('#new-goal-title', goalTitle);
   await page.fill('#new-goal-target', '5000');
+  await page.fill('#new-goal-deadline', '2030-01-15');
   await page.click('#add-goal');
   await page.waitForTimeout(2000);
   const newGoalRow = page.locator('#goal-list .goal-row', { hasText: goalTitle });
   check('created goal is visible', (await newGoalRow.count()) === 1);
+  check('goal deadline is shown', (await newGoalRow.innerText()).includes('2030'), await newGoalRow.innerText());
   const prompts = ['E2E Goal edited', '7500'];
   const answerPrompts = async dialog => { await dialog.accept(prompts.shift() ?? ''); };
   page.on('dialog', answerPrompts);
@@ -408,6 +467,13 @@ try {
   await page.click('.dash-side-nav [data-view="accounts"]');
   await page.waitForTimeout(900);
   const allAccounts = (await api(page, '/api/accounts')).body;
+  const firstAccountButton = page.locator('[data-account-detail]').first();
+  const firstAccountName = ((await firstAccountButton.getAttribute('aria-label')) || '').replace(/^Open /, '').replace(/ account details$/, '');
+  await firstAccountButton.click();
+  await page.waitForFunction(expected => document.querySelector('#drawer-title')?.innerText === expected, firstAccountName, { timeout: 4000 });
+  check('account detail opens with balances', (await page.locator('#drawer-body').innerText()).includes('Available balance'), await page.locator('#drawer-title').innerText());
+  await page.click('#drawer-close');
+  await page.waitForTimeout(400);
   const transferSource = allAccounts.find(a => a.currency === 'INR');
   const transferTarget = allAccounts.find(a => a.currency === 'USD');
   await page.selectOption('#transfer-from', transferSource.id);
@@ -511,12 +577,34 @@ try {
   const mob = await newPage({ width: 390, height: 844 });
   await mob.goto(WEB, { waitUntil: 'domcontentloaded' });
   await ready(mob);
+  const mobileLanding = await mob.evaluate(() => {
+    const title = document.querySelector('#title-1').getBoundingClientRect();
+    const dashboard = document.querySelector('.contact-btn').getBoundingClientRect();
+    const convert = document.querySelector('#open-currency-tools-mobile').getBoundingClientRect();
+    return { titleRight: title.right, dashboardRight: dashboard.right, convertRight: convert.right, width: innerWidth };
+  });
+  check('mobile: landing headline stays in view', mobileLanding.titleRight <= mobileLanding.width + 1, `${Math.round(mobileLanding.titleRight)}/${mobileLanding.width}`);
+  check('mobile: landing primary actions stay in view', mobileLanding.dashboardRight <= mobileLanding.width + 1 && mobileLanding.convertRight <= mobileLanding.width + 1, `${Math.round(mobileLanding.convertRight)}/${Math.round(mobileLanding.dashboardRight)}`);
   await openDashboard(mob);
   check('mobile: sidebar hidden', !(await mob.locator('.dash-sidebar').isVisible()));
-  check('mobile: tab bar visible', await mob.locator('.dash-viewtabs').isVisible());
-  await mob.locator('.dash-viewtabs button', { hasText: 'Goals' }).click();
+  check('mobile: bottom navigation visible', await mob.locator('.mobile-nav').isVisible());
+  check('mobile: back to story remains reachable', await mob.locator('[data-close-dashboard]').last().isVisible());
+  const mobileTopbar = await mob.evaluate(() => {
+    const bar = document.querySelector('.dash-topbar');
+    const account = document.querySelector('#cloud-account');
+    return { scrollWidth: bar.scrollWidth, clientWidth: bar.clientWidth, accountHidden: account?.closest('.select')?.hidden === true };
+  });
+  check('mobile: topbar does not clip controls', mobileTopbar.scrollWidth <= mobileTopbar.clientWidth + 1, `${mobileTopbar.scrollWidth}/${mobileTopbar.clientWidth}`);
+  check('mobile: inactive account selector is hidden', mobileTopbar.accountHidden);
+  await mob.click('#mobile-more-toggle');
+  await mob.locator('#mobile-more-sheet [data-view="goals"]').click();
   await mob.waitForTimeout(400);
-  check('mobile: tab switches view', (await mob.locator('#view-goals.active').count()) === 1);
+  check('mobile: more menu switches view', (await mob.locator('#view-goals.active').count()) === 1);
+  const mobileThemeBefore = await mob.evaluate(() => document.documentElement.getAttribute('data-theme'));
+  await mob.click('#mobile-more-toggle');
+  await mob.click('#mobile-theme-toggle');
+  await mob.waitForTimeout(700);
+  check('mobile: theme control works from the more menu', (await mob.evaluate(() => document.documentElement.getAttribute('data-theme'))) !== mobileThemeBefore && (await mob.locator('#mobile-more-sheet').isHidden()));
   await Shot(mob, '05-mobile');
   await mob.close();
 
@@ -560,6 +648,7 @@ try {
   await recovery.goto(WEB + '/?reset=e2e-invalid-reset-token', { waitUntil: 'domcontentloaded' });
   await ready(recovery);
   await recovery.waitForSelector('#auth-modal.open');
+  check('auth modal uses native dialog semantics', await recovery.evaluate(() => { const modal = document.querySelector('#auth-modal'); return modal.tagName === 'DIALOG' && modal.open; }));
   check('recovery: reset link opens the reset form', (await recovery.locator('#auth-title').innerText()) === 'Choose a new password');
   check('recovery: reset token removed from the URL', !recovery.url().includes('reset='));
   await recovery.fill('#auth-password', 'new-password-456');
