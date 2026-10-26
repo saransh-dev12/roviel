@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#050505">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <meta name="description" content="Understand your money across currencies. Convert with dated reference rates and compare exchange quotes and fees.">
   <meta name="roviel-api" content="">
   <title>Roviel — Give every currency a direction</title>
@@ -2047,6 +2050,7 @@
     html[data-theme="noir"] .dash-side-link.active svg { color: var(--accent); }
     html[data-theme] .dash-side-link[aria-expanded="true"] { color: var(--text); }
     html[data-theme] .dash-brand-mark { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 48%, transparent); background: var(--accent-wash); }
+    html[data-theme] img.dash-brand-mark { display: block; flex: 0 0 32px; padding: 0; border: 0; border-radius: 8px; background: transparent; object-fit: contain; }
     html[data-theme] .brand span, html[data-theme] .dash-brand span:last-child { color: var(--brass); }
     html[data-theme] .privacy-note i, html[data-theme] .dash-live i { background: var(--accent); box-shadow: 0 0 10px rgba(22, 163, 74, 55%); }
     html[data-theme] .cloud-pill.on { border-color: color-mix(in srgb, var(--accent) 50%, transparent); color: var(--positive); background: var(--accent-wash); }
@@ -2330,7 +2334,7 @@
   <section class="dashboard-view" id="dashboard-view" aria-label="Roviel dashboard" aria-hidden="true" data-lenis-prevent>
     <div class="dash-layout">
       <aside class="dash-sidebar">
-        <a href="#dashboard" class="dash-brand" aria-label="Roviel demo dashboard"><span class="dash-brand-mark">R</span> ROVIEL<span style="color:var(--brass)">.</span></a>
+        <a href="#dashboard" class="dash-brand" aria-label="Roviel demo dashboard"><img class="dash-brand-mark" src="/roviel-mark.svg" alt="" width="32" height="32"> ROVIEL<span style="color:var(--brass)">.</span></a>
         <p class="dash-workspace" id="dash-workspace-label">Local demo · INR sample data</p>
         <nav class="dash-side-nav" aria-label="Dashboard views">
           <span class="dash-nav-label">Workspace</span>

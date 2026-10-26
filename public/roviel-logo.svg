@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="96" viewBox="0 0 360 96" fill="none" role="img" aria-labelledby="roviel-logo-title">
+  <title id="roviel-logo-title">Roviel</title>
+  <g transform="translate(16 16)">
+    <rect x="1" y="1" width="62" height="62" rx="14" fill="#050505" stroke="#292929" stroke-width="2"/>
+    <path d="M14 50V14h14.8c7.9 0 13 4.7 13 11.4 0 4.9-2.4 8.4-6.5 10" stroke="#FFFFFF" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M35.3 35.4 51 50" stroke="#16A34A" stroke-width="5.2" stroke-linecap="round"/>
+    <circle cx="51" cy="14.5" r="2.6" fill="#4ADE80"/>
+  </g>
+  <text x="98" y="62" fill="#FFFFFF" font-family="Archivo, Inter, system-ui, sans-serif" font-size="40" font-weight="600" letter-spacing="8">ROVIEL<tspan fill="#16A34A">.</tspan></text>
+</svg>
