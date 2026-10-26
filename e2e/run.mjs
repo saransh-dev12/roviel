@@ -40,7 +40,7 @@ async function login(page) {
   await page.fill('#auth-email', 'demo@ledgerly.app');
   await page.fill('#auth-password', 'ledgerly123');
   await page.click('#auth-submit');
-  await page.waitForFunction(() => document.querySelector('#cloud-status')?.textContent.includes('CLOUD SYNC'), { timeout: 15000 });
+  await page.waitForFunction(() => document.querySelector('#cloud-status')?.textContent.includes('Cloud sync'), { timeout: 15000 });
   await page.waitForTimeout(2500);
 }
 async function api(page, path, options = {}) {
@@ -304,6 +304,12 @@ try {
   const cloudToday = await page.evaluate(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; });
   check('cloud transaction exposes the date control', (await page.locator('#transaction-date').isVisible()) && (await page.locator('#transaction-date').inputValue()) === cloudToday, await page.locator('#transaction-date').inputValue());
   await page.click('#close-transaction');
+
+  // motion engine + React Bits islands
+  const motion = await page.evaluate(() => window.__motion?.status?.());
+  check('motion engine runs gsap, lenis and scroll triggers', !!motion && motion.gsap === true && motion.lenis === true && motion.triggers >= 2 && motion.reduced === false, JSON.stringify(motion));
+  check('split-text headings hydrated', (await page.locator('#view-overview .view-head h1 .split-char').count()) > 0);
+  check('clickspark engine layer present', (await page.locator('#bits-sparks').count()) === 1);
 
   // command palette navigates with the keyboard
   await page.click('#open-command');
@@ -570,7 +576,7 @@ try {
   // sign out
   await page.click('#auth-button');
   await page.waitForTimeout(900);
-  check('sign out restores local demo', (await page.locator('#cloud-status').innerText()).includes('LOCAL DEMO'));
+  check('sign out restores local demo', (await page.locator('#cloud-status').innerText()).includes('Local demo'));
   await page.close();
 
   // ================= MOBILE =================
@@ -686,7 +692,7 @@ try {
   await recPage.fill('#auth-email', recEmail);
   await recPage.fill('#auth-password', recOldPassword);
   await recPage.click('#auth-submit');
-  await recPage.waitForFunction(() => document.querySelector('#cloud-status')?.textContent.includes('CLOUD SYNC'), { timeout: 20000 });
+  await recPage.waitForFunction(() => document.querySelector('#cloud-status')?.textContent.includes('Cloud sync'), { timeout: 20000 });
   await recPage.waitForTimeout(1200);
   await recPage.click('.dash-side-nav [data-view="accounts"]');
   await recPage.waitForTimeout(700);
@@ -715,8 +721,8 @@ try {
   await recPage.fill('#auth-email', recEmail);
   await recPage.fill('#auth-password', recNewPassword);
   await recPage.click('#auth-submit');
-  await recPage.waitForFunction(() => document.querySelector('#cloud-status')?.textContent.includes('CLOUD SYNC'), { timeout: 20000 });
-  check('recovery: new password signs in', (await recPage.locator('#cloud-status').innerText()).includes('CLOUD SYNC'));
+  await recPage.waitForFunction(() => document.querySelector('#cloud-status')?.textContent.includes('Cloud sync'), { timeout: 20000 });
+  check('recovery: new password signs in', (await recPage.locator('#cloud-status').innerText()).includes('Cloud sync'));
   const recDelete = await api(recPage, '/api/auth/account', { method: 'DELETE', body: JSON.stringify({ password: recNewPassword, confirm: 'DELETE' }) });
   check('recovery: test account cleaned up', recDelete.status === 200, recDelete.status);
   await recPage.close();

@@ -24,11 +24,11 @@ export async function sendPasswordResetEmail(email: string, resetUrl: string) {
     '',
     'If you did not request this, you can ignore this email. Your password has not changed.',
   ].join('\n');
-  const html = `<div style="font-family:system-ui,-apple-system,sans-serif;line-height:1.5;color:#171a20;max-width:560px">
+  const html = `<div style="font-family:system-ui,-apple-system,sans-serif;line-height:1.5;color:#171717;max-width:560px">
     <h1 style="font-size:22px">Reset your Roviel password</h1>
     <p>Use this single-use link to choose a new password. It expires in 30 minutes.</p>
-    <p><a href="${escapeHtml(resetUrl)}" style="display:inline-block;padding:11px 18px;border-radius:6px;background:#c6f432;color:#10140b;font-weight:700;text-decoration:none">Choose a new password</a></p>
-    <p style="color:#5b6068;font-size:13px">If you did not request this, you can ignore this email. Your password has not changed.</p>
+    <p><a href="${escapeHtml(resetUrl)}" style="display:inline-block;padding:11px 18px;border-radius:6px;background:#15803d;color:#ffffff;font-weight:700;text-decoration:none">Choose a new password</a></p>
+    <p style="color:#5b5b5b;font-size:13px">If you did not request this, you can ignore this email. Your password has not changed.</p>
   </div>`;
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',

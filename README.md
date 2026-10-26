@@ -17,7 +17,7 @@ Built as a portfolio-grade backend project — Express + TypeScript + PostgreSQL
 | **Landing** | Scroll-snapped story (one scroll = one section), WebGL coin scene with a graceful no-WebGL fallback, custom cursor, interface sounds, reduced-motion support. |
 | **Public converter** | Full currency directory when online (starter set offline), dated reference rates, inverse rate, stale/offline states with a dated cache, popular pairs, favourites, recents, copy & share. |
 | **Quote comparator** | Enter a provider quote + fixed/percentage/tax fees; exact `BigInt` minor-unit maths with per-currency rounding. The reference rate is **never** auto-filled into the provider field. |
-| **Dashboard** | 8 dedicated views: Overview, Transactions, Accounts, Budgets, Goals, Recurring, Insights, Currency pulse. Overview previews the newest activity; Transactions supports search, type/sort controls, native date entry and account-aware rows; Budgets supports a month selector and ledger-backed category suggestions; Accounts has per-account detail drawers; Goals supports optional deadlines; command palette (`Ctrl/⌘+K`) jumps to views, actions and active accounts; detail drawers return focus after closing. Pulse includes a 30-day accessible rate chart with high/low, observation date, source, freshness and keyboard/pointer inspection. |
+| **Dashboard** | 8 dedicated views: Overview, Transactions, Accounts, Budgets, Goals, Recurring, Insights, Currency pulse. Overview previews the newest activity; Transactions supports search, type/sort controls, native date entry and account-aware rows; Budgets supports a month selector and ledger-backed category suggestions; Accounts has per-account detail drawers; Goals supports optional deadlines; command palette (`Ctrl/⌘+K`) jumps to views, actions and active accounts; detail drawers return focus after closing. Pulse includes an emerald pair mini-tab strip (derived from the existing pair catalogue), route-synced child state, and a 30-day accessible rate chart with high/low, observation date, source, freshness and keyboard/pointer inspection. |
 | **Cloud mode** | JWT auth with expiring sessions, zero-cost single-use recovery codes, optional email reset, multi-currency accounts, atomic transfers with FX capture, budgets with burn-down bars, goals with contributions plus edit/delete, recurring rules you can post in one tap, CSV export of the full ledger with currency-native precision, deterministic insights. |
 | **Offline-first** | The anonymous demo keeps working with no API — localStorage ledger, local analytics, and an explicit "local demo" state. |
 
@@ -27,7 +27,7 @@ Built as a portfolio-grade backend project — Express + TypeScript + PostgreSQL
 Browser (Vite, zero-framework UI)
   ├── index.html            landing + dashboard + converter (vanilla JS, ES modules)
   ├── public/roviel-api.js thin API client (additive; demo works without it)
-  ├── e2e/run.mjs           Playwright suite (146 checks, real browser)
+  ├── e2e/run.mjs           Playwright suite (149 checks, real browser)
   └── server/test/          Vitest money/maths unit tests (JPY, KWD, fees)
         │  HTTPS + Bearer JWT
         ▼
@@ -54,10 +54,10 @@ Roviel ships **two calibrated themes** built from one editorial design system, w
 
 | Theme | Character |
 | --- | --- |
-| **Ink** (default) | Neutral graphite `#07090f`, warm ivory text, restrained cobalt `#5f80ff` interaction accent and brass `#cda85f` detail. No green-tinted surfaces. |
-| **Paper** | Warm paper `#f4f0e8`, ink text, cobalt `#2030d8` accents and restrained brass. A quieter, editorial version of the original cream identity. |
+| **Ink** (default) | Near-black `#050505` canvas, `#111111` elevated surfaces, white primary text, `#a3a3a3` secondary text, `#292929` borders, emerald `#16a34a` action/accent, and `#4ade80` positive data. Red is reserved for negative financial movement. |
+| **Paper** | White canvas, black text, neutral-gray surfaces and the same emerald system at light-theme contrast. Red remains semantic-only. |
 
-Typography is self-hosted from open-source SIL OFL families: **Archivo** for display, **Inter** for UI, and **IBM Plex Mono** with tabular figures for financial values. Shared across both themes: one spacing rhythm, one border/radius system, one purposeful motion language, native dialogs, portal-positioned selects, keyboard-operated command palette, reduced-motion support, and the same component set — cards, buttons, inputs, tabs, tables, pills, bars, modals, drawers, toasts, account-detail panels and grouped commands.
+Typography is self-hosted from open-source SIL OFL families: **Archivo** for display, **Inter** for UI, and **IBM Plex Mono** with tabular figures for financial values. Shared across both themes: one spacing rhythm, one border/radius system, one purposeful motion language, native dialogs, portal-positioned selects, keyboard-operated command palette, reduced-motion support, and the same component set — cards, buttons, inputs, tabs, tables, pills, bars, modals, drawers, toasts, account-detail panels and grouped commands. App screens follow an audited pass (sentence-case labels, right-aligned tabular figures, neutral navigation, one emerald primary per screen, emerald/white/gray/red financial charts with real y-scales); see `index.html` (`TASTE-SKILL APP PASS`).
 
 ## Design references
 
@@ -66,7 +66,7 @@ Concrete patterns were adapted in original Roviel code; no reference source code
 | Reference | Inspected page/component | Adapted pattern | Roviel location | Reuse/license status |
 | --- | --- | --- | --- | --- |
 | Refero Styles dashboard guide | `styles.refero.design/examples/dashboard-ui-design` | Calm analytical hierarchy, scannable dense tables, contrast reserved for action | `index.html` Overview metrics/cashflow/latest activity, Transactions filters/sort/row actions, Accounts/Budgets/Goals, dialogs/forms/dropdowns/empty states | Public inspiration; adapted principles, no code copied |
-| Refero Styles Ramp | `https://styles.refero.design/style/b38702a0-75ab-474c-9106-00b624535825` | Flat hairline cards, restrained neutral palette, one functional accent | `index.html` Ledger Redesign theme tokens/cards/CTA discipline | Public inspiration; adapted principles, no code copied |
+| Refero Styles Ramp | `https://styles.refero.design/style/b38702a0-75ab-474c-9106-00b624535825` | Flat hairline cards, restrained neutral palette, one functional emerald accent | `index.html` Ledger Redesign theme tokens/cards/CTA discipline | Public inspiration; adapted principles, no code copied |
 | Refero Styles Mercury | `https://styles.refero.design/style/3172cd4d-118a-4a16-a259-6b634d32322e` | Graphite-on-dark surfaces, pill controls, measured intermediate type | `index.html` Ink theme, dashboard shell, command palette | Public inspiration; adapted principles, no code copied |
 | Refero Styles Linear | `https://styles.refero.design/style/90ce5883-bb24-4466-93f7-801cd617b0d1` | Precision rows, tabular metadata, hairline borders | `index.html` transaction/account tables | Public inspiration; adapted principles, no code copied |
 | Refero Styles Steep | `https://styles.refero.design/style/75fdb89f-ca64-41b3-af36-7a78bd09448e` | Editorial serif/display hierarchy, generous whitespace | `index.html` Paper theme, landing/display type | Public inspiration; adapted principles, no code copied |
