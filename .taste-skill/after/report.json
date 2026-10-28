@@ -1,0 +1,1627 @@
+{
+ "url": "http://localhost:5173/#dashboard",
+ "at": "2026-10-24T22:46:29.502Z",
+ "allow": [
+  "headline-lines",
+  "app-title-size",
+  "micro-label",
+  "tiny-text"
+ ],
+ "viewports": [
+  {
+   "width": 1440,
+   "height": 900,
+   "load": "load",
+   "screens": 1,
+   "filled": [
+    0.76
+   ],
+   "motion": {
+    "elements": 5,
+    "css": 1,
+    "transitions": 4,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "page": {
+     "height": 900,
+     "screens": 1,
+     "words": 305,
+     "img": 0,
+     "video": 0,
+     "canvas": 1,
+     "svg": 18,
+     "sections": 24,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "G i v e e v e r y c u r r e n c y a d i r e c t i o n.",
+     "words": 27,
+     "chars": 54,
+     "lines": 3,
+     "size": 104,
+     "vw": 7.2,
+     "font": "Archivo",
+     "weight": 600,
+     "tracking": -0.03,
+     "leading": 0.98,
+     "top": 353,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "Give every currency a direction.",
+     "words": 5,
+     "lines": 3,
+     "size": 103.7,
+     "font": "Archivo"
+    },
+    "headings": [
+     {
+      "text": "Every currency you hold, on one page.",
+      "words": 7,
+      "chars": 37,
+      "lines": 2,
+      "size": 28,
+      "vw": 1.9,
+      "font": "Archivo",
+      "weight": 600,
+      "tracking": -0.015,
+      "leading": 1.2,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.27,
+      "top": 128,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "Give every currency a direction.",
+      "words": 5,
+      "chars": 32,
+      "lines": 3,
+      "size": 103.7,
+      "vw": 7.2,
+      "font": "Archivo",
+      "weight": 600,
+      "tracking": -0.035,
+      "leading": 0.98,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.6,
+      "top": 353,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "₹84,250.00",
+      "words": 1,
+      "chars": 10,
+      "lines": 1,
+      "size": 32,
+      "vw": 2.2,
+      "font": "IBM Plex Mono",
+      "weight": 500,
+      "tracking": 0,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": true,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.34,
+      "top": 368,
+      "tag": "strong",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 3,
+     "maxLines": 3,
+     "over2Lines": 1,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": 7,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Inter",
+       "share": 0.76,
+       "mono": false
+      },
+      {
+       "family": "IBM Plex Mono",
+       "share": 0.15,
+       "mono": true
+      },
+      {
+       "family": "Archivo",
+       "share": 0.09,
+       "mono": false
+      },
+      {
+       "family": "Arial",
+       "share": 0,
+       "mono": false
+      }
+     ],
+     "familyCount": 4,
+     "sizes": [
+      8,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      22,
+      24,
+      28,
+      32,
+      104
+     ],
+     "sizeCount": 14,
+     "notLoaded": [],
+     "body": {
+      "font": "Inter",
+      "size": 11.5,
+      "leading": 1.65,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 5.7
+     },
+     "measureChars": 132,
+     "max": {
+      "size": 103.7,
+      "vw": 7.2,
+      "font": "Archivo",
+      "text": "G"
+     },
+     "monoShare": 0.15,
+     "monoProseShare": 0.14,
+     "monoFamilies": [
+      "IBM Plex Mono"
+     ],
+     "monoSamples": [
+      "01 · Ledger",
+      "A clearer way to handle money",
+      "Live reference",
+      "1 USD = 0.89113 EUR · 25 Oct 2026",
+      "Currency directory",
+      "165 supported"
+     ],
+     "microLabels": 5,
+     "microLabelShare": 0.048,
+     "microSamples": [
+      "01 · Ledger",
+      "A clearer way to handle money",
+      "Live reference",
+      "Currency directory",
+      "Ledger"
+     ],
+     "upperShare": 0.05,
+     "centerShare": 0.06,
+     "smallText": 18
+    },
+    "eyebrows": [],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#07090f",
+     "bodyBgHsl": {
+      "h": 225,
+      "s": 0.36,
+      "l": 0.04
+     },
+     "dark": true,
+     "sectionBgs": [
+      {
+       "color": "#07090f",
+       "top": 0,
+       "hsl": {
+        "h": 225,
+        "s": 0.36,
+        "l": 0.04
+       }
+      },
+      {
+       "color": "#0e1219",
+       "top": 811,
+       "hsl": {
+        "h": 218,
+        "s": 0.28,
+        "l": 0.08
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#aaa79e",
+       "share": 0.47
+      },
+      {
+       "color": "#f2eee5",
+       "share": 0.25
+      },
+      {
+       "color": "#858a91",
+       "share": 0.14
+      },
+      {
+       "color": "#f2ede5",
+       "share": 0.09
+      },
+      {
+       "color": "#5f80ff",
+       "share": 0.02
+      }
+     ],
+     "button": {
+      "bg": "#4f6dff",
+      "hsl": {
+       "h": 230,
+       "s": 1,
+       "l": 0.65
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 19,
+     "inHero": 19,
+     "radius": 8,
+     "height": 40,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 4,
+     "upper": 3,
+     "heroLabels": [
+      "Overview",
+      "Transactions",
+      "Accounts",
+      "Budgets",
+      "Goals"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 3,
+     "hairlineSamples": [
+      "aside.dash-sidebar 240px",
+      "header.dash-topbar 1079px",
+      "div.dash-insight-stats 309px"
+     ],
+     "outlinedBoxes": 6,
+     "dashed": 0,
+     "blurred": 3,
+     "roundedBoxes": 6,
+     "boxRadius": 16,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [
+     {
+      "type": "svg",
+      "ratio": 0.09
+     }
+    ],
+    "nav": {
+     "links": 6,
+     "fixed": true,
+     "height": 900,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": [
+     "archivo",
+     "inter",
+     "ibm plex mono"
+    ]
+   },
+   "layout": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "pageH": 900,
+    "margins": {
+     "left": 18,
+     "right": 75
+    },
+    "sections": [],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Every currency you hold, on one page.",
+      "size": 28,
+      "top": 128,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [],
+    "leftBlocks": 0,
+    "bodySize": 16,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0.06,
+    "voidBox": {
+     "x": 0,
+     "y": 600,
+     "w": 300,
+     "h": 240
+    }
+   },
+   "app": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "dark": true,
+    "ground": "#07090f",
+    "sidebar": {
+     "w": 240,
+     "tag": "aside",
+     "links": 10,
+     "share": 0.17
+    },
+    "topbar": null,
+    "canvas": {
+     "left": 60,
+     "right": 60
+    },
+    "hero": {
+     "text": "G i v e e v e r y c u r r e n c y a d i r e c t i o n.",
+     "words": 27,
+     "chars": 54,
+     "lines": 3,
+     "size": 104,
+     "vw": 7.2,
+     "font": "Archivo",
+     "weight": 600,
+     "tracking": -0.03,
+     "leading": 0.98,
+     "top": 353,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 3,
+    "layout": {
+     "panels": 10,
+     "firstScreen": 10,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 10,
+     "radii": [
+      [
+       16,
+       9
+      ],
+      [
+       0,
+       1
+      ]
+     ],
+     "heavyBorders": 9,
+     "borderSamples": [
+      "#dee6ef on #07090f (15.8:1)",
+      "#dee6ef on #07090f (15.8:1)",
+      "#dee6ef on #07090f (15.8:1)"
+     ],
+     "heavyShadows": 0,
+     "softShadows": 0,
+     "shadowSamples": [],
+     "glass": 3
+    },
+    "chips": {
+     "count": 0,
+     "hues": 0,
+     "samples": []
+    },
+    "numbers": {
+     "cells": 0,
+     "leftAligned": 0,
+     "figures": 4,
+     "tabularShare": 0.25,
+     "kpiMax": 15
+    },
+    "rows": null,
+    "chartHues": 1,
+    "placeholders": [],
+    "type": {
+     "under13": 0.28,
+     "tiny": 13,
+     "tinySamples": [
+      "01 · Ledger 10px",
+      "A clearer way to handle  10px",
+      "Live reference 8px",
+      "Currency directory 8px"
+     ],
+     "sizes": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      22,
+      24,
+      28,
+      32
+     ]
+    },
+    "title": {
+     "text": "Give every\ncurrency a\ndirection.",
+     "size": 104,
+     "top": 353
+    },
+    "colourShare": 0.008
+   },
+   "consoleErrors": []
+  },
+  {
+   "width": 768,
+   "height": 1024,
+   "load": "load",
+   "screens": 1,
+   "filled": [
+    0.68
+   ],
+   "motion": {
+    "elements": 5,
+    "css": 1,
+    "transitions": 4,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "page": {
+     "height": 1024,
+     "screens": 1,
+     "words": 283,
+     "img": 0,
+     "video": 0,
+     "canvas": 1,
+     "svg": 18,
+     "sections": 24,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "G i v e e v e r y c u r r e n c y a d i r e c t i o n.",
+     "words": 27,
+     "chars": 54,
+     "lines": 3,
+     "size": 56,
+     "vw": 7.3,
+     "font": "Archivo",
+     "weight": 600,
+     "tracking": -0.03,
+     "leading": 0.98,
+     "top": 404,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "Give every currency a direction.",
+     "words": 5,
+     "lines": 3,
+     "size": 56,
+     "font": "Archivo"
+    },
+    "headings": [
+     {
+      "text": "Every currency you hold, on one page.",
+      "words": 7,
+      "chars": 37,
+      "lines": 2,
+      "size": 28,
+      "vw": 3.6,
+      "font": "Archivo",
+      "weight": 600,
+      "tracking": -0.015,
+      "leading": 1.2,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.5,
+      "top": 124,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "Give every currency a direction.",
+      "words": 5,
+      "chars": 32,
+      "lines": 3,
+      "size": 56,
+      "vw": 7.3,
+      "font": "Archivo",
+      "weight": 600,
+      "tracking": -0.035,
+      "leading": 0.98,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.91,
+      "top": 404,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "₹84,250.00",
+      "words": 1,
+      "chars": 10,
+      "lines": 1,
+      "size": 32,
+      "vw": 4.2,
+      "font": "IBM Plex Mono",
+      "weight": 500,
+      "tracking": 0,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": true,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.89,
+      "top": 430,
+      "tag": "strong",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 3,
+     "maxLines": 3,
+     "over2Lines": 1,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": 7,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Inter",
+       "share": 0.75,
+       "mono": false
+      },
+      {
+       "family": "IBM Plex Mono",
+       "share": 0.15,
+       "mono": true
+      },
+      {
+       "family": "Archivo",
+       "share": 0.09,
+       "mono": false
+      },
+      {
+       "family": "Arial",
+       "share": 0,
+       "mono": false
+      }
+     ],
+     "familyCount": 4,
+     "sizes": [
+      8,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      22,
+      24,
+      28,
+      32,
+      56
+     ],
+     "sizeCount": 13,
+     "notLoaded": [],
+     "body": {
+      "font": "Inter",
+      "size": 11.5,
+      "leading": 1.65,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 5.7
+     },
+     "measureChars": 127,
+     "max": {
+      "size": 56,
+      "vw": 7.3,
+      "font": "Archivo",
+      "text": "G"
+     },
+     "monoShare": 0.15,
+     "monoProseShare": 0.15,
+     "monoFamilies": [
+      "IBM Plex Mono"
+     ],
+     "monoSamples": [
+      "01 · Ledger",
+      "A clearer way to handle money",
+      "Live reference",
+      "1 USD = 0.89113 EUR · 25 Oct 2026",
+      "Currency directory",
+      "165 supported"
+     ],
+     "microLabels": 5,
+     "microLabelShare": 0.052,
+     "microSamples": [
+      "01 · Ledger",
+      "A clearer way to handle money",
+      "Live reference",
+      "Currency directory",
+      "Ledger"
+     ],
+     "upperShare": 0.05,
+     "centerShare": 0.07,
+     "smallText": 19
+    },
+    "eyebrows": [],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#07090f",
+     "bodyBgHsl": {
+      "h": 225,
+      "s": 0.36,
+      "l": 0.04
+     },
+     "dark": true,
+     "sectionBgs": [
+      {
+       "color": "#07090f",
+       "top": 0,
+       "hsl": {
+        "h": 225,
+        "s": 0.36,
+        "l": 0.04
+       }
+      },
+      {
+       "color": "#141a24",
+       "top": 1030,
+       "hsl": {
+        "h": 218,
+        "s": 0.29,
+        "l": 0.11
+       }
+      },
+      {
+       "color": "#0e1219",
+       "top": 1368,
+       "hsl": {
+        "h": 218,
+        "s": 0.28,
+        "l": 0.08
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#aaa79e",
+       "share": 0.46
+      },
+      {
+       "color": "#f2eee5",
+       "share": 0.26
+      },
+      {
+       "color": "#858a91",
+       "share": 0.12
+      },
+      {
+       "color": "#f2ede5",
+       "share": 0.1
+      },
+      {
+       "color": "#5f80ff",
+       "share": 0.03
+      }
+     ],
+     "button": {
+      "bg": "#4f6dff",
+      "hsl": {
+       "h": 230,
+       "s": 1,
+       "l": 0.65
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 7,
+     "inHero": 6,
+     "radius": 10,
+     "height": 40,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 3,
+     "upper": 3,
+     "heroLabels": [
+      "Sign in",
+      "View rates",
+      "+ Add transaction"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 1,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 2,
+     "hairlineSamples": [
+      "header.dash-topbar 728px",
+      "div.dash-insight-stats 682px"
+     ],
+     "outlinedBoxes": 6,
+     "dashed": 0,
+     "blurred": 3,
+     "roundedBoxes": 6,
+     "boxRadius": 16,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [
+     {
+      "type": "svg",
+      "ratio": 0.16
+     }
+    ],
+    "nav": {
+     "links": 2,
+     "fixed": true,
+     "height": 1024,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": [
+     "archivo",
+     "inter",
+     "ibm plex mono"
+    ]
+   },
+   "layout": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "pageH": 1024,
+    "margins": {
+     "left": 20,
+     "right": 20
+    },
+    "sections": [],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Every currency you hold, on one page.",
+      "size": 28,
+      "top": 124,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [],
+    "leftBlocks": 0,
+    "bodySize": 16,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "dark": true,
+    "ground": "#07090f",
+    "sidebar": null,
+    "topbar": null,
+    "canvas": {
+     "left": 20,
+     "right": 20
+    },
+    "hero": {
+     "text": "G i v e e v e r y c u r r e n c y a d i r e c t i o n.",
+     "words": 27,
+     "chars": 54,
+     "lines": 3,
+     "size": 56,
+     "vw": 7.3,
+     "font": "Archivo",
+     "weight": 600,
+     "tracking": -0.03,
+     "leading": 0.98,
+     "top": 404,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 3,
+    "layout": {
+     "panels": 6,
+     "firstScreen": 4,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 11,
+     "radii": [
+      [
+       16,
+       11
+      ]
+     ],
+     "heavyBorders": 11,
+     "borderSamples": [
+      "#dee6ef on #0e1219 (14.9:1)",
+      "#dee6ef on #0e1219 (14.9:1)",
+      "#dee6ef on #0e1219 (14.9:1)"
+     ],
+     "heavyShadows": 0,
+     "softShadows": 0,
+     "shadowSamples": [],
+     "glass": 0
+    },
+    "chips": {
+     "count": 0,
+     "hues": 0,
+     "samples": []
+    },
+    "numbers": {
+     "cells": 0,
+     "leftAligned": 0,
+     "figures": 4,
+     "tabularShare": 0.25,
+     "kpiMax": 15
+    },
+    "rows": null,
+    "chartHues": 1,
+    "placeholders": [],
+    "type": {
+     "under13": 0.28,
+     "tiny": 12,
+     "tinySamples": [
+      "01 · Ledger 10px",
+      "A clearer way to handle  10px",
+      "Live reference 8px",
+      "Currency directory 8px"
+     ],
+     "sizes": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      22,
+      24,
+      28,
+      32
+     ]
+    },
+    "title": {
+     "text": "Give every\ncurrency a\ndirection.",
+     "size": 56,
+     "top": 404
+    },
+    "colourShare": 0.012
+   },
+   "consoleErrors": []
+  },
+  {
+   "width": 390,
+   "height": 844,
+   "load": "load",
+   "screens": 1,
+   "filled": [
+    0.66
+   ],
+   "motion": {
+    "elements": 5,
+    "css": 1,
+    "transitions": 4,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "page": {
+     "height": 844,
+     "screens": 1,
+     "words": 283,
+     "img": 0,
+     "video": 0,
+     "canvas": 1,
+     "svg": 18,
+     "sections": 24,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "G i v e e v e r y c u r r e n c y a d i r e c t i o n.",
+     "words": 27,
+     "chars": 54,
+     "lines": 3,
+     "size": 37,
+     "vw": 9.4,
+     "font": "Archivo",
+     "weight": 600,
+     "tracking": -0.04,
+     "leading": 0.98,
+     "top": 381,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "Give every currency a direction.",
+     "words": 5,
+     "lines": 3,
+     "size": 36.7,
+     "font": "Archivo"
+    },
+    "headings": [
+     {
+      "text": "Every currency you hold, on one page.",
+      "words": 7,
+      "chars": 37,
+      "lines": 2,
+      "size": 22,
+      "vw": 5.6,
+      "font": "Archivo",
+      "weight": 600,
+      "tracking": -0.015,
+      "leading": 1.2,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.78,
+      "top": 124,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "Give every currency a direction.",
+      "words": 5,
+      "chars": 32,
+      "lines": 3,
+      "size": 36.7,
+      "vw": 9.4,
+      "font": "Archivo",
+      "weight": 600,
+      "tracking": -0.035,
+      "leading": 0.98,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.89,
+      "top": 381,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "₹84,250.00",
+      "words": 1,
+      "chars": 10,
+      "lines": 1,
+      "size": 32,
+      "vw": 8.2,
+      "font": "IBM Plex Mono",
+      "weight": 500,
+      "tracking": 0,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": true,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.78,
+      "top": 456,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "₹25,000.00",
+      "words": 1,
+      "chars": 10,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "IBM Plex Mono",
+      "weight": 500,
+      "tracking": 0,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": true,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.78,
+      "top": 625,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "₹11,410.00",
+      "words": 1,
+      "chars": 10,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "IBM Plex Mono",
+      "weight": 500,
+      "tracking": 0,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": true,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.78,
+      "top": 789,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "You’re keeping more than you spend.",
+      "words": 6,
+      "chars": 35,
+      "lines": 2,
+      "size": 22,
+      "vw": 5.6,
+      "font": "Archivo",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.22,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.64,
+      "top": 1437,
+      "tag": "h3",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 6,
+     "maxLines": 3,
+     "over2Lines": 1,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": 1,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Inter",
+       "share": 0.75,
+       "mono": false
+      },
+      {
+       "family": "IBM Plex Mono",
+       "share": 0.15,
+       "mono": true
+      },
+      {
+       "family": "Archivo",
+       "share": 0.09,
+       "mono": false
+      },
+      {
+       "family": "Arial",
+       "share": 0,
+       "mono": false
+      }
+     ],
+     "familyCount": 4,
+     "sizes": [
+      8,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      22,
+      24,
+      32,
+      37
+     ],
+     "sizeCount": 12,
+     "notLoaded": [],
+     "body": {
+      "font": "Inter",
+      "size": 11.5,
+      "leading": 1.65,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 5.7
+     },
+     "measureChars": 61,
+     "max": {
+      "size": 36.7,
+      "vw": 9.4,
+      "font": "Archivo",
+      "text": "G"
+     },
+     "monoShare": 0.15,
+     "monoProseShare": 0.15,
+     "monoFamilies": [
+      "IBM Plex Mono"
+     ],
+     "monoSamples": [
+      "01 · Ledger",
+      "A clearer way to handle money",
+      "Live reference",
+      "1 USD = 0.89113 EUR · 25 Oct 2026",
+      "Currency directory",
+      "165 supported"
+     ],
+     "microLabels": 5,
+     "microLabelShare": 0.052,
+     "microSamples": [
+      "01 · Ledger",
+      "A clearer way to handle money",
+      "Live reference",
+      "Currency directory",
+      "Ledger"
+     ],
+     "upperShare": 0.05,
+     "centerShare": 0.07,
+     "smallText": 21
+    },
+    "eyebrows": [],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#07090f",
+     "bodyBgHsl": {
+      "h": 225,
+      "s": 0.36,
+      "l": 0.04
+     },
+     "dark": true,
+     "sectionBgs": [
+      {
+       "color": "#07090f",
+       "top": 0,
+       "hsl": {
+        "h": 225,
+        "s": 0.36,
+        "l": 0.04
+       }
+      },
+      {
+       "color": "#0e1219",
+       "top": 889,
+       "hsl": {
+        "h": 218,
+        "s": 0.28,
+        "l": 0.08
+       }
+      },
+      {
+       "color": "#141a24",
+       "top": 1304,
+       "hsl": {
+        "h": 218,
+        "s": 0.29,
+        "l": 0.11
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#aaa79e",
+       "share": 0.46
+      },
+      {
+       "color": "#f2eee5",
+       "share": 0.26
+      },
+      {
+       "color": "#858a91",
+       "share": 0.12
+      },
+      {
+       "color": "#f2ede5",
+       "share": 0.1
+      },
+      {
+       "color": "#5f80ff",
+       "share": 0.03
+      }
+     ],
+     "button": {
+      "bg": "#4f6dff",
+      "hsl": {
+       "h": 230,
+       "s": 1,
+       "l": 0.65
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 6,
+     "inHero": 5,
+     "radius": 10,
+     "height": 40,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 2,
+     "upper": 2,
+     "heroLabels": [
+      "Sign in",
+      "View rates",
+      "+ Add transaction"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 1,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 2,
+     "hairlineSamples": [
+      "header.dash-topbar 350px",
+      "div.dash-insight-stats 308px"
+     ],
+     "outlinedBoxes": 11,
+     "dashed": 0,
+     "blurred": 3,
+     "roundedBoxes": 11,
+     "boxRadius": 16,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": [
+      {
+       "count": 3,
+       "iconTopped": false,
+       "rounded": true,
+       "top": 397
+      },
+      {
+       "count": 5,
+       "iconTopped": true,
+       "rounded": true,
+       "top": 2193
+      }
+     ]
+    },
+    "heroMedia": [],
+    "nav": {
+     "links": 2,
+     "fixed": true,
+     "height": 844,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": [
+     "archivo",
+     "inter",
+     "ibm plex mono"
+    ]
+   },
+   "layout": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "pageH": 844,
+    "margins": {
+     "left": 20,
+     "right": 20
+    },
+    "sections": [],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Every currency you hold, on one page.",
+      "size": 22,
+      "top": 124,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [],
+    "leftBlocks": 0,
+    "bodySize": 16,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "dark": true,
+    "ground": "#07090f",
+    "sidebar": null,
+    "topbar": null,
+    "canvas": {
+     "left": 20,
+     "right": 20
+    },
+    "hero": {
+     "text": "G i v e e v e r y c u r r e n c y a d i r e c t i o n.",
+     "words": 27,
+     "chars": 54,
+     "lines": 3,
+     "size": 37,
+     "vw": 9.4,
+     "font": "Archivo",
+     "weight": 600,
+     "tracking": -0.04,
+     "leading": 0.98,
+     "top": 381,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 3,
+    "layout": {
+     "panels": 6,
+     "firstScreen": 3,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 11,
+     "radii": [
+      [
+       16,
+       11
+      ]
+     ],
+     "heavyBorders": 11,
+     "borderSamples": [
+      "#dee6ef on #0e1219 (14.9:1)",
+      "#dee6ef on #0e1219 (14.9:1)",
+      "#dee6ef on #0e1219 (14.9:1)"
+     ],
+     "heavyShadows": 0,
+     "softShadows": 0,
+     "shadowSamples": [],
+     "glass": 0
+    },
+    "chips": {
+     "count": 0,
+     "hues": 0,
+     "samples": []
+    },
+    "numbers": {
+     "cells": 0,
+     "leftAligned": 0,
+     "figures": 4,
+     "tabularShare": 0.25,
+     "kpiMax": 15
+    },
+    "rows": null,
+    "chartHues": 1,
+    "placeholders": [],
+    "type": {
+     "under13": 0.29,
+     "tiny": 12,
+     "tinySamples": [
+      "01 · Ledger 10px",
+      "A clearer way to handle  8px",
+      "Live reference 8px",
+      "Currency directory 8px"
+     ],
+     "sizes": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      22,
+      24,
+      32
+     ]
+    },
+    "title": {
+     "text": "Give every\ncurrency a\ndirection.",
+     "size": 37,
+     "top": 381
+    },
+    "colourShare": 0.022
+   },
+   "consoleErrors": []
+  }
+ ],
+ "findings": [
+  {
+   "level": "WARN",
+   "id": "palette-cream",
+   "width": 1440,
+   "message": "Yellow-cream background (text #f2eee5, text #f2ede5).",
+   "fix": "Use the drawn palette. If you want warmth, take a low-chroma stone or bone, not a yellow cream.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "font-count",
+   "width": 1440,
+   "message": "3 typefaces in use (Inter, IBM Plex Mono, Archivo).",
+   "fix": "Two at most.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "heavy-borders",
+   "width": 1440,
+   "message": "9 panel borders are dark against their ground: #dee6ef on #07090f (15.8:1) | #dee6ef on #07090f (15.8:1) | #dee6ef on #07090f (15.8:1)",
+   "fix": "A panel border is a whisper: about 1.1–1.3:1 against its ground on a light screen (#e5e7eb–#ededed on white), and about 1.2–1.5:1 on a dark one (#1a1a1a on #000, #2e2e2e on #111). Darker lines turn the screen into a grid of boxes; keep the stronger line for controls.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  }
+ ],
+ "images": [
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "fold": "/Users/saranshpandey/roviel/.taste-skill/after/desktop-fold.jpg",
+   "pages": [
+    "/Users/saranshpandey/roviel/.taste-skill/after/desktop-page-01.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "tablet",
+   "width": 768,
+   "fold": "/Users/saranshpandey/roviel/.taste-skill/after/tablet-fold.jpg",
+   "pages": [
+    "/Users/saranshpandey/roviel/.taste-skill/after/tablet-page-01.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "mobile",
+   "width": 390,
+   "fold": "/Users/saranshpandey/roviel/.taste-skill/after/mobile-fold.jpg",
+   "pages": [
+    "/Users/saranshpandey/roviel/.taste-skill/after/mobile-page-01.jpg"
+   ],
+   "film": []
+  }
+ ]
+}
