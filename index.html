@@ -2389,7 +2389,7 @@
       border-bottom-color: var(--glass-border);
       box-shadow: inset 0 1px var(--glass-highlight), 0 12px 40px rgba(0, 0, 0, 14%);
       backdrop-filter: blur(26px) saturate(150%);
-      -webkit-backdrop-filter: blur(26px) saturate(150%);
+
     }
     html[data-theme="brutal"] .dash-topbar.dash-globalbar { box-shadow: inset 0 1px var(--glass-highlight), 0 12px 30px rgba(16, 24, 19, 6%); }
     html[data-theme] .dash-contextbar {
@@ -2397,7 +2397,7 @@
       border-bottom-color: var(--glass-border);
       box-shadow: inset 0 1px var(--glass-highlight);
       backdrop-filter: blur(22px) saturate(140%);
-      -webkit-backdrop-filter: blur(22px) saturate(140%);
+
     }
     html[data-theme] .dash-global-nav,
     html[data-theme] .pulse-tabs,
@@ -2406,13 +2406,13 @@
       border-color: var(--glass-border);
       box-shadow: inset 0 1px var(--glass-highlight), 0 8px 30px rgba(0, 0, 0, 12%);
       backdrop-filter: blur(18px) saturate(140%);
-      -webkit-backdrop-filter: blur(18px) saturate(140%);
+
     }
     html[data-theme] .dash-global-indicator {
       background: color-mix(in srgb, var(--accent) 18%, transparent);
       box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 38%, transparent), inset 0 1px rgba(255, 255, 255, 14%);
       backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+
     }
     html[data-theme] .dash-global-count { background: color-mix(in srgb, var(--surface) 55%, transparent); }
     html[data-theme] .dash-top-actions .dash-back,
@@ -2426,7 +2426,7 @@
       border-color: var(--glass-border);
       box-shadow: inset 0 1px var(--glass-highlight);
       backdrop-filter: blur(14px) saturate(130%);
-      -webkit-backdrop-filter: blur(14px) saturate(130%);
+
     }
     html[data-theme] .dash-top-actions .dash-back:hover,
     html[data-theme] .dash-top-actions .dash-command:hover,
@@ -2451,7 +2451,7 @@
       border-color: var(--glass-border);
       box-shadow: inset 0 1px var(--glass-highlight), inset 0 -1px rgba(255, 255, 255, 3%), var(--glass-shadow);
       backdrop-filter: blur(var(--glass-blur)) saturate(150%);
-      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+
       transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
     }
     html[data-theme] .dash-insight-card,
@@ -2487,7 +2487,7 @@
       border-color: var(--glass-border);
       box-shadow: inset 0 1px var(--glass-highlight);
       backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+
     }
     html[data-theme] .select-menu,
     html[data-theme] .suggest-list,
@@ -2504,7 +2504,7 @@
       border-color: var(--glass-border-strong);
       box-shadow: inset 0 1px var(--glass-highlight), 0 28px 80px rgba(0, 0, 0, 38%);
       backdrop-filter: blur(26px) saturate(150%);
-      -webkit-backdrop-filter: blur(26px) saturate(150%);
+
     }
     html[data-theme="brutal"] .select-menu,
     html[data-theme="brutal"] .suggest-list,
@@ -2523,15 +2523,15 @@
       border-color: var(--glass-border-strong);
       box-shadow: inset 0 1px var(--glass-highlight), 0 20px 50px rgba(0, 0, 0, 24%);
       backdrop-filter: blur(24px) saturate(150%);
-      -webkit-backdrop-filter: blur(24px) saturate(150%);
+
     }
     html[data-theme] .dash-primary,
     html[data-theme] .auth-primary {
       box-shadow: 0 10px 26px color-mix(in srgb, var(--accent) 18%, transparent), inset 0 1px rgba(255, 255, 255, 16%);
     }
     @media (max-width: 900px) {
-      html[data-theme] .dash-globalbar, html[data-theme] .dash-contextbar { backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); }
-      html[data-theme] .dash-card, html[data-theme] .pulse-tile, html[data-theme] .pulse-chart-card, html[data-theme] .insight-card { backdrop-filter: blur(16px) saturate(130%); -webkit-backdrop-filter: blur(16px) saturate(130%); }
+      html[data-theme] .dash-globalbar, html[data-theme] .dash-contextbar { backdrop-filter: blur(18px) saturate(140%); }
+      html[data-theme] .dash-card, html[data-theme] .pulse-tile, html[data-theme] .pulse-chart-card, html[data-theme] .insight-card { backdrop-filter: blur(16px) saturate(130%); }
     }
     @media (prefers-reduced-motion: reduce) {
       html[data-theme] .dash-card, html[data-theme] .insight-card, html[data-theme] .dash-row:not(.head) { transition: none; }
