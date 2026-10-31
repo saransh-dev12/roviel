@@ -1625,7 +1625,7 @@
      .command-backdrop { position: fixed; inset: 0; z-index: 300; background: rgba(4, 4, 4, 58%); opacity: 0; transition: opacity var(--duration-quick); }
     .command-backdrop.open { opacity: 1; }
     .command-palette { position: fixed; inset: 0; z-index: 301; display: flex; justify-content: center; align-items: flex-start; padding: 12vh 18px 18px; pointer-events: none; }
-    .command-box { width: min(580px, 100%); overflow: hidden; border: 1px solid var(--line-strong); border-radius: 18px; background: color-mix(in srgb, var(--surface, #131313) 92%, transparent); box-shadow: 0 34px 100px rgba(0, 0, 0, 48%); opacity: 0; transform: translateY(14px) scale(.985); transition: opacity var(--duration-quick) var(--ease-product), transform var(--duration-quick) var(--ease-product); pointer-events: auto; }
+    .command-box { width: min(580px, 100%); overflow: hidden; border: 1px solid var(--line-strong); border-radius: 18px; background: color-mix(in srgb, var(--surface, #131313) 92%, transparent); box-shadow: 0 34px 100px rgba(0, 0, 0, 48%); opacity: 0; transform: translateY(10px) scale(.99); transition: opacity 140ms var(--ease-product), transform 140ms var(--ease-product); pointer-events: auto; }
     .command-palette.open .command-box { opacity: 1; transform: none; }
     .command-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px 10px; color: var(--muted); font: 600 9px var(--mono); letter-spacing: 1.5px; text-transform: uppercase; }
     .command-keys { display: inline-flex; align-items: center; gap: 4px; color: var(--faint, var(--muted)); letter-spacing: .2px; text-transform: none; }
@@ -1724,7 +1724,7 @@
     html[data-theme] .dash-breadcrumb strong { font-size: 14px; font-weight: 600; }
     html[data-theme] .dash-top-actions { align-items: center; gap: 8px; }
     html[data-theme] .dash-live, html[data-theme] .dash-breadcrumb { font-family: var(--sans); }
-    html[data-theme] .dash-primary, html[data-theme] .auth-primary { border: 1px solid transparent; border-radius: 999px; color: var(--on-brand); background: var(--brand); box-shadow: none; font-size: 13px; font-weight: 600; letter-spacing: 0; }
+    html[data-theme] .dash-primary, html[data-theme] .auth-primary { border: 1px solid transparent; border-radius: 999px; color: var(--on-brand); background: var(--brand); box-shadow: none; font-size: 13px; font-weight: 600; letter-spacing: 0; white-space: nowrap; }
     html[data-theme="noir"] .dash-primary, html[data-theme="noir"] .auth-primary { background: var(--brand); }
     html[data-theme] .dash-primary:hover, html[data-theme] .auth-primary:hover { background: var(--brand-strong); box-shadow: none; transform: translateY(-1px); }
     html[data-theme="noir"] .dash-primary:hover, html[data-theme="noir"] .auth-primary:hover { background: var(--brand-strong); }
@@ -2171,6 +2171,372 @@
       .pulse-tabs-label { display: none; }
       .pulse-tabs button { min-height: 38px; }
     }
+    /* ============ TOOLBAR + INTERACTION POLISH ============ */
+    html[data-theme] .dash-topbar { min-height: 60px; gap: 18px; align-items: center; }
+    html[data-theme] .dash-breadcrumb { font-size: 12px; }
+    html[data-theme] .dash-breadcrumb strong { font-size: 13px; font-weight: 600; }
+    html[data-theme] .dash-top-actions { gap: 6px; align-items: center; flex-wrap: nowrap; }
+    html[data-theme] .dash-toolgroup { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+    html[data-theme] .dash-toolgroup + .dash-toolgroup { margin-left: 2px; padding-left: 10px; border-left: 1px solid var(--line); }
+    html[data-theme] .dash-top-actions .dash-back,
+    html[data-theme] .dash-top-actions .dash-command,
+    html[data-theme] .dash-top-actions .cloud-pill { min-height: 36px; height: 36px; border-radius: 10px; }
+    html[data-theme] .dash-top-actions .dash-back { padding: 0 12px; font-size: 11.5px; font-weight: 500; }
+    html[data-theme] .dash-top-actions .dash-back.icon-only { width: 36px; height: 36px; min-height: 36px; flex: 0 0 36px; padding: 0; }
+    html[data-theme] .dash-top-actions .dash-command { gap: 8px; padding: 0 10px; border-color: var(--line); border-radius: 10px; color: var(--muted); background: var(--surface); font: 500 12px var(--sans); letter-spacing: 0; }
+    html[data-theme] .dash-command-icon { width: 14px; height: 14px; flex: 0 0 14px; color: var(--faint); transition: color var(--duration-quick) ease; }
+    html[data-theme] .dash-command kbd { padding: 2px 5px; border-color: var(--line); border-radius: 5px; color: var(--muted); background: var(--surface-2); font-size: 9px; }
+    html[data-theme] .dash-top-actions .dash-command:hover { border-color: var(--line-strong); color: var(--text); background: var(--surface-2); }
+    html[data-theme] .dash-top-actions .dash-command:hover .dash-command-icon { color: var(--text); }
+    html[data-theme] .dash-top-actions .dash-command.is-open { border-color: color-mix(in srgb, var(--accent) 48%, transparent); color: var(--text); background: var(--accent-wash); }
+    html[data-theme] .dash-top-actions .dash-command.is-open .dash-command-icon { color: var(--positive); }
+    html[data-theme] .dash-top-actions .dash-back:hover { border-color: var(--line-strong); color: var(--text); background: var(--surface-2); }
+    html[data-theme] .dash-top-actions .dash-back.theme-toggle { border-color: var(--line); color: var(--muted); background: transparent; }
+    html[data-theme] .dash-top-actions .dash-back.theme-toggle:hover { border-color: var(--line-strong); color: var(--text); background: var(--surface-2); }
+    html[data-theme] .dash-top-actions .dash-back[aria-expanded="true"] { border-color: color-mix(in srgb, var(--accent) 48%, transparent); color: var(--positive); background: var(--accent-wash); }
+    html[data-theme] .dash-top-actions .cloud-pill { padding: 0 10px; font-size: 10px; }
+    html[data-theme] .dash-top-actions .dash-live { font-size: 11px; gap: 7px; }
+    html[data-theme] .dash-side-link { min-height: 38px; padding: 0 10px; border-radius: 9px; font-size: 13.5px; }
+    html[data-theme] .dash-side-nav { gap: 3px; }
+    html[data-theme] .dash-nav-label { margin: 16px 0 4px 10px; font-size: 11px; }
+    html[data-theme] .dashboard-view:focus { outline: none; }
+
+    /* Theme switch: one synchronized color transition, never a layout transition. */
+    html.theme-transitioning *,
+    html.theme-transitioning *::before,
+    html.theme-transitioning *::after {
+      transition-property: background-color, color, border-color, fill, stroke, box-shadow !important;
+      transition-duration: 220ms !important;
+      transition-timing-function: ease !important;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html.theme-transitioning *, html.theme-transitioning *::before, html.theme-transitioning *::after { transition-duration: 0ms !important; }
+    }
+
+    /* One pressed state across the interactive surface. */
+    html[data-theme] :is(.dash-side-link, .dash-back, .dash-primary, .dash-secondary, .dash-command, .seg button, .pulse-tabs button, .mobile-nav button, .mobile-more-grid button, .cloud-grid button, .mini-form button, .auth-row button, .command-item, .select-trigger, .select-option, .suggest-item, .currency-actions button, .currency-popular button, .currency-recent-item, #currency-favorites-list button, .row-del, .contact-btn, .slide-cta) {
+      transition: color var(--duration-quick) ease, background-color var(--duration-quick) ease, border-color var(--duration-quick) ease, box-shadow var(--duration-quick) ease, transform 120ms var(--ease-product);
+    }
+    html[data-theme] :is(.dash-side-link, .dash-back, .dash-primary, .dash-secondary, .dash-command, .seg button, .pulse-tabs button, .mobile-nav button, .mobile-more-grid button, .cloud-grid button, .mini-form button, .auth-row button, .command-item, .select-trigger, .select-option, .suggest-item, .currency-actions button, .currency-popular button, .currency-recent-item, #currency-favorites-list button, .row-del, .contact-btn, .slide-cta):active:not(:disabled) {
+      transform: translateY(1px) scale(.992);
+    }
+    html[data-theme] :is(.dash-command, .dash-back, .dash-side-link, .seg button, .pulse-tabs button, .command-item, .select-trigger, .cloud-grid button, .mini-form button, .mobile-nav button, .mobile-more-grid button):focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    html[data-theme] .dash-side-link.active:focus-visible { outline-offset: 1px; }
+
+    /* Smooth menus without delaying the control itself. */
+    @keyframes rovel-menu-in { from { opacity: 0; transform: translateY(-4px) scale(.995); } to { opacity: 1; transform: none; } }
+    @keyframes rovel-tip-in { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+    html[data-theme] .select-menu:not([hidden]),
+    html[data-theme] .suggest-list:not([hidden]) { transform-origin: top center; animation: rovel-menu-in .16s var(--ease-product); }
+    html[data-theme] .chart-tooltip:not([hidden]),
+    html[data-theme] .pulse-tooltip:not([hidden]) { animation: rovel-tip-in .12s ease-out; }
+    html[data-theme] .detail-drawer { transition: transform .22s var(--ease-product); }
+    html[data-theme] .drawer-backdrop { transition: opacity .18s ease; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html[data-theme] :is(.dash-side-link, .dash-back, .dash-primary, .dash-secondary, .dash-command, .seg button, .pulse-tabs button, .mobile-nav button, .mobile-more-grid button, .cloud-grid button, .mini-form button, .auth-row button, .command-item, .select-trigger, .select-option, .suggest-item, .currency-actions button, .currency-popular button, .currency-recent-item, #currency-favorites-list button, .row-del, .contact-btn, .slide-cta) { transition-duration: 0ms; }
+      html[data-theme] :is(.dash-side-link, .dash-back, .dash-primary, .dash-secondary, .dash-command, .seg button, .pulse-tabs button, .mobile-nav button, .mobile-more-grid button, .cloud-grid button, .mini-form button, .auth-row button, .command-item, .select-trigger, .select-option, .suggest-item, .currency-actions button, .currency-popular button, .currency-recent-item, #currency-favorites-list button, .row-del, .contact-btn, .slide-cta):active:not(:disabled) { transform: none; }
+      html[data-theme] .select-menu:not([hidden]), html[data-theme] .suggest-list:not([hidden]), html[data-theme] .chart-tooltip:not([hidden]), html[data-theme] .pulse-tooltip:not([hidden]) { animation: none; }
+    }
+
+    @media (max-width: 900px) {
+      html[data-theme] .dash-topbar { min-height: 60px; gap: 10px; }
+      html[data-theme] .dash-top-actions { gap: 6px; }
+      html[data-theme] .dash-utility-group, html[data-theme] #sound-toggle, html[data-theme] .dash-live { display: none; }
+      html[data-theme] .dash-breadcrumb { display: flex; min-width: 0; overflow: hidden; }
+      html[data-theme] .dash-breadcrumb span, html[data-theme] .dash-breadcrumb b { display: none; }
+      html[data-theme] .dash-breadcrumb strong { display: block; overflow: hidden; color: var(--text); font-size: 13px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+      html[data-theme] .dash-top-actions .dash-back,
+      html[data-theme] .dash-top-actions .dash-command { min-height: 42px; height: 42px; border-radius: 11px; }
+      html[data-theme] .dash-top-actions .dash-back.icon-only { width: 42px; height: 42px; min-height: 42px; flex-basis: 42px; }
+      html[data-theme] .dash-top-actions .cloud-pill { min-height: 38px; height: 38px; border-radius: 11px; }
+      html[data-theme] .dash-toolgroup + .dash-toolgroup { margin-left: 0; padding-left: 8px; }
+    }
+    @media (max-width: 520px) {
+      html[data-theme] .dash-status-group { display: none; }
+    }
+    @media (max-width: 380px) {
+      html[data-theme] .view-head-actions .dash-primary,
+      html[data-theme] .view-head-actions .dash-secondary { gap: 6px; padding: 0 10px; font-size: 11.5px; }
+    }
+
+    /* ============ TWO-LEVEL HORIZONTAL NAVIGATION ============ */
+    html[data-theme] .dash-layout { display: block; min-height: 100vh; }
+    html[data-theme] .dash-main { min-width: 0; padding: 0; }
+    html[data-theme] .dash-content { width: min(100% - 48px, 1220px); max-width: none; margin: 0 auto; padding: 0 0 120px; }
+
+    html[data-theme] .dash-topbar.dash-globalbar { position: sticky; top: 0; z-index: 60; display: block; min-height: 62px; padding: 0; border-bottom: 1px solid var(--line); background: var(--bg); }
+    html[data-theme] .dash-global-inner { display: flex; width: min(100% - 48px, 1220px); min-height: 62px; margin: 0 auto; align-items: center; gap: 20px; }
+    html[data-theme] .dash-globalbar .dash-brand { flex: 0 0 auto; color: var(--text); font-size: 16px; letter-spacing: 3px; }
+    html[data-theme] .dash-brand-word { display: inline; }
+    html[data-theme] .dash-brand-dot { display: inline; }
+
+    html[data-theme] .dash-global-nav { position: relative; display: flex; flex: 0 1 auto; min-width: 0; align-items: center; gap: 2px; padding: 4px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+    html[data-theme] .dash-global-indicator { position: absolute; top: 4px; bottom: 4px; left: 0; z-index: 0; width: 0; border-radius: 8px; background: var(--green-surface); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 38%, transparent); pointer-events: none; }
+    html[data-theme] .dash-global-link { position: relative; z-index: 1; display: inline-flex; min-height: 34px; align-items: center; gap: 7px; padding: 0 12px; border: 0; border-radius: 8px; color: var(--muted); background: transparent; font: 500 12.5px var(--sans); white-space: nowrap; transition: color 120ms ease, background-color 120ms ease; }
+    html[data-theme] .dash-global-link:hover { color: var(--text); background: var(--hover-surface); }
+    html[data-theme] .dash-global-link.active { color: var(--text); background: transparent; }
+    html[data-theme] .dash-global-link.active:hover { background: transparent; }
+    html[data-theme] .dash-global-count { display: inline-grid; min-width: 17px; height: 17px; place-items: center; padding: 0 5px; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--faint); font: 500 9px var(--mono); line-height: 1; }
+    html[data-theme] .dash-global-link.active .dash-global-count { border-color: color-mix(in srgb, var(--accent) 45%, transparent); color: var(--positive); background: var(--accent-wash); }
+    html[data-theme] .dash-globalbar .dash-top-actions { margin-left: auto; flex: 0 0 auto; gap: 6px; }
+
+    html[data-theme] .dash-contextbar { position: sticky; top: 62px; z-index: 55; min-height: 46px; border-bottom: 1px solid var(--line); background: var(--surface); }
+    html[data-theme] .dash-context-inner { display: flex; width: min(100% - 48px, 1220px); min-height: 46px; margin: 0 auto; align-items: center; gap: 22px; }
+    html[data-theme] .dash-breadcrumb { display: flex; flex: 0 0 auto; align-items: center; gap: 7px; overflow: hidden; color: var(--faint); font-size: 12px; white-space: nowrap; }
+    html[data-theme] .dash-crumb-root { color: var(--muted); }
+    html[data-theme] .dash-breadcrumb b { margin: 0; color: var(--line-strong); font-weight: 400; }
+    html[data-theme] .dash-breadcrumb strong { color: var(--text); font-size: 12.5px; font-weight: 600; }
+    html[data-theme] .dash-context-nav { display: flex; flex: 1 1 auto; min-width: 0; align-items: center; justify-content: center; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+    html[data-theme] .dash-context-nav::-webkit-scrollbar { display: none; }
+    html[data-theme] .dash-context-nav[hidden] { display: none; }
+    html[data-theme] .dash-context-link { position: relative; min-height: 45px; padding: 0 12px; border: 0; color: var(--muted); background: transparent; font: 500 12.5px var(--sans); white-space: nowrap; transition: color 120ms ease; }
+    html[data-theme] .dash-context-link::after { position: absolute; right: 12px; bottom: 0; left: 12px; height: 2px; border-radius: 2px 2px 0 0; background: transparent; content: ''; transition: background-color 150ms ease; }
+    html[data-theme] .dash-context-link:hover { color: var(--text); }
+    html[data-theme] .dash-context-link.active { color: var(--text); }
+    html[data-theme] .dash-context-link.active::after { background: var(--accent); }
+    html[data-theme] .dash-context-status { display: flex; flex: 0 0 auto; align-items: center; gap: 8px; margin-left: auto; }
+    html[data-theme] .dash-context-status .dash-live { font-size: 11px; }
+    html[data-theme] .dash-context-status .cloud-pill { min-height: 28px; height: 28px; padding: 0 9px; border-radius: 8px; font-size: 9.5px; }
+    html[data-theme] .dash-context-status #cloud-account { display: none; }
+
+    @media (min-width: 901px) and (max-width: 1120px) {
+      html[data-theme] .dash-global-inner, html[data-theme] .dash-context-inner, html[data-theme] .dash-content { width: calc(100% - 40px); }
+      html[data-theme] .dash-global-inner { gap: 12px; }
+      html[data-theme] .dash-global-link { padding: 0 9px; font-size: 12px; }
+      html[data-theme] .dash-global-count { display: none; }
+      html[data-theme] .dash-command-label { display: none; }
+      html[data-theme] .dash-session-group [data-close-dashboard] { width: 36px; padding: 0; }
+      html[data-theme] .dash-session-group [data-close-dashboard] .dash-back-label { display: none; }
+      html[data-theme] .dash-context-inner { gap: 14px; }
+    }
+
+    @media (max-width: 900px) {
+      html[data-theme] .dash-globalbar { min-height: 60px; }
+      html[data-theme] .dash-global-inner { width: calc(100% - 32px); min-height: 60px; gap: 10px; }
+      html[data-theme] .dash-global-nav { display: none; }
+      html[data-theme] .dash-contextbar { top: 60px; min-height: 44px; }
+      html[data-theme] .dash-context-inner { width: calc(100% - 32px); min-height: 44px; gap: 12px; }
+      html[data-theme] .dash-context-nav { justify-content: flex-start; }
+      html[data-theme] .dash-context-link { min-height: 43px; padding: 0 10px; font-size: 12px; }
+      html[data-theme] .dash-context-link::after { right: 10px; left: 10px; }
+      html[data-theme] .dash-context-status { display: none; }
+      html[data-theme] .dash-content { width: calc(100% - 40px); padding: 0 0 128px; }
+      html[data-theme] .dash-main { padding: 0; }
+    }
+    @media (max-width: 360px) {
+      html[data-theme] .dash-brand-word, html[data-theme] .dash-brand-dot { display: none; }
+      html[data-theme] .dash-globalbar .dash-brand { gap: 0; }
+    }
+
+    /* ============ GLASS DASHBOARD ============ */
+    html[data-theme="noir"] {
+      --glass-bg: rgba(10, 11, 10, 62%);
+      --glass-surface: rgba(17, 18, 17, 42%);
+      --glass-surface-2: rgba(23, 25, 23, 54%);
+      --glass-strong: rgba(9, 11, 10, 86%);
+      --glass-border: rgba(255, 255, 255, 14%);
+      --glass-border-strong: rgba(255, 255, 255, 22%);
+      --glass-highlight: rgba(255, 255, 255, 14%);
+      --glass-sheen: rgba(255, 255, 255, 8%);
+      --glass-hover: rgba(27, 30, 27, 58%);
+      --glass-shadow: 0 24px 70px rgba(0, 0, 0, 38%);
+      --glass-blur: 22px;
+      --glass-glow: rgba(22, 163, 74, 24%);
+    }
+    html[data-theme="brutal"] {
+      --glass-bg: rgba(255, 255, 255, 66%);
+      --glass-surface: rgba(255, 255, 255, 52%);
+      --glass-surface-2: rgba(255, 255, 255, 68%);
+      --glass-strong: rgba(255, 255, 255, 92%);
+      --glass-border: rgba(6, 12, 8, 12%);
+      --glass-border-strong: rgba(6, 12, 8, 22%);
+      --glass-highlight: rgba(255, 255, 255, 90%);
+      --glass-sheen: rgba(255, 255, 255, 80%);
+      --glass-hover: rgba(255, 255, 255, 72%);
+      --glass-shadow: 0 24px 60px rgba(16, 24, 19, 8%);
+      --glass-blur: 22px;
+      --glass-glow: rgba(22, 163, 74, 14%);
+    }
+    html[data-theme] .dashboard-view {
+      background:
+        radial-gradient(ellipse 42% 34% at 8% 18%, var(--glass-glow), transparent 70%),
+        radial-gradient(ellipse 34% 28% at 92% 20%, rgba(255, 255, 255, 9%), transparent 72%),
+        radial-gradient(ellipse 48% 34% at 22% 54%, rgba(22, 163, 74, 9%), transparent 72%),
+        radial-gradient(ellipse 40% 30% at 84% 58%, rgba(255, 255, 255, 5%), transparent 72%),
+        radial-gradient(ellipse 44% 36% at 74% 88%, rgba(22, 163, 74, 11%), transparent 72%),
+        radial-gradient(ellipse 65% 55% at 48% -8%, rgba(255, 255, 255, 4%), transparent 72%),
+        var(--bg);
+      background-attachment: fixed;
+    }
+    html[data-theme="brutal"] .dashboard-view {
+      background:
+        radial-gradient(ellipse 42% 34% at 8% 18%, var(--glass-glow), transparent 70%),
+        radial-gradient(ellipse 34% 28% at 92% 20%, rgba(255, 255, 255, 96%), transparent 72%),
+        radial-gradient(ellipse 48% 34% at 22% 54%, rgba(22, 163, 74, 6%), transparent 72%),
+        radial-gradient(ellipse 40% 30% at 84% 58%, rgba(255, 255, 255, 84%), transparent 72%),
+        radial-gradient(ellipse 44% 36% at 74% 88%, rgba(22, 163, 74, 7%), transparent 72%),
+        radial-gradient(ellipse 65% 55% at 48% -8%, rgba(255, 255, 255, 90%), transparent 72%),
+        #f5f7f4;
+      background-attachment: fixed;
+    }
+    html[data-theme] .dashboard-view::before { background: transparent; }
+    html[data-theme] .dash-topbar.dash-globalbar {
+      background: var(--glass-bg);
+      border-bottom-color: var(--glass-border);
+      box-shadow: inset 0 1px var(--glass-highlight), 0 12px 40px rgba(0, 0, 0, 14%);
+      backdrop-filter: blur(26px) saturate(150%);
+      -webkit-backdrop-filter: blur(26px) saturate(150%);
+    }
+    html[data-theme="brutal"] .dash-topbar.dash-globalbar { box-shadow: inset 0 1px var(--glass-highlight), 0 12px 30px rgba(16, 24, 19, 6%); }
+    html[data-theme] .dash-contextbar {
+      background: color-mix(in srgb, var(--glass-bg) 88%, transparent);
+      border-bottom-color: var(--glass-border);
+      box-shadow: inset 0 1px var(--glass-highlight);
+      backdrop-filter: blur(22px) saturate(140%);
+      -webkit-backdrop-filter: blur(22px) saturate(140%);
+    }
+    html[data-theme] .dash-global-nav,
+    html[data-theme] .pulse-tabs,
+    html[data-theme] .seg {
+      background: var(--glass-surface);
+      border-color: var(--glass-border);
+      box-shadow: inset 0 1px var(--glass-highlight), 0 8px 30px rgba(0, 0, 0, 12%);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+    }
+    html[data-theme] .dash-global-indicator {
+      background: color-mix(in srgb, var(--accent) 18%, transparent);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 38%, transparent), inset 0 1px rgba(255, 255, 255, 14%);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    html[data-theme] .dash-global-count { background: color-mix(in srgb, var(--surface) 55%, transparent); }
+    html[data-theme] .dash-top-actions .dash-back,
+    html[data-theme] .dash-top-actions .dash-command,
+    html[data-theme] .dash-context-status .cloud-pill,
+    html[data-theme] .dash-secondary,
+    html[data-theme] .dash-back,
+    html[data-theme] .cloud-grid button,
+    html[data-theme] .mini-form button {
+      background: var(--glass-surface);
+      border-color: var(--glass-border);
+      box-shadow: inset 0 1px var(--glass-highlight);
+      backdrop-filter: blur(14px) saturate(130%);
+      -webkit-backdrop-filter: blur(14px) saturate(130%);
+    }
+    html[data-theme] .dash-top-actions .dash-back:hover,
+    html[data-theme] .dash-top-actions .dash-command:hover,
+    html[data-theme] .dash-secondary:hover,
+    html[data-theme] .dash-back:hover,
+    html[data-theme] .cloud-grid button:hover,
+    html[data-theme] .mini-form button:hover {
+      background: var(--glass-hover);
+      border-color: var(--glass-border-strong);
+      color: var(--text);
+    }
+    html[data-theme] .dash-top-actions .dash-command.is-open {
+      background: color-mix(in srgb, var(--accent) 20%, var(--glass-surface));
+      border-color: color-mix(in srgb, var(--accent) 52%, transparent);
+    }
+    html[data-theme] .dash-card,
+    html[data-theme] .pulse-tile,
+    html[data-theme] .pulse-chart-card,
+    html[data-theme] .insight-card,
+    html[data-theme] .cloud-grid .dash-card {
+      background: linear-gradient(135deg, var(--glass-sheen), transparent 42%), var(--glass-surface);
+      border-color: var(--glass-border);
+      box-shadow: inset 0 1px var(--glass-highlight), inset 0 -1px rgba(255, 255, 255, 3%), var(--glass-shadow);
+      backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+      transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    }
+    html[data-theme] .dash-insight-card,
+    html[data-theme] .dash-insight-card.dash-card {
+      background: linear-gradient(135deg, var(--glass-sheen), transparent 42%), var(--glass-surface-2);
+    }
+    html[data-theme] .dash-card:hover,
+    html[data-theme] .insight-card:hover,
+    html[data-theme] .insight-card:focus-visible {
+      background: linear-gradient(135deg, var(--glass-sheen), transparent 42%), var(--glass-hover);
+      border-color: var(--glass-border-strong);
+      box-shadow: inset 0 1px var(--glass-highlight), 0 30px 80px rgba(0, 0, 0, 30%);
+    }
+    html[data-theme="brutal"] .dash-card:hover,
+    html[data-theme="brutal"] .insight-card:hover,
+    html[data-theme="brutal"] .insight-card:focus-visible { box-shadow: inset 0 1px var(--glass-highlight), 0 28px 70px rgba(16, 24, 19, 9%); }
+    html[data-theme] .dash-row:not(.head) {
+      background: color-mix(in srgb, var(--glass-surface-2) 52%, transparent);
+      border-color: var(--glass-border);
+    }
+    html[data-theme] .dash-row:not(.head):hover { background: color-mix(in srgb, var(--glass-surface-2) 72%, transparent); border-color: var(--glass-border-strong); }
+    html[data-theme] .dash-search,
+    html[data-theme] .dash-filter,
+    html[data-theme] .dash-period,
+    html[data-theme] .select-trigger,
+    html[data-theme] .mini-form input,
+    html[data-theme] .mini-form select,
+    html[data-theme] .tx-field input,
+    html[data-theme] .tx-field select,
+    html[data-theme] .auth-form input,
+    html[data-theme] .command-input {
+      background: var(--glass-surface-2);
+      border-color: var(--glass-border);
+      box-shadow: inset 0 1px var(--glass-highlight);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    html[data-theme] .select-menu,
+    html[data-theme] .suggest-list,
+    html[data-theme] .command-box,
+    html[data-theme] .chart-tooltip,
+    html[data-theme] .pulse-tooltip,
+    html[data-theme] .dash-toast,
+    html[data-theme] .tx-form,
+    html[data-theme] .auth-form,
+    html[data-theme] .currency-tools-dialog,
+    html[data-theme] .detail-drawer,
+    html[data-theme] .mobile-more-sheet {
+      background: linear-gradient(135deg, var(--glass-sheen), transparent 45%), var(--glass-strong);
+      border-color: var(--glass-border-strong);
+      box-shadow: inset 0 1px var(--glass-highlight), 0 28px 80px rgba(0, 0, 0, 38%);
+      backdrop-filter: blur(26px) saturate(150%);
+      -webkit-backdrop-filter: blur(26px) saturate(150%);
+    }
+    html[data-theme="brutal"] .select-menu,
+    html[data-theme="brutal"] .suggest-list,
+    html[data-theme="brutal"] .command-box,
+    html[data-theme="brutal"] .chart-tooltip,
+    html[data-theme="brutal"] .pulse-tooltip,
+    html[data-theme="brutal"] .dash-toast,
+    html[data-theme="brutal"] .tx-form,
+    html[data-theme="brutal"] .auth-form,
+    html[data-theme="brutal"] .currency-tools-dialog,
+    html[data-theme="brutal"] .detail-drawer,
+    html[data-theme="brutal"] .mobile-more-sheet { box-shadow: inset 0 1px var(--glass-highlight), 0 28px 70px rgba(16, 24, 19, 10%); }
+    html[data-theme] .detail-drawer { border-left-color: var(--glass-border-strong); }
+    html[data-theme] .mobile-nav {
+      background: var(--glass-bg);
+      border-color: var(--glass-border-strong);
+      box-shadow: inset 0 1px var(--glass-highlight), 0 20px 50px rgba(0, 0, 0, 24%);
+      backdrop-filter: blur(24px) saturate(150%);
+      -webkit-backdrop-filter: blur(24px) saturate(150%);
+    }
+    html[data-theme] .dash-primary,
+    html[data-theme] .auth-primary {
+      box-shadow: 0 10px 26px color-mix(in srgb, var(--accent) 18%, transparent), inset 0 1px rgba(255, 255, 255, 16%);
+    }
+    @media (max-width: 900px) {
+      html[data-theme] .dash-globalbar, html[data-theme] .dash-contextbar { backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); }
+      html[data-theme] .dash-card, html[data-theme] .pulse-tile, html[data-theme] .pulse-chart-card, html[data-theme] .insight-card { backdrop-filter: blur(16px) saturate(130%); -webkit-backdrop-filter: blur(16px) saturate(130%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html[data-theme] .dash-card, html[data-theme] .insight-card, html[data-theme] .dash-row:not(.head) { transition: none; }
+    }
+
     /* GSAP motion layer: GSAP owns view entrances when active; CSS rise is the fallback. */
     html.gsap-on .dash-view.active > * { animation: none; }
     .split-parent { display: inline-block; }
@@ -2331,45 +2697,49 @@
       <div class="story-dashes"><div class="story-dash"><div class="story-dash-fill" id="dash-fill-1"></div></div><div class="story-dash"><div class="story-dash-fill" id="dash-fill-2"></div></div><div class="story-dash"><div class="story-dash-fill" id="dash-fill-3"></div></div><div class="story-dash"><div class="story-dash-fill" id="dash-fill-4"></div></div></div>
     </div>
   </div>
-  <section class="dashboard-view" id="dashboard-view" aria-label="Roviel dashboard" aria-hidden="true" data-lenis-prevent>
+  <section class="dashboard-view" id="dashboard-view" aria-label="Roviel dashboard" aria-hidden="true" tabindex="-1" data-lenis-prevent>
     <div class="dash-layout">
-      <aside class="dash-sidebar">
-        <a href="#dashboard" class="dash-brand" aria-label="Roviel demo dashboard"><img class="dash-brand-mark" src="/roviel-mark.svg" alt="" width="32" height="32"> ROVIEL<span style="color:var(--brass)">.</span></a>
-        <p class="dash-workspace" id="dash-workspace-label">Local demo · INR sample data</p>
-        <nav class="dash-side-nav" aria-label="Dashboard views">
-          <span class="dash-nav-label">Workspace</span>
-          <button class="dash-side-link active" type="button" data-view="overview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg>Overview</button>
-          <button class="dash-side-link" type="button" data-view="transactions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="7" cy="6" r="1"/><circle cx="7" cy="12" r="1"/><circle cx="7" cy="18" r="1"/></svg>Transactions</button>
-          <button class="dash-side-link" type="button" data-view="accounts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>Accounts</button>
-          <span class="dash-nav-label">Plan</span>
-          <button class="dash-side-link" type="button" data-view="budgets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 20V10m6 10V4m6 16v-7m4 7H2"/></svg>Budgets</button>
-          <button class="dash-side-link" type="button" data-view="goals"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".5"/></svg>Goals</button>
-          <button class="dash-side-link" type="button" data-view="recurring"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg>Recurring</button>
-          <span class="dash-nav-label">Analyze</span>
-          <button class="dash-side-link" type="button" data-view="insights"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19V5m0 14h16"/><path d="m7 15 4-4 3 2 5-6"/></svg>Insights</button>
-          <button class="dash-side-link" type="button" data-view="pulse" aria-controls="pulse-tabs" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>Currency pulse</button>
-        </nav>
-        <div class="dash-sidebar-bottom">
-          <div class="dash-side-note"><span>A small reminder</span><p>Clarity grows from the little moments you choose to notice.</p></div>
-          <a class="dash-side-link" href="#story" data-close-dashboard><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18 9 12l6-6"/><path d="M10 12h10"/></svg>Back to the story</a>
-        </div>
-      </aside>
       <div class="dash-main">
-        <header class="dash-topbar">
-          <div class="dash-breadcrumb"><span id="dash-mode-label">Local demo</span> <b>/</b> <strong>Overview</strong></div>
-          <div class="dash-top-actions"><button class="dash-command" type="button" id="open-command" aria-haspopup="dialog" aria-controls="command-palette"><kbd>⌘K</kbd><span>Command</span></button><span class="dash-live" id="sync-label"><i></i> Saved on this device</span><span class="cloud-pill" id="cloud-status"><i></i> Local demo</span><select id="cloud-account" aria-label="Active account" hidden></select><button class="dash-back theme-toggle" type="button" data-theme-toggle aria-label="Switch to paper theme">PAPER</button><button class="dash-back icon-only" type="button" id="sound-toggle" aria-pressed="true" aria-label="Toggle interface sounds" title="Toggle interface sounds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button><button class="dash-back" type="button" id="auth-button">Sign in</button><button class="dash-back" type="button" data-close-dashboard aria-label="Back to story"><span aria-hidden="true">←</span><span class="dash-back-label"> Back to story</span></button></div>
+        <header class="dash-topbar dash-globalbar">
+          <div class="dash-global-inner">
+            <a href="#dashboard" class="dash-brand" aria-label="Roviel dashboard"><img class="dash-brand-mark" src="/roviel-mark.svg" alt="" width="32" height="32"><span class="dash-brand-word">ROVIEL</span><span class="dash-brand-dot" style="color:var(--brass)">.</span></a>
+            <nav class="dash-global-nav" aria-label="Primary navigation">
+              <span class="dash-global-indicator" aria-hidden="true"></span>
+              <button class="dash-global-link active" type="button" data-primary="overview" data-view="overview" aria-current="page">Overview</button>
+              <button class="dash-global-link" type="button" data-primary="transactions" data-view="transactions">Transactions</button>
+              <button class="dash-global-link" type="button" data-primary="accounts" data-view="accounts">Accounts</button>
+              <button class="dash-global-link" type="button" data-primary="planning" data-nav-group="planning" aria-controls="dash-context-nav" aria-expanded="false">Planning<span class="dash-global-count">3</span></button>
+              <button class="dash-global-link" type="button" data-primary="analytics" data-nav-group="analytics" aria-controls="dash-context-nav" aria-expanded="false">Analytics<span class="dash-global-count">2</span></button>
+            </nav>
+            <div class="dash-top-actions">
+              <button class="dash-command" type="button" id="open-command" aria-haspopup="dialog" aria-controls="command-palette" aria-expanded="false" title="Search and commands (⌘K)">
+                <svg class="dash-command-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
+                <span class="dash-command-label">Search</span>
+                <kbd>⌘K</kbd>
+              </button>
+              <div class="dash-toolgroup dash-utility-group">
+                <button class="dash-back theme-toggle" type="button" data-theme-toggle aria-label="Switch to paper theme" title="Switch theme">PAPER</button>
+                <button class="dash-back icon-only" type="button" id="sound-toggle" aria-pressed="true" aria-label="Toggle interface sounds" title="Toggle interface sounds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+              </div>
+              <div class="dash-toolgroup dash-session-group">
+                <button class="dash-back" type="button" id="auth-button">Sign in</button>
+                <button class="dash-back" type="button" data-close-dashboard aria-label="Back to story" title="Back to story"><span aria-hidden="true">←</span><span class="dash-back-label"> Back to story</span></button>
+              </div>
+            </div>
+          </div>
+        </header>
+        <header class="dash-contextbar">
+          <div class="dash-context-inner">
+            <div class="dash-breadcrumb"><span class="dash-crumb-root">Roviel</span><b>/</b><strong id="dash-crumb-current">Overview</strong></div>
+            <nav class="dash-context-nav" id="dash-context-nav" aria-label="Section navigation" hidden></nav>
+            <div class="dash-context-status">
+              <span class="dash-live" id="sync-label"><i></i> Saved on this device</span>
+              <span class="cloud-pill" id="cloud-status"><i></i> Local demo</span>
+              <select id="cloud-account" aria-label="Active account" hidden></select>
+            </div>
+          </div>
         </header>
         <main class="dash-content" id="dashboard-overview">
-          <div class="dash-viewtabs" role="tablist" aria-label="Dashboard views">
-            <button type="button" class="active" data-view="overview" role="tab">Overview</button>
-            <button type="button" data-view="transactions" role="tab">Transactions</button>
-            <button type="button" data-view="accounts" role="tab">Accounts</button>
-            <button type="button" data-view="budgets" role="tab">Budgets</button>
-            <button type="button" data-view="goals" role="tab">Goals</button>
-            <button type="button" data-view="recurring" role="tab">Recurring</button>
-            <button type="button" data-view="insights" role="tab">Insights</button>
-            <button type="button" data-view="pulse" role="tab">Pulse</button>
-          </div>
           <div class="dash-view active" id="view-overview" role="tabpanel">
           <header class="view-head">
             <div class="view-head-copy">
@@ -3504,7 +3874,7 @@
         history.pushState({ dashboard: true, view: target }, '', next);
       }
       window.scrollTo(0, 0);
-      document.getElementById('dashboard-close').focus({ preventScroll: true });
+      view.focus({ preventScroll: true });
     }
 
     function closeDashboard(updateHistory) {
@@ -3554,43 +3924,102 @@
       return hash;
     }
     function updatePulseHash(pair) {
-      if (!document.body.classList.contains('dashboard-open') || !pair) return;
+      if (activeView !== 'pulse' || !document.body.classList.contains('dashboard-open') || !pair) return;
       const next = dashboardViewHash('pulse', pair);
       if (window.location.hash !== next) history.replaceState({ dashboard: true, view: 'pulse', pair }, '', next);
+    }
+    const NAV_GROUPS = {
+      planning: { label: 'Planning', items: [{ view: 'budgets', label: 'Budgets' }, { view: 'goals', label: 'Goals' }, { view: 'recurring', label: 'Recurring' }] },
+      analytics: { label: 'Analytics', items: [{ view: 'insights', label: 'Insights' }, { view: 'pulse', label: 'Currency Pulse' }] },
+    };
+    const GROUP_FOR_VIEW = { budgets: 'planning', goals: 'planning', recurring: 'planning', insights: 'analytics', pulse: 'analytics' };
+    let renderedContextGroup = null;
+    function primaryForView(name) { return GROUP_FOR_VIEW[name] || name; }
+    let globalIndicatorAnimation = null;
+    function syncGlobalIndicator() {
+      const nav = document.querySelector('.dash-global-nav');
+      const indicator = nav?.querySelector('.dash-global-indicator');
+      const active = nav?.querySelector('.dash-global-link.active');
+      if (!nav || !indicator || !active || nav.offsetParent === null) return;
+      const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      const before = getComputedStyle(indicator);
+      const fromTransform = before.transform === 'none' ? 'translateX(0px)' : before.transform;
+      const fromWidth = before.width;
+      indicator.style.width = `${active.offsetWidth}px`;
+      indicator.style.transform = `translateX(${active.offsetLeft}px)`;
+      if (reduce || !indicator.animate) return;
+      globalIndicatorAnimation?.cancel();
+      globalIndicatorAnimation = indicator.animate(
+        [{ transform: fromTransform, width: fromWidth }, { transform: `translateX(${active.offsetLeft}px)`, width: `${active.offsetWidth}px` }],
+        { duration: 190, easing: 'cubic-bezier(.22, 1, .36, 1)' }
+      );
+    }
+    function syncContextNav(name) {
+      const nav = document.getElementById('dash-context-nav');
+      const crumb = document.getElementById('dash-crumb-current');
+      const group = GROUP_FOR_VIEW[name];
+      if (!nav) return;
+      if (crumb) crumb.textContent = group ? NAV_GROUPS[group].label : VIEW_TITLES[name];
+      if (!group) {
+        nav.hidden = true;
+        nav.replaceChildren();
+        renderedContextGroup = null;
+        return;
+      }
+      if (renderedContextGroup !== group) {
+        nav.replaceChildren(...NAV_GROUPS[group].items.map(item => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'dash-context-link';
+          button.dataset.view = item.view;
+          button.textContent = item.label;
+          button.setAttribute('aria-controls', `view-${item.view}`);
+          return button;
+        }));
+        renderedContextGroup = group;
+      }
+      nav.hidden = false;
+      nav.querySelectorAll('[data-view]').forEach(button => {
+        const on = button.dataset.view === name;
+        button.classList.toggle('active', on);
+        button.setAttribute('aria-current', on ? 'page' : 'false');
+      });
     }
     function showView(name, options = {}) {
       if (!VIEW_TITLES[name]) name = 'overview';
       activeView = name;
+      const primary = primaryForView(name);
       document.querySelectorAll('.dash-view').forEach(view => {
         const on = view.id === 'view-' + name;
         view.classList.toggle('active', on);
         if (on) view.removeAttribute('hidden');
         else view.setAttribute('hidden', '');
       });
+      document.querySelectorAll('[data-primary]').forEach(button => {
+        const on = button.dataset.primary === primary;
+        button.classList.toggle('active', on);
+        button.setAttribute('aria-current', on ? 'page' : 'false');
+        if (button.hasAttribute('aria-expanded')) button.setAttribute('aria-expanded', on ? 'true' : 'false');
+      });
       document.querySelectorAll('[data-view]').forEach(btn => {
         const on = btn.dataset.view === name;
         btn.classList.toggle('active', on);
         if (btn.getAttribute('role') === 'tab') btn.setAttribute('aria-selected', on ? 'true' : 'false');
-        if (btn.classList.contains('dash-side-link')) btn.setAttribute('aria-current', on ? 'page' : 'false');
+        if (btn.classList.contains('dash-context-link')) btn.setAttribute('aria-current', on ? 'page' : 'false');
         if (btn.dataset.view === 'pulse' && btn.hasAttribute('aria-expanded')) btn.setAttribute('aria-expanded', on ? 'true' : 'false');
       });
-      const crumb = document.querySelector('.dash-breadcrumb strong');
-      if (crumb) crumb.textContent = VIEW_TITLES[name];
+      syncContextNav(name);
       const moreToggle = document.getElementById('mobile-more-toggle');
       const moreSheet = document.getElementById('mobile-more-sheet');
       const secondary = ['budgets', 'goals', 'recurring', 'insights'];
       if (moreToggle) moreToggle.classList.toggle('active', secondary.includes(name));
       if (moreSheet) { moreSheet.hidden = true; moreToggle?.setAttribute('aria-expanded', 'false'); }
-      const cloud = !!(window.RovielAPI && window.RovielAPI.isCloud());
-      const label = document.getElementById('dash-workspace-label');
-      if (label) label.textContent = (cloud ? 'Cloud workspace' : 'Local demo') + ' · ' + VIEW_TITLES[name];
-      const mode = document.getElementById('dash-mode-label');
-      if (mode) mode.textContent = cloud ? 'Cloud workspace' : 'Local demo';
       const scroller = document.getElementById('dashboard-view');
       if (scroller) scroller.scrollTo({ top: 0, behavior: 'auto' });
       if (name === 'pulse') { try { window.RovielPreparePulse?.(); } catch {} }
       try { window.__motion?.onViewChange(name); } catch {}
       try { splitViewHeading(name); } catch {}
+      requestAnimationFrame(syncGlobalIndicator);
       if (options.updateHash !== false && document.body.classList.contains('dashboard-open')) {
         const pair = name === 'pulse' ? (options.pair || document.getElementById('pulse-pair')?.value || null) : null;
         const next = dashboardViewHash(name, pair);
@@ -4363,6 +4792,19 @@
         closeDashboard(true);
       }));
       document.querySelectorAll('[data-view]').forEach(btn => btn.addEventListener('click', () => window.RovielShowView(btn.dataset.view)));
+      document.getElementById('dash-context-nav')?.addEventListener('click', event => {
+        const button = event.target instanceof Element ? event.target.closest('[data-view]') : null;
+        if (button) window.RovielShowView(button.dataset.view);
+      });
+      document.querySelectorAll('[data-nav-group]').forEach(button => button.addEventListener('click', () => {
+        const group = button.dataset.navGroup;
+        const views = NAV_GROUPS[group]?.items.map(item => item.view) || [];
+        if (!views.length) return;
+        const target = views.includes(activeView) ? activeView : views[0];
+        window.RovielShowView(target);
+      }));
+      window.addEventListener('resize', () => requestAnimationFrame(syncGlobalIndicator));
+
       const mobileMoreToggle = document.getElementById('mobile-more-toggle');
       const mobileMoreSheet = document.getElementById('mobile-more-sheet');
       const mobileMoreClose = document.getElementById('mobile-more-close');
@@ -4619,16 +5061,27 @@
       },
     };
     let currentTheme = 'noir';
+    let themeTransitionTimer = null;
+    let themeHasApplied = false;
     const theme = () => RovielThemes[currentTheme];
     function applyTheme(name) {
       if (!RovielThemes[name]) name = 'noir';
+      const previous = document.documentElement.getAttribute('data-theme');
+      const animate = themeHasApplied && previous !== name && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      if (animate) {
+        document.documentElement.classList.add('theme-transitioning');
+        clearTimeout(themeTransitionTimer);
+        themeTransitionTimer = setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 280);
+      }
       currentTheme = name;
       document.documentElement.setAttribute('data-theme', name);
+      themeHasApplied = true;
       try { localStorage.setItem('roviel.theme', name); } catch (error) {}
       document.querySelectorAll('[data-theme-toggle]').forEach(button => {
         const next = name === 'noir' ? 'PAPER' : 'INK';
         button.textContent = next;
         button.setAttribute('aria-label', 'Switch to ' + next.toLowerCase() + ' theme');
+        button.setAttribute('title', 'Switch to ' + next.toLowerCase() + ' theme');
       });
       try { document.querySelector('meta[name="theme-color"]')?.setAttribute('content', name === 'noir' ? '#050505' : '#ffffff'); } catch (error) {}
       rebuildScene();
@@ -4727,10 +5180,6 @@
             ? 'Cloud workspace · your balances are stored in Postgres and valued in your home currency using the latest reference rates.'
             : 'Local demo · single-currency INR sample data stored in this browser. Sign in for multi-currency accounts, budgets, goals and cross-device sync.';
         }
-        const mode = document.getElementById('dash-mode-label');
-        if (mode) mode.textContent = on ? 'Cloud workspace' : 'Local demo';
-        const ws = document.getElementById('dash-workspace-label');
-        if (ws) ws.textContent = (on ? 'Cloud workspace' : 'Local demo') + ' · ' + (document.querySelector('.dash-breadcrumb strong')?.textContent || 'Overview');
         if (accountSel) accountSel.hidden = !on || cloudAccounts.length < 2;
         const txAccountField = document.getElementById('transaction-account-field');
         if (txAccountField) txAccountField.hidden = !on;
@@ -5935,7 +6384,7 @@
         const index = items.indexOf(document.activeElement);
         if (event.key === 'ArrowDown') { event.preventDefault(); (items[index + 1] || items[0])?.focus(); }
         if (event.key === 'ArrowUp') { event.preventDefault(); (items[index - 1] || items[items.length - 1])?.focus(); }
-        if (event.key === 'Escape') { event.preventDefault(); close(); trigger.focus(); }
+        if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); close(); trigger.focus(); }
         if (event.key === 'Tab') close();
       });
       select.addEventListener('change', paint);
@@ -5983,6 +6432,13 @@
       list.setAttribute('data-lenis-prevent', '');
       list.hidden = true;
       wrap.appendChild(list);
+      input.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !list.hidden) {
+          event.preventDefault();
+          event.stopPropagation();
+          list.hidden = true;
+        }
+      });
       const currencyOf = () => {
         const sel = document.getElementById('new-account-cur');
         return sel ? sel.value : 'INR';
@@ -6331,6 +6787,7 @@
     let commandPaletteOpen = false;
     let commandPaletteReturnFocus = null;
     let commandPaletteActive = 0;
+    let commandPaletteHideTimer = null;
 
     function commandPaletteCatalog() {
       const cloud = !!(window.RovielAPI && window.RovielAPI.isCloud());
@@ -6439,11 +6896,14 @@
       const palette = document.getElementById('command-palette');
       const input = document.getElementById('command-input');
       if (!backdrop || !palette || !input) return;
+      if (commandPaletteHideTimer) { clearTimeout(commandPaletteHideTimer); commandPaletteHideTimer = null; }
       commandPaletteReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
       commandPaletteOpen = true;
       commandPaletteActive = 0;
       backdrop.hidden = false;
       palette.hidden = false;
+      document.getElementById('open-command')?.classList.add('is-open');
+      document.getElementById('open-command')?.setAttribute('aria-expanded', 'true');
       requestAnimationFrame(() => { backdrop.classList.add('open'); palette.classList.add('open'); });
       renderCommandPalette('');
       input.value = '';
@@ -6457,9 +6917,18 @@
       commandPaletteOpen = false;
       backdrop?.classList.remove('open');
       palette?.classList.remove('open');
+      document.getElementById('open-command')?.classList.remove('is-open');
+      document.getElementById('open-command')?.setAttribute('aria-expanded', 'false');
       const returnFocus = restoreFocus ? commandPaletteReturnFocus : null;
       commandPaletteReturnFocus = null;
-      setTimeout(() => { if (backdrop) backdrop.hidden = true; if (palette) palette.hidden = true; returnFocus?.focus({ preventScroll: true }); }, 120);
+      if (commandPaletteHideTimer) clearTimeout(commandPaletteHideTimer);
+      commandPaletteHideTimer = setTimeout(() => {
+        commandPaletteHideTimer = null;
+        if (commandPaletteOpen) return;
+        if (backdrop) backdrop.hidden = true;
+        if (palette) palette.hidden = true;
+        returnFocus?.focus({ preventScroll: true });
+      }, 140);
     }
 
     function setupCommandPalette() {

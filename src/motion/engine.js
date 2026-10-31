@@ -65,14 +65,14 @@ export function initMotion() {
       const kids = host.querySelectorAll(':scope > *');
       if (!kids.length) return false;
       gsap.fromTo(kids,
-        { y: 12, autoAlpha: 0 },
-        { y: 0, autoAlpha: 1, duration: 0.45, ease: 'power3.out', stagger: 0.05, overwrite: 'auto', clearProps: 'transform,opacity,visibility' });
+        { y: 8, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 0.22, ease: 'power3.out', stagger: 0.03, overwrite: 'auto', clearProps: 'transform,opacity,visibility' });
       if (name === 'budgets' || name === 'goals') {
         const bars = host.querySelectorAll('.bar i');
         if (bars.length) {
           gsap.fromTo(bars,
             { scaleX: 0 },
-            { scaleX: 1, transformOrigin: '0 50%', duration: 0.6, ease: 'power3.out', stagger: 0.04, overwrite: 'auto', clearProps: 'transform', delay: 0.1 });
+            { scaleX: 1, transformOrigin: '0 50%', duration: 0.3, ease: 'power3.out', stagger: 0.03, overwrite: 'auto', clearProps: 'transform', delay: 0.06 });
         }
       }
       return true;

@@ -1,0 +1,11 @@
+import { chromium } from '@playwright/test';
+const b=await chromium.launch(); const p=await b.newPage({viewport:{width:1440,height:900}});
+await p.goto('http://localhost:5173/#dashboard',{waitUntil:'domcontentloaded'}); await p.waitForFunction(()=>document.documentElement.dataset.appReady==='true'); await p.waitForTimeout(900);
+await p.addStyleTag({content:'*{cursor:none!important}.cursor-inner,.cursor-outer{display:none!important}'});
+await p.click('#open-command'); await p.waitForTimeout(350); await p.screenshot({path:'/tmp/glass-command.png'}); await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+await p.click('.dash-global-link[data-view="transactions"]'); await p.waitForTimeout(400);
+await p.locator('.dash-activity-tools .select-trigger').first().click(); await p.waitForTimeout(250); await p.screenshot({path:'/tmp/glass-dropdown.png'}); await p.keyboard.press('Escape'); await p.waitForTimeout(250);
+await p.locator('[data-metric="expense"]').click().catch(()=>{});
+await p.click('.dash-global-link[data-view="overview"]'); await p.waitForTimeout(400); await p.locator('[data-metric="expense"]').click(); await p.waitForTimeout(400); await p.screenshot({path:'/tmp/glass-drawer.png'});
+console.log(await p.evaluate(()=>({commandBg:getComputedStyle(document.querySelector('.command-box')).backgroundColor,commandBlur:getComputedStyle(document.querySelector('.command-box')).backdropFilter,drawerBg:getComputedStyle(document.getElementById('detail-drawer')).backgroundColor,drawerBlur:getComputedStyle(document.getElementById('detail-drawer')).backdropFilter})));
+await b.close();

@@ -33,6 +33,21 @@ async function openDashboard(page) {
   }
   await page.waitForSelector('#dashboard-view.open', { timeout: 10000 });
 }
+async function goView(page, view) {
+  const group = ['budgets', 'goals', 'recurring'].includes(view) ? 'planning'
+    : ['insights', 'pulse'].includes(view) ? 'analytics' : null;
+  if (group) {
+    const parent = page.locator(`.dash-global-nav [data-nav-group="${group}"]`);
+    if (await parent.isVisible().catch(() => false)) {
+      await parent.click();
+      await page.waitForTimeout(120);
+    }
+  }
+  const target = page.locator(`.dash-global-nav [data-view="${view}"], .dash-context-nav [data-view="${view}"]`).first();
+  if (await target.isVisible().catch(() => false)) await target.click();
+  else await page.evaluate(v => window.RovielShowView(v), view);
+  await page.waitForTimeout(150);
+}
 async function login(page) {
   await page.evaluate(base => localStorage.setItem('roviel.api.base', base), API);
   await page.click('#auth-button');
@@ -183,16 +198,17 @@ try {
   // ================= DASHBOARD (local demo) =================
   await page.click('.contact-btn');
   await page.waitForSelector('#dashboard-view.open');
-  check('8 sidebar views', (await page.locator('.dash-side-nav [data-view]').count()) === 8);
+  check('5 global navigation items', (await page.locator('.dash-global-nav [data-primary]').count()) === 5);
+  check('8 dashboard views', (await page.locator('.dash-view').count()) === 8);
   for (const view of ['transactions', 'accounts', 'budgets', 'goals', 'recurring', 'insights', 'pulse']) {
-    await page.click(`.dash-side-nav [data-view="${view}"]`);
+    await goView(page, view);
     await page.waitForTimeout(320);
     const headline = await page.locator(`#view-${view} .view-head h1`).innerText().catch(() => '');
     check(`view "${view}" has a headline`, (await page.locator(`#view-${view}.active`).count()) === 1 && headline.length > 8, headline.slice(0, 34));
   }
 
   // add transaction -> exact delta
-  await page.click('.dash-side-nav [data-view="overview"]');
+  await goView(page, 'overview');
   const beforeSpend = money(await page.locator('#total-expenses').innerText());
   await page.click('#open-transaction');
   const todayEntryDate = await page.evaluate(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; });
@@ -245,7 +261,7 @@ try {
   await page.waitForTimeout(300);
 
   // delete the entry we just added
-  await page.click('.dash-side-nav [data-view="transactions"]');
+  await goView(page, 'transactions');
   await page.fill('#transaction-search', 'E2E Flat 250');
   await page.waitForTimeout(500);
   check('added entry is searchable', (await page.locator('#transaction-list').innerText()).includes('E2E Flat 250'));
@@ -292,7 +308,7 @@ try {
 
   // ================= CLOUD MODE =================
   await login(page);
-  await page.click('.dash-side-nav [data-view="overview"]');
+  await goView(page, 'overview');
   await page.waitForTimeout(900);
   const summary = await api(page, '/api/summary?months=6');
   check('summary endpoint returns', summary.status === 200 && summary.body.totals, JSON.stringify(summary.body.totals || {}).slice(0, 90));
@@ -323,7 +339,7 @@ try {
   await page.waitForFunction(() => document.querySelector('#command-palette').hidden, { timeout: 2000 });
   check('command palette opens the selected view', (await page.locator('#view-budgets.active').count()) === 1);
   check('command palette hides after running', await page.locator('#command-palette').isHidden());
-  await page.click('.dash-side-nav [data-view="overview"]');
+  await goView(page, 'overview');
   await page.waitForSelector('#view-overview.active');
   await page.click('#open-command');
   await page.waitForSelector('#command-palette.open');
@@ -399,7 +415,7 @@ try {
   check('drawer returns focus to the spending card', await page.evaluate(() => document.activeElement?.closest?.('[data-metric="expense"]')?.dataset.metric === 'expense'));
 
   // budgets: exact percentage maths
-  await page.click('.dash-side-nav [data-view="budgets"]');
+  await goView(page, 'budgets');
   await page.waitForTimeout(900);
   const budgetRows = await page.locator('#budget-list .budget-row').count();
   check('budgets render as rows', budgetRows === summary.body.budgets.length, `${budgetRows} rows`);
@@ -426,7 +442,7 @@ try {
   check('new budget reports the exact limit', !!createdProgress && createdProgress.limitMajor === 2000, createdProgress ? String(createdProgress.limitMajor) : 'n/a');
 
   // goal contribution must add exactly the contributed amount
-  await page.click('.dash-side-nav [data-view="goals"]');
+  await goView(page, 'goals');
   await page.waitForTimeout(900);
   const goalRow = page.locator('#goal-list .goal-row', { hasText: 'Emergency fund' });
   const goalBefore = money((await goalRow.innerText()).split('of')[0]);
@@ -461,7 +477,7 @@ try {
   check('goal delete removes the row', (await page.locator('#goal-list .goal-row', { hasText: 'E2E Goal edited' }).count()) === 0);
 
   // recurring post creates exactly one transaction
-  await page.click('.dash-side-nav [data-view="recurring"]');
+  await goView(page, 'recurring');
   await page.waitForTimeout(900);
   const txCountBefore = (await api(page, '/api/transactions')).body.length;
   await page.locator('[data-rec]').first().click();
@@ -470,7 +486,7 @@ try {
   check('recurring posts exactly one transaction', txCountAfter === txCountBefore + 1, `${txCountBefore} -> ${txCountAfter}`);
 
   // transfer: choose accounts, preview the FX, then verify both linked legs
-  await page.click('.dash-side-nav [data-view="accounts"]');
+  await goView(page, 'accounts');
   await page.waitForTimeout(900);
   const allAccounts = (await api(page, '/api/accounts')).body;
   const firstAccountButton = page.locator('[data-account-detail]').first();
@@ -500,7 +516,7 @@ try {
   const crossLeg = ledgerAfterTransfer.find(t => t.kind === 'transfer_out' && t.accountId === transferSource.id && t.transfer && t.transfer.toAccount.id === transferTarget.id);
   check('transfer stores the exact FX quote', !!crossLeg && Number(crossLeg.transfer.rate) > 0 && crossLeg.transfer.rateDate, crossLeg ? `${crossLeg.transfer.rate} @ ${crossLeg.transfer.rateDate}` : 'missing');
   check('transfer stores both linked minor amounts', !!crossLeg && BigInt(crossLeg.transfer.sentMinor) === BigInt(crossLeg.amountMinor) && BigInt(crossLeg.transfer.receivedMinor) > 0n, crossLeg ? `${crossLeg.transfer.sentMinor} -> ${crossLeg.transfer.receivedMinor}` : 'missing');
-  await page.click('.dash-side-nav [data-view="transactions"]');
+  await goView(page, 'transactions');
   await page.waitForTimeout(1000);
   const transferRow = page.locator('#transaction-list .dash-row', { hasText: `Transfer to ${transferTarget.name}` }).first();
   await transferRow.click();
@@ -510,7 +526,7 @@ try {
   await page.click('#drawer-close');
 
   // insights cards open evidence
-  await page.click('.dash-side-nav [data-view="insights"]');
+  await goView(page, 'insights');
   await page.waitForTimeout(1000);
   check('insight cards render', (await page.locator('.insight-card').count()) >= 3, (await page.locator('.insight-card').count()) + ' cards');
   check('every insight has evidence', (await page.locator('.insight-card .insight-more').allInnerTexts()).every(t => /Evidence \d+ entr|Open breakdown/.test(t)));
@@ -521,7 +537,7 @@ try {
   await page.waitForTimeout(400);
 
   // pulse
-  await page.click('.dash-side-nav [data-view="pulse"]');
+  await goView(page, 'pulse');
   await page.waitForTimeout(2500);
   const hist = await api(page, '/api/fx/history?base=USD&quote=EUR&days=30');
   const histPoints = Object.keys((hist && hist.body && hist.body.rates) || {}).length;
@@ -539,7 +555,7 @@ try {
   await Shot(page, '04-pulse');
 
   // custom select + bank suggestions
-  await page.click('.dash-side-nav [data-view="accounts"]');
+  await goView(page, 'accounts');
   await page.waitForTimeout(800);
   await page.locator('#new-account-name').click();
   await page.waitForTimeout(400);
@@ -549,7 +565,7 @@ try {
   check('bank suggestions filter', (await page.locator('.suggest-item').count()) === 1, (await page.locator('.suggest-item').allInnerTexts()).join(','));
 
   // cleanup: remove the budget created by the test (and prove deletion works)
-  await page.click('.dash-side-nav [data-view="budgets"]');
+  await goView(page, 'budgets');
   await page.waitForTimeout(900);
   const e2eRow = page.locator('#budget-list .budget-row', { hasText: cat });
   check('test budget is visible before cleanup', (await e2eRow.count()) === 1);
@@ -564,7 +580,7 @@ try {
   const kwdEntry = await api(page, '/api/transactions', { method: 'POST', body: JSON.stringify({ accountId: kwdAccount.body.id, kind: 'expense', amountMajor: 1.234, note: 'KWD precision E2E', category: 'Other' }) });
   check('KWD entry stores three decimals', kwdEntry.status === 201 && kwdEntry.body.amountMinor === '-1234', kwdEntry.body.amountMinor);
   await page.evaluate(() => window.RovielCloud.loadCloud());
-  await page.click('.dash-side-nav [data-view="transactions"]');
+  await goView(page, 'transactions');
   await page.waitForTimeout(800);
   const [cloudDownload] = await Promise.all([page.waitForEvent('download', { timeout: 10000 }).catch(() => null), page.click('#export-csv')]);
   check('cloud CSV downloads', !!cloudDownload, cloudDownload ? await cloudDownload.suggestedFilename() : 'none');
@@ -694,7 +710,7 @@ try {
   await recPage.click('#auth-submit');
   await recPage.waitForFunction(() => document.querySelector('#cloud-status')?.textContent.includes('Cloud sync'), { timeout: 20000 });
   await recPage.waitForTimeout(1200);
-  await recPage.click('.dash-side-nav [data-view="accounts"]');
+  await goView(recPage, 'accounts');
   await recPage.waitForTimeout(700);
   await recPage.fill('#recovery-generate-password', recOldPassword);
   recPage.once('dialog', dialog => dialog.accept());
