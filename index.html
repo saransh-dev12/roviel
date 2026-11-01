@@ -2,7 +2,7 @@
 <html lang="en" data-theme="noir">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#050505">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -2542,6 +2542,177 @@
     .split-parent { display: inline-block; }
     .split-parent .split-char { display: inline-block; }
     .split-parent .split-word { display: inline-block; }
+    html[data-theme] .split-parent { display: inline !important; overflow: visible !important; }
+
+    .mobile-more-scrim { display: none; }
+    html[data-theme] .dash-columns > *,
+    html[data-theme] .dash-card,
+    html[data-theme] .dash-chart-card,
+    html[data-theme] .dash-insight-card,
+    html[data-theme] .pulse-chart-card,
+    html[data-theme] .insight-card { min-width: 0; max-width: 100%; }
+    html[data-theme] .insight-cards { grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); }
+    html[data-theme] .insight-card-head { flex-wrap: wrap; }
+    html[data-theme] .insight-value { overflow-wrap: anywhere; text-align: right; }
+    html[data-theme] .pulse-grid { grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); }
+    html[data-theme] .pulse-tile { min-width: 0; }
+    html[data-theme] .pulse-tile strong, html[data-theme] .rec-amount, html[data-theme] .goal-row-top span { overflow-wrap: anywhere; }
+    html[data-theme] .rec-row > div { min-width: 0; }
+    html[data-theme] .rec-row strong, html[data-theme] .rec-meta { overflow-wrap: anywhere; }
+    html[data-theme] .tx-form, html[data-theme] .auth-form { max-height: calc(100dvh - 32px); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+    html[data-theme] dialog.tx-modal[open], html[data-theme] dialog.auth-modal[open] { max-height: calc(100dvh - 16px); }
+
+    @media (max-width: 900px) {
+      html[data-theme] .dash-main { padding: 0; }
+      html[data-theme] .dash-content { width: calc(100% - 40px); padding: 0 0 calc(140px + env(safe-area-inset-bottom)); }
+      html[data-theme] .dash-contextbar.no-context,
+      html[data-theme] .dash-contextbar.no-context .dash-context-inner { min-height: 38px; }
+      html[data-theme] .dash-context-link { min-height: 44px; }
+      html[data-theme] .mobile-nav {
+        right: max(12px, env(safe-area-inset-right));
+        bottom: max(12px, env(safe-area-inset-bottom));
+        left: max(12px, env(safe-area-inset-left));
+      }
+      .mobile-more-scrim:not([hidden]) {
+        display: block;
+        position: fixed;
+        z-index: 139;
+        inset: 0;
+        background: rgba(4, 4, 4, 34%);
+        backdrop-filter: blur(2px);
+      }
+      .mobile-more-sheet:not([hidden]) {
+        right: max(12px, env(safe-area-inset-right));
+        bottom: calc(82px + env(safe-area-inset-bottom));
+        left: max(12px, env(safe-area-inset-left));
+        max-height: calc(100dvh - 154px - env(safe-area-inset-bottom));
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+      }
+      .mobile-more-head button { width: 44px; height: 44px; min-width: 44px; min-height: 44px; }
+      html[data-theme] .dash-toast {
+        right: max(16px, env(safe-area-inset-right));
+        bottom: calc(98px + env(safe-area-inset-bottom));
+        left: max(16px, env(safe-area-inset-left));
+        z-index: 150;
+        max-width: none;
+        text-align: center;
+      }
+      html[data-theme] .dash-row.head { display: none; }
+      html[data-theme] .dash-row:not(.head) {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas: "desc amount" "desc action";
+        align-items: start;
+        gap: 2px 10px;
+        min-height: 0;
+        padding: 13px 0;
+      }
+      html[data-theme] .dash-row:not(.head) > .dash-transaction { grid-area: desc; align-items: flex-start; }
+      html[data-theme] .dash-row:not(.head) > .dash-amount { grid-area: amount; align-self: start; justify-self: end; font-size: 11px; }
+      html[data-theme] .dash-row:not(.head) > .row-del { grid-area: action; align-self: end; justify-self: end; width: 40px; height: 40px; min-width: 40px; min-height: 40px; }
+      html[data-theme] .dash-row:not(.head) > .dash-category,
+      html[data-theme] .dash-row:not(.head) > .dash-date { display: none; }
+      html[data-theme] .dash-transaction > div { min-width: 0; }
+      html[data-theme] .dash-transaction-name { overflow: visible; white-space: normal; text-overflow: clip; overflow-wrap: anywhere; line-height: 1.3; }
+      html[data-theme] .dash-transaction-sub,
+      html[data-theme] .dash-mobile-sub { display: block; overflow-wrap: anywhere; line-height: 1.4; }
+      html[data-theme] .dash-mobile-sub { margin-top: 3px; color: var(--faint); font-size: 10.5px; }
+      html[data-theme] .rec-row { grid-template-columns: minmax(0, 1fr) auto 40px; gap: 8px; align-items: start; }
+      html[data-theme] .rec-row .row-del { width: 40px; height: 40px; min-width: 40px; min-height: 40px; }
+      html[data-theme] .pulse-chart-head { flex-wrap: wrap; gap: 4px 12px; }
+      html[data-theme] .pulse-chart-head span:last-child { text-align: left; }
+    }
+
+    @media (max-width: 600px) {
+      html[data-theme] .view-head { margin: 26px 0 18px; }
+      html[data-theme] .view-head-actions { flex-wrap: wrap; }
+      html[data-theme] .goal-row-top { flex-wrap: wrap; gap: 4px 12px; }
+      html[data-theme] .goal-row,
+      html[data-theme] .goal-row-foot,
+      html[data-theme] .goal-row-tools,
+      html[data-theme] .goal-row-tools .mini-form { min-width: 0; }
+      html[data-theme] .goal-row-foot { flex-direction: column; align-items: stretch; gap: 8px; }
+      html[data-theme] .goal-row-tools { width: 100%; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+      html[data-theme] .goal-row-tools .mini-form { flex: 1 1 100%; }
+      html[data-theme] .goal-row-tools .mini-form input { flex: 1 1 0; width: 0; min-width: 0; }
+      html[data-theme] .goal-row-tools .mini-form button { flex: 0 0 auto; }
+      html[data-theme] .goal-row-actions .row-del { width: 40px; min-width: 40px; height: 40px; min-height: 40px; }
+      html[data-theme] .insight-card { padding: 15px; }
+      html[data-theme] .pulse-tabs button { min-height: 40px; }
+      html[data-theme] .pulse-chart-head { align-items: flex-start; }
+    }
+
+    @media (max-width: 520px) {
+      html[data-theme] .dash-content { width: calc(100% - 32px); }
+      html[data-theme] .pulse-tabs { border-radius: 12px; }
+      html[data-theme] .pulse-tabs button { padding: 0 10px; }
+      html[data-theme] .insight-value { flex: 1 1 100%; text-align: left; }
+      html[data-theme] .rec-row { grid-template-columns: minmax(0, 1fr) auto 40px; }
+    }
+
+    @media (pointer: coarse) {
+      html[data-theme] .dash-global-link,
+      html[data-theme] .dash-context-link,
+      html[data-theme] .mobile-more-grid button { min-height: 44px; }
+      html[data-theme] .dash-top-actions .dash-back,
+      html[data-theme] .dash-top-actions .dash-command { min-height: 44px; height: 44px; }
+      html[data-theme] .tx-close,
+      html[data-theme] .currency-close,
+      html[data-theme] .row-del,
+      html[data-theme] .goal-row-actions .row-del { min-width: 44px; min-height: 44px; }
+      html[data-theme] .dash-row:not(.head) > .row-del,
+      html[data-theme] .rec-row .row-del { width: 44px; height: 44px; }
+    }
+
+    @media (pointer: coarse) and (max-width: 900px) {
+      html[data-theme] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+      html[data-theme] select,
+      html[data-theme] textarea { font-size: 16px; }
+      html[data-theme] .tx-field input,
+      html[data-theme] .tx-field select,
+      html[data-theme] .auth-form input,
+      html[data-theme] .currency-search-field input,
+      html[data-theme] .currency-amount-field input,
+      html[data-theme] .currency-field input,
+      html[data-theme] .currency-field select { min-height: 44px; height: 44px; }
+    }
+
+    @media (max-height: 520px) and (orientation: landscape) {
+      html[data-theme] .main-header { min-height: 54px; padding: 8px 0; }
+      html[data-theme] .slide-image-mask { display: none !important; }
+      html[data-theme] .slide,
+      html[data-theme] #slide-1,
+      html[data-theme] #slide-2,
+      html[data-theme] #slide-3,
+      html[data-theme] #slide-4 { bottom: 5% !important; }
+      html[data-theme] .slide-title { margin-bottom: 8px; font-size: clamp(30px, 7.4vh, 54px) !important; }
+      html[data-theme] .slide-desc { max-width: 560px; font-size: 11px; line-height: 1.45; }
+      html[data-theme] .slide-kicker { margin-bottom: 5px; }
+      html[data-theme] .slide-cta { margin-top: 8px; min-height: 36px; }
+      html[data-theme] .hero-proof { max-width: 480px; margin-top: 10px; gap: 6px; }
+      html[data-theme] .hero-proof-item { padding: 6px 8px; }
+      html[data-theme] .hero-proof-item strong { margin-top: 3px; font-size: 10px; }
+      html[data-theme] .story-dashes { display: none; }
+      html[data-theme] .dash-content { padding-bottom: calc(120px + env(safe-area-inset-bottom)); }
+    }
+
+    @media (max-height: 400px) and (orientation: landscape) {
+      html[data-theme] .hero-proof { display: none; }
+      html[data-theme] .slide-title { font-size: clamp(28px, 8.6vh, 44px) !important; }
+      html[data-theme] .slide-desc.col-2 { display: none; }
+    }
+
+    @media (max-width: 900px) {
+      html[data-theme] .currency-open-shortcut { display: inline-flex; align-items: center; justify-content: center; }
+    }
+
+    @media (max-width: 1320px) {
+      html[data-theme] .privacy-note { display: none; }
+      html[data-theme] .header-actions { flex: 0 0 auto; }
+      html[data-theme] .header-actions .currency-open-shortcut,
+      html[data-theme] .contact-btn { flex: 0 0 auto; white-space: nowrap; }
+    }
   </style>
   <script type="importmap">
     {
@@ -2926,8 +3097,9 @@
           <button type="button" data-view="pulse" aria-controls="pulse-tabs" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg><span>Pulse</span></button>
           <button type="button" id="mobile-more-toggle" aria-expanded="false" aria-controls="mobile-more-sheet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span>More</span></button>
         </nav>
-        <div class="mobile-more-sheet" id="mobile-more-sheet" hidden>
-          <div class="mobile-more-head"><span>More views</span><button type="button" id="mobile-more-close" aria-label="Close more views">×</button></div>
+        <div class="mobile-more-scrim" id="mobile-more-scrim" hidden aria-hidden="true"></div>
+        <div class="mobile-more-sheet" id="mobile-more-sheet" role="dialog" aria-modal="false" aria-labelledby="mobile-more-title" hidden>
+          <div class="mobile-more-head"><span id="mobile-more-title">More views</span><button type="button" id="mobile-more-close" aria-label="Close more views">×</button></div>
           <div class="mobile-more-grid">
             <button type="button" data-view="budgets">Budgets</button>
             <button type="button" data-view="goals">Goals</button>
@@ -3339,6 +3511,7 @@
       const width = window.innerWidth;
       const scale = width < 520 ? .32 : width < 760 ? .37 : width < 1100 ? .44 : .52;
       modelPivot.userData.baseScale = scale;
+      modelPivot.userData.baseX = width < 760 ? .35 : width < 1100 ? 1.28 : 1.48;
       modelPivot.scale.setScalar(scale);
     }
 
@@ -3591,7 +3764,7 @@
       const displayCurrency = cloud ? summary.homeCurrency : 'INR';
       box.innerHTML = top.length ? top.map(([c, v]) => {
         const pct = Math.round(v / total * 100);
-        return `<div class="dash-row"><div class="dash-transaction"><span class="dash-transaction-icon">•</span><div><div class="dash-transaction-name">${escapeHtml(c)}</div><div class="dash-transaction-sub">${pct}% of spending</div></div></div><span class="dash-category">${formatMoney(v, displayCurrency)}</span><span class="dash-date">${pct}%</span><strong class="dash-amount"><span class="bar" style="min-width:70px"><i style="width:${pct}%"></i></span></strong></div>`;
+        return `<div class="dash-row"><div class="dash-transaction"><span class="dash-transaction-icon">•</span><div><div class="dash-transaction-name">${escapeHtml(c)}</div><div class="dash-transaction-sub">${pct}% of spending</div><div class="dash-mobile-sub">${formatMoney(v, displayCurrency)} · ${pct}%</div></div></div><span class="dash-category">${formatMoney(v, displayCurrency)}</span><span class="dash-date">${pct}%</span><strong class="dash-amount"><span class="bar" style="min-width:70px"><i style="width:${pct}%"></i></span></strong></div>`;
       }).join('') : '<p class="dash-empty">Add spending to see your breakdown.</p>';
       if (note) {
         const rate = expenses > 0 ? Math.round(income / expenses * 100) / 100 : 0;
@@ -3958,6 +4131,7 @@
       const nav = document.getElementById('dash-context-nav');
       const crumb = document.getElementById('dash-crumb-current');
       const group = GROUP_FOR_VIEW[name];
+      nav?.closest('.dash-contextbar')?.classList.toggle('no-context', !group);
       if (!nav) return;
       if (crumb) crumb.textContent = group ? NAV_GROUPS[group].label : VIEW_TITLES[name];
       if (!group) {
@@ -3983,6 +4157,9 @@
         const on = button.dataset.view === name;
         button.classList.toggle('active', on);
         button.setAttribute('aria-current', on ? 'page' : 'false');
+        if (on && nav.scrollWidth > nav.clientWidth + 1) {
+          nav.scrollTo({ left: Math.max(0, button.offsetLeft - (nav.clientWidth - button.offsetWidth) / 2), behavior: 'auto' });
+        }
       });
     }
     function showView(name, options = {}) {
@@ -4006,20 +4183,35 @@
         btn.classList.toggle('active', on);
         if (btn.getAttribute('role') === 'tab') btn.setAttribute('aria-selected', on ? 'true' : 'false');
         if (btn.classList.contains('dash-context-link')) btn.setAttribute('aria-current', on ? 'page' : 'false');
+        if (btn.closest('.mobile-nav, .mobile-more-sheet')) btn.setAttribute('aria-current', on ? 'page' : 'false');
         if (btn.dataset.view === 'pulse' && btn.hasAttribute('aria-expanded')) btn.setAttribute('aria-expanded', on ? 'true' : 'false');
       });
       syncContextNav(name);
       const moreToggle = document.getElementById('mobile-more-toggle');
       const moreSheet = document.getElementById('mobile-more-sheet');
+      const moreScrim = document.getElementById('mobile-more-scrim');
       const secondary = ['budgets', 'goals', 'recurring', 'insights'];
-      if (moreToggle) moreToggle.classList.toggle('active', secondary.includes(name));
-      if (moreSheet) { moreSheet.hidden = true; moreToggle?.setAttribute('aria-expanded', 'false'); }
+      const moreWasOpen = !!(moreSheet && !moreSheet.hidden);
+      if (moreToggle) {
+        moreToggle.classList.toggle('active', secondary.includes(name));
+        moreToggle.setAttribute('aria-current', secondary.includes(name) ? 'page' : 'false');
+      }
+      if (moreSheet) {
+        moreSheet.hidden = true;
+        moreScrim?.setAttribute('hidden', '');
+        moreToggle?.setAttribute('aria-expanded', 'false');
+        if (moreWasOpen && moreSheet.contains(document.activeElement)) moreToggle?.focus({ preventScroll: true });
+      }
       const scroller = document.getElementById('dashboard-view');
       if (scroller) scroller.scrollTo({ top: 0, behavior: 'auto' });
       if (name === 'pulse') { try { window.RovielPreparePulse?.(); } catch {} }
       try { window.__motion?.onViewChange(name); } catch {}
       try { splitViewHeading(name); } catch {}
       requestAnimationFrame(syncGlobalIndicator);
+      requestAnimationFrame(() => {
+        try { renderChart(); } catch {}
+        try { window.RovielRefreshPulseChart?.(); } catch {}
+      });
       if (options.updateHash !== false && document.body.classList.contains('dashboard-open')) {
         const pair = name === 'pulse' ? (options.pair || document.getElementById('pulse-pair')?.value || null) : null;
         const next = dashboardViewHash(name, pair);
@@ -4803,18 +4995,56 @@
         const target = views.includes(activeView) ? activeView : views[0];
         window.RovielShowView(target);
       }));
-      window.addEventListener('resize', () => requestAnimationFrame(syncGlobalIndicator));
+      window.addEventListener('resize', () => requestAnimationFrame(() => {
+        syncGlobalIndicator();
+        try { renderChart(); } catch {}
+        try { window.RovielRefreshPulseChart?.(); } catch {}
+      }));
 
       const mobileMoreToggle = document.getElementById('mobile-more-toggle');
       const mobileMoreSheet = document.getElementById('mobile-more-sheet');
+      const mobileMoreScrim = document.getElementById('mobile-more-scrim');
       const mobileMoreClose = document.getElementById('mobile-more-close');
+      let mobileMoreReturnFocus = null;
       const setMobileMore = open => {
         if (!mobileMoreSheet || !mobileMoreToggle) return;
-        mobileMoreSheet.hidden = !open;
-        mobileMoreToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        const isOpen = !mobileMoreSheet.hidden;
+        if (open === isOpen) return;
+        if (open) {
+          mobileMoreReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+          mobileMoreSheet.hidden = false;
+          if (mobileMoreScrim) mobileMoreScrim.hidden = false;
+          mobileMoreToggle.setAttribute('aria-expanded', 'true');
+          requestAnimationFrame(() => mobileMoreClose?.focus({ preventScroll: true }));
+        } else {
+          mobileMoreSheet.hidden = true;
+          if (mobileMoreScrim) mobileMoreScrim.hidden = true;
+          mobileMoreToggle.setAttribute('aria-expanded', 'false');
+          const returnFocus = mobileMoreReturnFocus;
+          mobileMoreReturnFocus = null;
+          if (returnFocus && document.contains(returnFocus)) returnFocus.focus({ preventScroll: true });
+          else mobileMoreToggle.focus({ preventScroll: true });
+        }
       };
       mobileMoreToggle?.addEventListener('click', () => setMobileMore(mobileMoreSheet?.hidden !== false));
       mobileMoreClose?.addEventListener('click', () => setMobileMore(false));
+      mobileMoreScrim?.addEventListener('click', () => setMobileMore(false));
+      mobileMoreSheet?.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          event.stopPropagation();
+          setMobileMore(false);
+          return;
+        }
+        if (event.key !== 'Tab') return;
+        const focusables = [...mobileMoreSheet.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')]
+          .filter(element => !element.disabled && element.offsetParent !== null);
+        if (!focusables.length) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      });
       document.getElementById('mobile-theme-toggle')?.addEventListener('click', () => {
         setMobileMore(false);
         document.querySelector('.dashboard-view [data-theme-toggle]')?.click();
@@ -4931,11 +5161,17 @@
       window.addEventListener('popstate', syncDashboardRoute);
       window.addEventListener('hashchange', syncDashboardRoute);
       window.addEventListener('keydown', event => {
-        if (event.key === 'Escape') {
-          if (document.getElementById('detail-drawer')?.classList.contains('open')) return;
-          if (document.getElementById('transaction-modal').classList.contains('open')) closeTransactionModal();
-          else closeDashboard(true);
+        if (event.key !== 'Escape') return;
+        if (document.getElementById('detail-drawer')?.classList.contains('open')) return;
+        if (document.querySelector('dialog[open]')) return;
+        if (document.getElementById('auth-modal')?.classList.contains('open')) return;
+        if (document.getElementById('transaction-modal')?.classList.contains('open')) return;
+        if (document.getElementById('command-palette')?.classList.contains('open')) return;
+        if (mobileMoreSheet && !mobileMoreSheet.hidden) {
+          setMobileMore(false);
+          return;
         }
+        closeDashboard(true);
       });
       renderDashboard();
       if (dashboardHashInfo()) openDashboard(false);
@@ -4955,21 +5191,23 @@
       });
     }
 
+    const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     function animate() {
       requestAnimationFrame(animate);
       if (!renderer) return;
+      const reduceMotion = reducedMotionQuery.matches;
       const deltaTime = clock.getDelta();
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
       const scrollTop = window.scrollY !== undefined ? window.scrollY : (window.pageYOffset || document.documentElement.scrollTop);
       const targetScroll = maxScroll > 0 ? scrollTop / maxScroll : 0;
-      currentScroll += (targetScroll - currentScroll) * .11;
+      currentScroll = reduceMotion ? targetScroll : currentScroll + (targetScroll - currentScroll) * .11;
       mouseX += (targetMouseX - mouseX) * .05;
       mouseY += (targetMouseY - mouseY) * .05;
       outerCursorX += (cursorX - outerCursorX) * .2;
       outerCursorY += (cursorY - outerCursorY) * .2;
       const cursorOuter = document.querySelector('.cursor-outer');
       if (cursorOuter) { cursorOuter.style.left = `${outerCursorX}px`; cursorOuter.style.top = `${outerCursorY}px`; }
-      if (sparkParticles) {
+      if (sparkParticles && !reduceMotion) {
         const positions = sparkParticles.geometry.attributes.position.array;
         const time = clock.elapsedTime;
         const scrollVelocity = Math.abs(targetScroll - currentScroll);
@@ -5007,21 +5245,21 @@
         const previewOut = 1 - smoothProgress(currentScroll, .98, 1.06);
         const previewBlend = previewIn * previewOut;
         const positionEase = 1 - Math.exp(-6 * deltaTime);
-        const xTarget = THREE.MathUtils.lerp(1.48, .32, previewBlend);
+        const xTarget = THREE.MathUtils.lerp(modelPivot.userData.baseX ?? 1.48, .32, previewBlend);
         const yTarget = THREE.MathUtils.lerp(.62, .92, previewBlend);
         const baseScale = modelPivot.userData.baseScale || .5;
         const targetScale = THREE.MathUtils.lerp(baseScale, Math.min(baseScale, .39), previewBlend);
         modelPivot.position.x = THREE.MathUtils.lerp(modelPivot.position.x, xTarget, positionEase);
         modelPivot.position.y = THREE.MathUtils.lerp(modelPivot.position.y, yTarget, positionEase);
         modelPivot.position.z = THREE.MathUtils.lerp(modelPivot.position.z, -4.2, positionEase);
-        const tiltX = Math.sin(clock.elapsedTime * .34) * .26;
-        const tiltY = Math.cos(clock.elapsedTime * .27) * .3;
+        const tiltX = reduceMotion ? 0 : Math.sin(clock.elapsedTime * .34) * .26;
+        const tiltY = reduceMotion ? 0 : Math.cos(clock.elapsedTime * .27) * .3;
         modelPivot.rotation.x = THREE.MathUtils.damp(modelPivot.rotation.x, mouseY * .05 + tiltX, 5, deltaTime);
         modelPivot.rotation.y = THREE.MathUtils.damp(modelPivot.rotation.y, mouseX * .06 + tiltY, 5, deltaTime);
         modelPivot.rotation.z = THREE.MathUtils.damp(modelPivot.rotation.z, Math.sin(clock.elapsedTime * .19) * .045, 5, deltaTime);
         modelPivot.scale.setScalar(THREE.MathUtils.damp(modelPivot.scale.x, targetScale, 6, deltaTime));
       }
-      updateCoinCurrency(deltaTime);
+      if (!reduceMotion) updateCoinCurrency(deltaTime);
       shaderUniforms.uTime.value = clock.elapsedTime;
       shaderUniforms.uMouse.value.set(mouseX, -mouseY);
       shaderUniforms.uScroll.value = currentScroll;
@@ -5245,7 +5483,11 @@
       document.getElementById('auth-close')?.addEventListener('click', closeAuth);
       authModal?.addEventListener('click', e => { if (e.target.id === 'auth-modal') closeAuth(); });
       authModal?.addEventListener('cancel', e => { e.preventDefault(); closeAuth(); });
-      document.addEventListener('keydown', e => { if (e.key === 'Escape' && authModal?.classList.contains('open')) closeAuth(); });
+      document.addEventListener('keydown', e => {
+        if (e.key !== 'Escape' || !authModal?.classList.contains('open')) return;
+        e.stopPropagation();
+        closeAuth();
+      });
       async function afterAuth(r) {
         closeAuth(); dashState.summary = null; dashState.homeCurrency = 'INR'; dashState.locale = undefined; refreshStatus(); await loadCloud(); showDashboardToast('Signed in. Cloud sync on.');
       }
@@ -5600,6 +5842,10 @@
           button.classList.toggle('active', on);
           button.setAttribute('aria-selected', on ? 'true' : 'false');
           button.tabIndex = on ? 0 : -1;
+          if (on && host.scrollWidth > host.clientWidth + 1) {
+            const left = button.offsetLeft - (host.clientWidth - button.offsetWidth) / 2;
+            host.scrollTo({ left: Math.max(0, left), behavior: 'auto' });
+          }
         });
       }
       function renderPulseTabs() {
@@ -5690,7 +5936,7 @@
           pulseChart.setAttribute('aria-label', `${base}/${quote} history is not available yet.`);
           return;
         }
-        const W = 700, H = 180, padL = 10, padR = 10, padT = 18, padB = 24;
+        const H = 180, W = Math.max(280, Math.round((pulseChart.clientWidth || 700) * (H / Math.max(1, pulseChart.clientHeight || H)))), padL = 10, padR = 10, padT = 18, padB = 24;
         const values = data.map(item => item.value);
         const min = Math.min(...values);
         const max = Math.max(...values);
@@ -5720,6 +5966,10 @@
         pulseDetail.textContent = `Hover, tap or focus the chart to inspect a day. Latest ${data[data.length - 1].date}: 1 ${base} = ${formatRate(data[data.length - 1].value)} ${quote}.`;
         pulseState = { data, coords, selected: -1, base, quote, width: W, height: H };
       }
+      window.RovielRefreshPulseChart = () => {
+        if (!pulseState.data.length) return;
+        renderPulseChart(pulseState.base, pulseState.quote, pulseState.data.map(item => [item.date, item.value]));
+      };
       function showPulsePoint(index) {
         if (!pulseState.data.length) return;
         const selected = Math.max(0, Math.min(pulseState.data.length - 1, index));
@@ -5756,8 +6006,14 @@
           return pulseState.coords.reduce((best, point, index) => Math.abs(point.x - x) < Math.abs(pulseState.coords[best].x - x) ? index : best, 0);
         };
         pulseChart.addEventListener('pointermove', event => { const index = nearestIndex(event); if (index >= 0) showPulsePoint(index); });
-        pulseChart.addEventListener('pointerdown', event => { const index = nearestIndex(event); if (index >= 0) showPulsePoint(index); });
-        pulseChart.addEventListener('pointerleave', () => { pulseTooltip.hidden = true; });
+        pulseChart.addEventListener('pointerdown', event => {
+          const index = nearestIndex(event);
+          if (index >= 0) showPulsePoint(index);
+          pulseChart.focus({ preventScroll: true });
+        });
+        pulseChart.addEventListener('pointerleave', event => {
+          if (event.pointerType !== 'touch') pulseTooltip.hidden = true;
+        });
         pulseChart.addEventListener('focus', () => { if (pulseState.selected < 0) showPulsePoint(pulseState.data.length - 1); });
         pulseChart.addEventListener('blur', () => { pulseTooltip.hidden = true; });
         pulseChart.addEventListener('keydown', event => {
@@ -5820,7 +6076,7 @@
             <div class="pulse-tile"><span class="pulse-tile-label">30-day movement</span><strong class="${movePct === null ? '' : movePct >= 0 ? 'is-up' : 'is-down'}">${movePct === null ? '—' : `${movePct >= 0 ? '+' : ''}${movePct.toFixed(2)}%`}</strong><small>${moveLabel}</small></div>
             <div class="pulse-tile"><span class="pulse-tile-label">Observed</span><strong>${rate.date || '—'}</strong><small>${rate.source === 'wide-coverage' ? 'Wide-coverage feed' : 'Frankfurter (ECB blend)'}</small></div>`;
           list.innerHTML = `<div class="dash-row head"><span>Pair</span><span>Rate</span><span>Observed</span><span style="text-align:right">Freshness</span></div>
-            <div class="dash-row"><div class="dash-transaction"><span class="dash-transaction-icon">⇄</span><div><div class="dash-transaction-name">${b} / ${q}</div><div class="dash-transaction-sub">${pts.length ? pts.length + ' points · 30d' : 'Reference rate · history unavailable'}</div></div></div>
+            <div class="dash-row"><div class="dash-transaction"><span class="dash-transaction-icon">⇄</span><div><div class="dash-transaction-name">${b} / ${q}</div><div class="dash-transaction-sub">${pts.length ? pts.length + ' points · 30d' : 'Reference rate · history unavailable'}</div><div class="dash-mobile-sub">${fmt(rate.rate, q)} ${q} · ${rate.date}</div></div></div>
             <span class="dash-category">${fmt(rate.rate, q)}</span><span class="dash-date">${rate.date}</span><strong class="dash-amount ${rate.stale ? 'is-stale' : ''}">${rate.stale ? 'STALE' : 'FRESH'}</strong></div>`;
           document.getElementById('pulse-caption').textContent = `Source: ${rate.source === 'wide-coverage' ? 'wide-coverage feed' : 'Frankfurter'} · Reference rates only — not provider quotes.`;
           renderPulseChart(b, q, pts);
@@ -6210,6 +6466,8 @@
     }
 
     function setupScrollSnap() {
+      if (window.matchMedia('(pointer: coarse)').matches) return;
+      const scrollBehavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
       const STOPS = [0, 0.34, 0.62, 0.94];
       let timer = 0;
       let snapping = false;
@@ -6226,7 +6484,7 @@
         const { stop, gap } = nearest(ratio);
         if (gap < 0.045) return;
         snapping = true;
-        window.scrollTo({ top: stop * maxScroll(), behavior: 'smooth' });
+        window.scrollTo({ top: stop * maxScroll(), behavior: scrollBehavior });
         setTimeout(() => { snapping = false; }, 620);
       };
       window.addEventListener('scroll', () => {
@@ -6247,7 +6505,7 @@
         if (forward) next = STOPS[Math.min(STOPS.length - 1, (index < 0 ? 0 : index) + 1)];
         else next = STOPS[Math.max(0, (index < 0 ? 0 : index) - 1)];
         snapping = true;
-        window.scrollTo({ top: next * maxScroll(), behavior: 'smooth' });
+        window.scrollTo({ top: next * maxScroll(), behavior: scrollBehavior });
         setTimeout(() => { snapping = false; }, 620);
       });
     }
@@ -6550,7 +6808,9 @@
       const host = document.getElementById('cashflow-chart');
       if (!host || !dashState.summary) return;
       const data = dashState.summary.months || [];
-      const W = 700, H = 190, padL = 52, padR = 8, padT = 14, padB = 26;
+      const H = 190;
+      const W = Math.max(300, Math.round((host.clientWidth || 700) * (H / Math.max(1, host.clientHeight || H))));
+      const padL = W < 360 ? 42 : 52, padR = 8, padT = 14, padB = 26;
       if (!data.length) { host.innerHTML = '<p class="dash-empty">No activity yet.</p>'; return; }
       const rawMax = Math.max(1, ...data.map(d => Math.max(d.income, d.expense)));
       const mag = 10 ** Math.floor(Math.log10(rawMax));
