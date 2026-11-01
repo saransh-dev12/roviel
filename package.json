@@ -16,6 +16,7 @@
     "test:unit": "vitest run",
     "test:api": "node server/test/api.integration.mjs",
     "test:journey": "node e2e/user-journey.mjs",
+    "test:responsive": "node e2e/responsive.mjs",
     "smoke:prod": "node scripts/production-smoke.mjs"
   },
   "dependencies": {
