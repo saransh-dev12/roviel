@@ -106,7 +106,8 @@ Open <http://localhost:5173>. Use the public converter without an account; sign 
 
 ```sh
 npm run test:unit     # minor-unit maths: JPY (1), KWD (1000), fees
-npm run test:e2e      # reseeds the demo, then runs 146 Playwright checks
+npm run test:e2e      # reseeds the demo, then runs 150 Playwright checks
+npm run test:responsive # viewport, safe-area, dialog and touch-layout checks
 npm run smoke:prod    # web, API/DB health, FX freshness and auth boundary
 npm run lint          # oxlint
 ```
