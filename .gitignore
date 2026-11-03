@@ -5,6 +5,7 @@ dist/
 !.env.example
 .DS_Store
 e2e/screenshots/
+artifacts/
 .vercel/
 .vercel
 .env*
