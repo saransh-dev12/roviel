@@ -114,6 +114,8 @@ npm run lint          # oxlint
 
 The E2E suite drives a real Chromium instance and asserts exact values rather than labels. It also covers password-reset form states, recovery-code generation/reset, non-enumerating forgot-password responses, CSV formula neutralization, self-hosted visuals, command-palette navigation, account-detail drawers, goal deadlines, and mobile/offline behavior; the API integration suite exercises reset expiry, single-use tokens, session revocation, recovery-code reuse and signed-in password changes. A ₹250 expense must raise spending by exactly ₹250, a ₹2,000 budget must report a ₹2,000 limit and 0% spend, a ₹1,000 goal contribution must move the saved amount by ₹1,000, a transfer of ₹100 must debit the source by ₹100, conversions and quotes are compared against the displayed rate, and chart months are checked against `/api/summary`. It also covers landing scroll-snap, auth, every dashboard view, budgets/goals/recurring creation and deletion, CSV export, mobile layout, and a fully-blocked-network offline pass. The suite reseeds the demo account first, so it is repeatable.
 
+The responsive suite checks all dashboard views, both themes, safe-area spacing, mobile navigation, dialogs, transaction rows, charts and landscape layouts across phone, tablet, laptop and desktop viewports.
+
 ## API surface
 
 | Method | Route | Purpose |
