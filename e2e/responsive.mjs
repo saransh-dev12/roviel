@@ -121,6 +121,9 @@ try {
     if (viewport.width <= 900) {
       const nav = page.locator('.mobile-nav');
       check(`${viewport.name} bottom navigation is visible`, await nav.isVisible());
+      const contextRow = await rect(page, '.dash-contextbar');
+      check(`${viewport.name} empty context row stays compact`, contextRow.height <= 46, `${Math.round(contextRow.height)}px`);
+      check(`${viewport.name} active mobile tab exposes aria-current`, await page.locator('.mobile-nav [data-view="overview"]').getAttribute('aria-current') === 'page');
       const navRect = await rect(page, '.mobile-nav');
       const padding = await page.locator('.dash-content').evaluate(element => parseFloat(getComputedStyle(element).paddingBottom) || 0);
       check(`${viewport.name} content clears bottom navigation`, padding >= navRect.height, `padding ${padding}, nav ${navRect.height}`);
