@@ -1,245 +1,120 @@
 # Roviel
 
-**Give every currency a direction.** A full-stack, multi-currency finance tracker: a cinematic public landing page, a live reference-rate converter, and an authenticated ledger with accounts, budgets, goals, recurring rules and evidence-based insights.
+**Give every currency a direction.** A full-stack, multi-currency finance tracker — a cinematic landing with an interactive 3D coin that disintegrates as you scroll, a live reference-rate converter, and an authenticated ledger with accounts, budgets, goals, recurring rules and evidence-based insights.
 
-Built as a portfolio-grade backend project — Express + TypeScript + PostgreSQL + Prisma in front, a dependency-free design system in the browser.
+**Live:** [roviel.vercel.app](https://roviel.vercel.app) · [API health](https://ledgerly-api-4yhc.onrender.com/health) · demo login `demo@ledgerly.app` / `ledgerly123`
 
-**Live:** [roviel.vercel.app](https://roviel.vercel.app) · [API health](https://ledgerly-api-4yhc.onrender.com/health) — demo login `demo@ledgerly.app` / `ledgerly123`.
+> The API runs on Render's free tier and sleeps after ~15 minutes idle, so the first cloud request can take ~30 seconds. The offline demo is instant.
 
-> The API runs on Render's free tier and sleeps after 15 minutes idle, so the first request can take ~30 seconds. Cloud mode wakes it; the offline demo is instant.
+## What's inside
 
----
-
-## What it does
-
-| Surface | Highlights |
-| --- | --- |
-| **Landing** | Scroll-snapped story (one scroll = one section), WebGL coin scene with a graceful no-WebGL fallback, custom cursor, interface sounds, reduced-motion support. |
-| **Public converter** | Full currency directory when online (starter set offline), dated reference rates, inverse rate, stale/offline states with a dated cache, popular pairs, favourites, recents, copy & share. |
-| **Quote comparator** | Enter a provider quote + fixed/percentage/tax fees; exact `BigInt` minor-unit maths with per-currency rounding. The reference rate is **never** auto-filled into the provider field. |
-| **Dashboard** | 8 dedicated views: Overview, Transactions, Accounts, Budgets, Goals, Recurring, Insights, Currency pulse. Overview previews the newest activity; Transactions supports search, type/sort controls, native date entry and account-aware rows; Budgets supports a month selector and ledger-backed category suggestions; Accounts has per-account detail drawers; Goals supports optional deadlines; command palette (`Ctrl/⌘+K`) jumps to views, actions and active accounts; detail drawers return focus after closing. Pulse includes an emerald pair mini-tab strip (derived from the existing pair catalogue), route-synced child state, and a 30-day accessible rate chart with high/low, observation date, source, freshness and keyboard/pointer inspection. |
-| **Cloud mode** | JWT auth with expiring sessions, zero-cost single-use recovery codes, optional email reset, multi-currency accounts, atomic transfers with FX capture, budgets with burn-down bars, goals with contributions plus edit/delete, recurring rules you can post in one tap, full-ledger export (server JSON, client-built CSV) with currency-native precision and formula-injection escaping, deterministic insights. |
-| **Offline-first** | The anonymous demo keeps working with no API — localStorage ledger, local analytics, and an explicit "local demo" state. |
+- **Landing** — a four-slide scroll story (one flick = one slide) where a 3D coin disintegrates into particles and reintegrates; works with and without WebGL.
+- **Public converter + quote comparator** — 200-currency directory, dated reference rates, provider quote + fee breakdown with exact `BigInt` minor-unit maths. The reference rate is never auto-filled into the provider field.
+- **Dashboard** — 8 views: Overview, Transactions, Accounts, Budgets, Goals, Recurring, Insights, Currency Pulse. Command palette (`⌘K`), detail drawers, sparkline metric cards with month-over-month deltas, odometer tickers, atomic cross-currency transfers with FX capture, budgets with burn-down bars, goals with contributions, one-tap recurring rules, full-ledger export with formula-injection escaping, deterministic insights.
+- **Two themes** — Ink (near-black) and Paper (warm ivory), one design system: self-hosted Space Grotesk / Inter / IBM Plex Mono, native dialogs, keyboard-operable charts and palette, reduced-motion support.
+- **Offline-first** — the anonymous demo keeps working with no API: localStorage ledger and local analytics, honestly labelled.
 
 ## Architecture
 
 ```
-Browser (Vite, zero-framework UI)
-  ├── index.html            landing + dashboard + converter (vanilla JS, ES modules)
-  ├── public/roviel-api.js thin API client (additive; demo works without it)
-  ├── e2e/run.mjs           Playwright suite (150 checks, real browser)
-  └── server/test/          Vitest money/maths unit tests (JPY, KWD, fees)
+Browser (Vite, vanilla JS + ES modules)
+  ├── index.html            landing + dashboard + converter
+  ├── public/roviel-api.js  thin API client (additive; demo works without it)
+  └── e2e/                  Playwright suites
         │  HTTPS + Bearer JWT
         ▼
 Express API (TypeScript)
   ├── routes: auth · accounts · transactions · finance · fx · insights
-  ├── middleware: requireAuth (JWT → userId), rate limit, helmet, CORS, zod validation
-  └── lib: money (BigInt minor units) · fx (Frankfurter + wide-coverage fallback, cached in Postgres)
+  ├── middleware: requireAuth, rate limit, helmet, CORS, zod validation
+  └── lib: money (BigInt minor units) · fx (Frankfurter + fallback, cached in Postgres)
         │  Prisma ORM
         ▼
-PostgreSQL — 11 tables, user-scoped by userId on every query
+PostgreSQL (Neon) — 11 tables, user-scoped by userId on every query
 ```
 
-**Design rules that hold everywhere**
-
-- Money is stored as **integer minor units + ISO currency** (`amountMinor`, `currency`). Never floats.
-- Original amounts and the reporting rate are stored together without rewriting either (`amountMinor`, `currency`, `rateToHome`).
-- Transfers are **atomic** (`prisma.$transaction`) and both legs are linked, so a linked transfer can never be half-deleted.
-- Every query is filtered by `userId` — user isolation is enforced in the data layer, not the UI.
-- The frontend never touches the database, and the API never trusts client-supplied amounts or account ids.
-
-## Design system
-
-Roviel ships **two calibrated themes** built from one editorial design system, with the same geometry, type scale and components. The active theme is stored in `localStorage` and applied via `data-theme` on `<html>`; the WebGL scene rebuilds with the matching palette.
-
-| Theme | Character |
-| --- | --- |
-| **Ink** (default) | Near-black `#050505` canvas, `#111111` elevated surfaces, white primary text, `#a3a3a3` secondary text, `#292929` borders, emerald `#16a34a` action/accent, and `#4ade80` positive data. Red is reserved for negative financial movement. |
-| **Paper** | White canvas, black text, neutral-gray surfaces and the same emerald system at light-theme contrast. Red remains semantic-only. |
-
-Typography is self-hosted from open-source SIL OFL families: **Space Grotesk** for display, **Inter** for UI, and **IBM Plex Mono** with tabular figures for financial values. Shared across both themes: one spacing rhythm, one border/radius system, one purposeful motion language, native dialogs, portal-positioned selects, keyboard-operated command palette, reduced-motion support, and the same component set — cards, buttons, inputs, tabs, tables, pills, bars, modals, drawers, toasts, account-detail panels and grouped commands. App screens follow an audited pass (sentence-case labels, right-aligned tabular figures, neutral navigation, one emerald primary per screen, emerald/white/gray/red financial charts with real y-scales); see `index.html` (`TASTE-SKILL APP PASS`).
-
-## Design references
-
-Concrete patterns were adapted in original Roviel code; no reference source code, proprietary assets, paid components, testimonials, customer metrics or fabricated financial claims were copied.
-
-| Reference | Inspected page/component | Adapted pattern | Roviel location | Reuse/license status |
-| --- | --- | --- | --- | --- |
-| Refero Styles dashboard guide | `styles.refero.design/examples/dashboard-ui-design` | Calm analytical hierarchy, scannable dense tables, contrast reserved for action | `index.html` Overview metrics/cashflow/latest activity, Transactions filters/sort/row actions, Accounts/Budgets/Goals, dialogs/forms/dropdowns/empty states | Public inspiration; adapted principles, no code copied |
-| Refero Styles Ramp | `https://styles.refero.design/style/b38702a0-75ab-474c-9106-00b624535825` | Flat hairline cards, restrained neutral palette, one functional emerald accent | `index.html` Ledger Redesign theme tokens/cards/CTA discipline | Public inspiration; adapted principles, no code copied |
-| Refero Styles Mercury | `https://styles.refero.design/style/3172cd4d-118a-4a16-a259-6b634d32322e` | Graphite-on-dark surfaces, pill controls, measured intermediate type | `index.html` Ink theme, dashboard shell, command palette | Public inspiration; adapted principles, no code copied |
-| Refero Styles Linear | `https://styles.refero.design/style/90ce5883-bb24-4466-93f7-801cd617b0d1` | Precision rows, tabular metadata, hairline borders | `index.html` transaction/account tables | Public inspiration; adapted principles, no code copied |
-| Refero Styles Steep | `https://styles.refero.design/style/75fdb89f-ca64-41b3-af36-7a78bd09448e` | Editorial serif/display hierarchy, generous whitespace | `index.html` Paper theme, landing/display type | Public inspiration; adapted principles, no code copied |
-| Details finance/hero/modal/navigation | `details.so/inspo/category/finance`, hero/modal/navigation categories | Editorial kickers, display hierarchy, pacing, section transitions | `index.html` landing slides/product previews | Public inspiration; no paywalled code used |
-| Framer Finsaro | `framer.com/marketplace/templates/finsaro` | Hero rolling counters, live product preview, capability/stat/FAQ composition | `index.html` live hero rate/directory proof, product cards | Public marketing pattern; original copy/implementation |
-| Skiper UI command palette | `skiper-ui.com`, free quick-start/license | Keyboard command menu with grouped actions | `index.html` `#command-palette`, `setupCommandPalette()` | Free interaction pattern adapted; no Skiper code bundled; attribution provided here per Skiper free terms |
-| Componentry kinetic reveal/hover | `componentry.dev/docs/components/kinetic-text-reveal`, `hover-transition`, MIT repo | Staggered kinetic headline reveal; purposeful hover transitions | `index.html` `splitTitlesIntoChars()`, metric/card hover | MIT; original implementation inspired by documented behavior, no Componentry code copied |
-| DesignSpells transitions/delete/details | Smooth Doji transitions, Things-take-time delete confirmation, sidebar/detail spells | Smooth view/sheet transitions, explicit success/error/toast and destructive-confirmation feedback | `index.html` view/drawer/modal/toast transitions, recovery/account confirmations | Public interaction principles; no assets copied |
-| Spline storytelling principle | `spline.design` platform/event approach | Selective self-hosted 3D for identity/storytelling | `index.html` + `public/vendor/three` local WebGL coin | No Spline runtime copied; Three.js remains vendored under MIT |
-| shadcn dialog/select/command/data-table/toast | `ui.shadcn.com/docs/components/...`, MIT license | Accessible dialog composition, trigger/content/select behavior, command groups, filter/sort/row-action table guidance | `index.html` native dialogs, Floating UI selects, command palette, transaction table | MIT; patterns adapted in vanilla JS, no shadcn code copied |
-| Manus workflow polish | `manus.im` product/onboarding/feedback presentation | Clear onboarding, guided empty states, immediate action feedback | `index.html` cloud gates, empty states, toasts, command workflow | General principles; no Manus assets copied |
-| Storm Labs / Uxda | Supplementary references | Cross-check only | Not separately implemented | No direct reuse claimed |
-
-Runtime/third-party licenses: `@floating-ui/dom@1.8.0` (MIT), Three.js 0.160 vendored under `public/vendor/three/` (MIT), Componentry/shadcn patterns adapted under MIT, Skiper UI free interaction inspiration attributed above.
+**Rules that hold everywhere:** money is integer minor units + ISO currency (never floats); original amounts and the reporting rate are stored together; transfers are atomic and both legs linked; every query is filtered by `userId`; the API never trusts client-supplied amounts or account ids.
 
 ## Run it locally
 
 ```sh
-# 1. Database
 docker compose up -d db          # Postgres 16 on :5432
-
-# 2. API  (http://localhost:4000)
 cd server
 cp .env.example .env             # set DATABASE_URL + a long JWT_SECRET
-npm install
-npx prisma migrate deploy
+npm install && npx prisma migrate deploy
 npm run seed                     # demo@ledgerly.app / ledgerly123
-npm run dev
-
-# 3. Frontend (http://localhost:5173)
-npm install && npm run dev
+npm run dev                      # API on :4000
+# second terminal, repo root:
+npm install && npm run dev       # web on :5173
 ```
-
-Open <http://localhost:5173>. Use the public converter without an account; sign in for cloud sync.
 
 ## Testing
 
 ```sh
-npm run test:unit       # minor-unit maths: JPY (1), KWD (1000), fees
-npm run test:api        # API integration (needs the API + Postgres running locally)
-npm run test:e2e        # reseeds the demo, then runs 150 Playwright checks
-npm run test:responsive # 16-viewport matrix × both themes (319 checks)
-npm run test:journey    # recorded user-journey walkthrough against the local stack
-npm run smoke:prod      # web, API/DB health, FX freshness and auth boundary (read-only)
-npm run lint            # oxlint
+npm run test:unit        # minor-unit maths: JPY (1), KWD (1000), fees
+npm run test:api         # API integration (needs API + Postgres running locally)
+npm run test:e2e         # reseeds the demo, then 151 Playwright checks
+npm run test:responsive  # 16-viewport matrix × both themes (319 checks)
+npm run test:journey     # recorded user-journey walkthrough (reseeds first)
+npm run smoke:prod       # production smoke, read-only
+npm run lint             # oxlint
 ```
 
-The E2E suite drives a real Chromium instance and asserts exact values rather than labels. It also covers password-reset form states, recovery-code generation/reset, non-enumerating forgot-password responses, CSV formula neutralization, self-hosted visuals, command-palette navigation, account-detail drawers, goal deadlines, and mobile/offline behavior; the API integration suite exercises reset expiry, single-use tokens, session revocation, recovery-code reuse and signed-in password changes. A ₹250 expense must raise spending by exactly ₹250, a ₹2,000 budget must report a ₹2,000 limit and 0% spend, a ₹1,000 goal contribution must move the saved amount by ₹1,000, a transfer of ₹100 must debit the source by ₹100, conversions and quotes are compared against the displayed rate, and chart months are checked against `/api/summary`. It also covers landing scroll-snap, auth, every dashboard view, budgets/goals/recurring creation and deletion, CSV export, mobile layout, and a fully-blocked-network offline pass. The suite reseeds the demo account first, so it is repeatable.
-
-The responsive suite runs a 16-viewport matrix (phone, landscape phone, tablet, laptop, desktop) across **both themes**, asserting landing and dashboard overflow, safe-area spacing, mobile navigation, dialogs, transaction rows, charts, cloud-view fit and reduced-motion usability. Unexpected browser page errors fail the suite, and cloud view checks fail rather than silently skip when sign-in breaks (set `RESPONSIVE_CLOUD_OPTIONAL=1` to record them as explicit skips). CI runs it as a separate release gate alongside the full E2E suite.
+The E2E suite asserts exact values, not labels: a ₹250 expense raises spending by exactly ₹250, a ₹2,000 budget reports 0% spend, a ₹1,000 contribution moves a goal by exactly ₹1,000, a ₹100 transfer debits ₹100, recovery codes are single-use, forgot-password is non-enumerating, CSV escapes formulas. The responsive suite covers both themes with page errors failing the run. CI runs unit + E2E + responsive as release gates; the seed refuses non-local `DATABASE_URL` targets unless `ALLOW_NONLOCAL_SEED=1`.
 
 ## API surface
 
-| Method | Route | Purpose |
-| --- | --- | --- |
-| `POST` | `/api/auth/signup` · `/login` | Create account / sign in (bcrypt + JWT) |
-| `POST` | `/api/auth/forgot-password` · `/reset-password` | Optional email reset flow (single-use, expiring) |
-| `POST` | `/api/auth/recovery-codes` | Generate ten single-use recovery codes (authenticated) |
-| `POST` | `/api/auth/recover-with-code` | Reset a password with one saved recovery code |
-| `POST` | `/api/auth/change-password` | Change password and revoke other sessions |
-| `GET` | `/api/auth/me` | Current user |
-| `DELETE` | `/api/auth/account` | Delete account and all data |
-| `GET/POST` | `/api/accounts` | Multi-currency accounts |
-| `GET/POST` | `/api/transactions` | Ledger entries (filter by account, kind, date) |
-| `PATCH/DELETE` | `/api/transactions/:id` | Correct or remove an entry (linked legs are protected) |
-| `POST` | `/api/transactions/transfer` | Atomic cross-account transfer with FX capture |
-| `PATCH/DELETE` | `/api/accounts/:id` | Rename or remove an empty account |
-| `GET/POST/DELETE` | `/api/budgets` · `/api/budgets/:id` | Monthly limits |
-| `GET/POST` | `/api/goals` · `/api/recurring` | Planning records |
-| `PATCH/DELETE` | `/api/goals/:id` | Edit or remove a savings goal |
-| `POST` | `/api/goals/:id/contribute` | Record a contribution |
-| `POST` | `/api/recurring/:id/post` | Post a rule into the ledger and advance its next run |
-| `PATCH` | `/api/auth/me` | Home currency, locale and display name |
-| `GET` | `/api/fx/rate` · `/history` · `/currencies` | Reference rates (cached, stale-aware) |
-| `POST` | `/api/fx/quote` | Server-side quote + fee breakdown |
-| `GET` | `/api/summary?months=N` | Server-side totals, accounts, categories, months, budgets, goals |
-| `GET` | `/api/insights` | Deterministic, evidence-backed summaries |
+| Route | Purpose |
+| --- | --- |
+| `POST /api/auth/signup` · `/login` · `/me` (`GET`/`PATCH`) | Account lifecycle (bcrypt + JWT, 12h sessions) |
+| `POST /api/auth/forgot-password` · `/reset-password` · `/recover-with-code` | Single-use, expiring resets; ten one-time recovery codes |
+| `POST /api/auth/change-password` · `DELETE /api/auth/account` | Revoke sessions / delete everything |
+| `GET/POST/PATCH/DELETE /api/accounts` · `/api/transactions[/:id]` | Multi-currency accounts and ledger entries |
+| `POST /api/transactions/transfer` | Atomic cross-currency transfer with FX capture |
+| `GET/POST/DELETE /api/budgets` · `/api/goals` · `/api/recurring` | Budgets, goals, recurring rules (+ `/post`, `/contribute`) |
+| `GET /api/fx/rate` · `/history` · `/currencies` · `POST /api/fx/quote` | Reference rates and fee-aware quotes |
+| `GET /api/summary?months=N` · `/api/insights` | Server-side totals, months, budgets, goals, insights |
 
 ## Deployment
 
-| Piece | Target | Config |
-| --- | --- | --- |
-| Frontend | Vercel | `vercel.json` |
-| API | Render (Docker) | `render.yaml` |
-| Database | Neon Postgres (free) | `server/prisma/migrations` |
+**Vercel** (frontend) · **Render** (API, Docker, Singapore) · **Neon Postgres** (database). Live: [roviel.vercel.app](https://roviel.vercel.app) · API `https://ledgerly-api-4yhc.onrender.com` (service `roviel-api`, health `/health`).
 
-Live URLs: web `https://roviel.vercel.app`, API `https://ledgerly-api-4yhc.onrender.com` (Render service `roviel-api`, Singapore, Docker, `rootDir: server`).
+1. **Database** — free Neon project (Vercel Marketplace, Singapore), direct/unpooled URL for Render; `prisma migrate deploy` runs in the API container on start.
+2. **API** — Render Docker service, `rootDir: server`, env `DATABASE_URL`, `FRONTEND_URL` (CORS allow-list), `JWT_SECRET`, optionally `RESEND_API_KEY` + `EMAIL_FROM`. Auto-deploy is deliberately off.
+3. **Frontend** — Vercel project linked via CLI; `VITE_API_URL` set for Production/Preview. A release is:
+   ```sh
+   git push && render deploys create srv-dbdidass728c73c30920 --confirm && vercel deploy --prod && npm run smoke:prod
+   ```
+4. **Seed** — `DATABASE_URL='<url>?sslmode=require' ALLOW_NONLOCAL_SEED=1 npm run db:seed` (the guard makes an ordinary local run unable to touch production).
 
-1. **Database** — create a free Neon Postgres project through the Vercel Marketplace (Singapore `sin1`) and use the **direct/unpooled** connection string for Render. Keep the pooled URL for serverless clients if one is added later. Run `prisma migrate deploy` and restore the latest dump before pointing production at it.
-2. **API** — create a Render Docker web service with `rootDir: server`, health check `/health`, and env `DATABASE_URL` (Neon direct), `FRONTEND_URL` (comma-separated allow-list for the web origins), `APP_URL`, `JWT_SECRET`, plus `RESEND_API_KEY` and `EMAIL_FROM` when recovery email is enabled. The image installs OpenSSL 3 so Prisma's schema engine can run; the container executes `prisma migrate deploy` before starting the server. Auto-deploy is intentionally disabled on Render so database migrations are never triggered by an ordinary push.
-3. **Frontend** — the Vercel project is linked locally (`.vercel/`, gitignored) and `VITE_API_URL` is set for Production and Preview. Deploy with `vercel --prod`, which rebuilds the bundle with the API URL baked in; the value takes precedence over `meta[name="roviel-api"]` and the localStorage override. The project is not connected to GitHub yet, so pushing alone does not deploy the frontend.
-4. **Seed the demo** — `DATABASE_URL='<external-url>?sslmode=require' ALLOW_NONLOCAL_SEED=1 npm run db:seed`. The seed resets the demo user's data; it **refuses any non-local `DATABASE_URL`** unless you set `ALLOW_NONLOCAL_SEED=1`, so an ordinary local run can never wipe the production demo. The API integration test enforces the same rule for its targets (`ALLOW_NONLOCAL_TEST_TARGET=1` to override).
-
-`FRONTEND_URL` is also the CORS allow-list: requests from other origins are rejected. Local development needs no env at all — the web app defaults to `http://localhost:4000` on localhost and keeps working offline in demo mode.
-
-Operational notes: the Render web service sleeps after 15 minutes idle (cold start ~30s). Production now uses **Neon Postgres** in Singapore; the old Render database is kept temporarily for rollback and is no longer read by the API. Render auto-deploy is disabled deliberately. Vercel frontend auto-deploy needs the GitHub login connection added in the Vercel dashboard, so a release is `git push`, `render deploys create srv-dbdidass728c73c30920`, then `vercel deploy --prod`, followed by `npm run smoke:prod`.
-
-## Backup and recovery
-
-Production data now lives on Neon Postgres 18. Take an off-platform dump before migrations or destructive changes; the free Neon plan is not a substitute for your own backup policy. A local PostgreSQL 16 `pg_dump` cannot dump PostgreSQL 18, so the Neon helper uses the matching `postgres:18` Docker image:
+## Backup & recovery
 
 ```sh
-DATABASE_URL='postgresql://.../neondb?sslmode=require' ./scripts/backup-neon.sh
+DATABASE_URL='postgresql://…neondb?sslmode=require' ./scripts/backup-neon.sh
+DATABASE_URL='…' RESTORE_CONFIRM=RESTORE ./scripts/restore-neon.sh backups/roviel-neon-….dump
+SOURCE_DATABASE_URL='…' DRILL_DATABASE_URL='…' DRILL_CONFIRM=RESTORE-DRILL ./scripts/restore-drill.sh
 ```
 
-Restore into a fresh database or Neon branch, never over live data without a snapshot:
+Neon needs the Postgres 18 Docker client (`backup-neon.sh`/`restore-neon.sh`); `backup-db.sh`/`restore-db.sh` remain for Postgres 16 targets. The drill script dumps, refuses non-empty targets, restores, and compares every table and migration count. `backups/` is gitignored — never commit dumps or credentials. `.github/workflows/uptime.yml` smokes production every 30 minutes.
 
-```sh
-DATABASE_URL='postgresql://.../neondb?sslmode=require' RESTORE_CONFIRM=RESTORE ./scripts/restore-neon.sh backups/roviel-neon-YYYYMMDDTHHMMSSZ.dump
-npm run db:migrate    # only if the backup predates the current schema
-```
+## Security & correctness
 
-The generic `backup-db.sh` and `restore-db.sh` scripts remain for a Postgres 16/Render database where the local client version matches. The restore drill still requires matching client tools; use a PostgreSQL 18 client or the Docker helpers when drilling against Neon.
+- Startup refuses weak/missing `JWT_SECRET`, missing `DATABASE_URL`, or wildcard CORS. Access tokens last 12h; logout and password changes revoke old sessions server-side (`tokenVersion`).
+- Reset tokens are 256-bit, SHA-256-stored, single-use, 30-minute expiry; forgot-password responses never reveal whether an email exists. Without Resend configured, production returns a clear 503 — ten single-use recovery codes are the always-available fallback.
+- Accounts start at zero; entries match their account's currency; missing FX is reported `null`, never faked as `1`; deletion requires password + `DELETE`.
+- A `401` clears cloud state and asks you to sign in — a failed cloud write never silently falls back to the local ledger.
+- The client renders server data through HTML escaping; CSV exports escape formula injection.
 
-`backups/` is gitignored. Keep dumps outside the repository and never commit credentials or dumps. For the bundled demo, `npm run db:seed` rebuilds the sample ledger; it is destructive to the `demo@ledgerly.app` user only.
+## Limitations
 
-Run a real restore drill against a disposable database or a Neon branch before cutting over production:
+- Render free tier sleeps (~30s cold start); the uptime workflow may show an occasional timeout right after a wake.
+- Recovery email needs `RESEND_API_KEY` + `EMAIL_FROM`; until then the 503 is honest and recovery codes cover sign-in.
+- Vercel auto-deploy needs the GitHub connection added in the Vercel dashboard; until then releases are the CLI command above. The old Render Postgres expired naturally and is no longer referenced.
+- Refresh-token rotation and TOTP are deliberately out of scope (issue #10).
 
-```sh
-createdb roviel_restore_drill
-SOURCE_DATABASE_URL='postgresql:///roviel' \
-DRILL_DATABASE_URL='postgresql:///roviel_restore_drill' \
-DRILL_CONFIRM=RESTORE-DRILL ./scripts/restore-drill.sh
-dropdb roviel_restore_drill
-```
+## Privacy & data
 
-The script dumps the source, refuses a non-empty target, restores into it, compares every public table and migration count, and never drops the target itself. A local drill against all seven migrations passed on 2026-10-23, and the production cutover was preceded by a restore drill from the old Render database into Neon.
+Roviel stores only what you enter, scoped to your account, and deletes everything on account deletion. The anonymous demo never leaves the browser. No third-party analytics, no ad tracking. Reference rates come from [Frankfurter](https://frankfurter.dev/) (central-bank blended, wide-coverage fallback) — informational and dated, never a provider quote. Three.js 0.160 is vendored under `public/vendor/three/` (MIT) so the signature scene has no CDN dependency.
 
-### Uptime checks
+## Credits
 
-`.github/workflows/uptime.yml` runs `npm run smoke:prod` every 30 minutes and on demand. It checks the web alias, `/health` (including the database when the deployed API reports it), a dated USD/EUR quote, the full currency directory and the 401 boundary on summary data. A failed run appears as a red scheduled run on the Actions tab (GitHub emails watchers who have Actions notifications enabled); no production credentials are stored in the workflow.
-
-## Security and correctness notes
-
-- Production startup refuses to boot with a missing/default `JWT_SECRET`, no `DATABASE_URL`, or a wildcard/empty `FRONTEND_URL`. Access tokens last 12 hours; logout and password changes increment `tokenVersion` so old sessions are revoked server-side.
-- Password-reset tokens are random 256-bit values stored only as SHA-256 hashes, expire after 30 minutes, are single-use, and are invalidated by a newer request. Forgot-password responses are intentionally identical for registered and unknown emails. Reset links are delivered by Resend in production; local development logs the link instead. Until `RESEND_API_KEY` and `EMAIL_FROM` are configured, production returns a clear 503 instead of pretending the email was sent.
-- Signed-in users can generate ten recovery codes in Accounts. Codes are 80-bit random values shown once, stored only as SHA-256 hashes, single-use, rate-limited on use, and invalidated by password changes, email resets or use. Losing both the password and every saved code is unrecoverable; the UI says so before generation.
-- New accounts start at **zero** — the app never invents an opening balance. Demo data is seeded explicitly and labelled as a demo.
-- Entries can only use the currency of their account. Missing FX quotes are reported as unavailable (`null`) rather than converted at `1`.
-- Account deletion requires the account password plus the exact word `DELETE`; an account with entries cannot be removed, and at least one account must remain.
-- The client treats a `401` as an expired session, clears cloud state, and asks you to sign in instead of showing an empty or local ledger as if it were yours. A failed cloud write never falls back to the local demo ledger while signed in; the form stays open with a retryable error.
-- CSV exports include the original currency, kind, `amount_minor`, and the converted `home_amount` when a rate exists.
-
-## Data sources & disclaimers
-
-The WebGL coin scene runs on Three.js 0.160, vendored under `public/vendor/three/` with its MIT licence so the signature visual has no runtime CDN dependency.
-
-Reference rates come from [Frankfurter](https://frankfurter.dev/) (central-bank blended), with a wide-coverage fallback for currencies the ECB feed does not publish. Rates are informational, dated, and can be revised — they are not provider quotes and Roviel never executes an exchange.
-
-## Notable bugs found and fixed during testing
-
-- Converter inflated amounts by `10^100` (`minorScale` used where the digit count was needed).
-- `GET /api/recurring` crashed on `BigInt` serialisation, returning 503.
-- Public FX routes were shadowed by a globally-authenticated router (401 on a public endpoint).
-- The API crashed the whole process when the database was unreachable.
-- Linked transfer legs could be deleted, orphaning the pair.
-- Dashboard "Sign in" button was hidden behind an id collision and a mobile-only CSS rule.
-- Stored XSS via account/goal/budget names rendered through `innerHTML`.
-- After cloud login the dashboard rendered the local demo totals (constant opening balance, transfers counted as income/spend) instead of `/api/summary`.
-- Transfer legs leaked into income and spending in the client-side fallback summary.
-- The goal **Contribute** button had no listener — it looked interactive and did nothing.
-- Budget progress fell back to the current month when a budget's own month had no activity.
-- Goals with identical `createdAt` reordered after an update, so the row you contributed to appeared to change.
-- The dashboard topbar overflowed on 800–1050px screens and the landing header pushed its primary action off-screen at ~800px.
-
-## Known limitations
-
-- Render's free web service sleeps after 15 minutes idle, so the first cloud request can take around 30 seconds.
-- Password-recovery email is implemented, but production returns a clear 503 until a free Resend sender/domain is configured with `RESEND_API_KEY` and `EMAIL_FROM`. Signed-in users can instead generate ten single-use recovery codes; it never pretends a reset email was sent when delivery is unavailable.
-- Vercel frontend auto-deploy still requires the account's GitHub login connection in Vercel; until then releases use `vercel deploy --prod`.
-- The old Render Postgres is retained temporarily for rollback, is no longer read by the API and will expire naturally. Neon's free tier has its own compute/storage limits.
-- Refresh-token rotation and optional TOTP are not part of V1 and remain tracked in issue #10.
-
-## Privacy
-
-Roviel stores only what you enter, scoped to your account, and deletes everything when you delete your account. The anonymous demo never leaves the browser. There is no third-party analytics and no advertising tracking.
+Design patterns adapted as original code from public inspiration: Refero Styles (Ramp, Mercury, Linear, Steep), Details.so, Framer Finsaro, shadcn/ui (MIT), Skiper UI (free-tier attribution per its terms), Componentry (MIT), DesignSpells. No reference source code or assets are bundled; Three.js, `@floating-ui/dom` and all fonts are MIT/OFL licensed and self-hosted.
