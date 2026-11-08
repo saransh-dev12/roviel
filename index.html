@@ -29,7 +29,7 @@
 
     * { margin: 0; padding: 0; box-sizing: border-box; user-select: auto; }
     html, body { width: 100%; margin: 0; padding: 0; background: var(--ledger-canvas, #050505); -ms-overflow-style: none; scrollbar-width: none; }
-    body { min-height: 460vh; overflow-x: hidden; color: var(--ledger-ink, #ffffff); background: var(--ledger-canvas, #050505); font-family: var(--sans); }
+    body { min-height: 320vh; overflow-x: hidden; color: var(--ledger-ink, #ffffff); background: var(--ledger-canvas, #050505); font-family: var(--sans); }
     * { cursor: auto !important; }
     input, select, textarea { user-select: text; }
     button, a, select { cursor: pointer !important; }
@@ -41,7 +41,7 @@
       --brass: #16a34a; --brass-strong: #4ade80; --on-brand: #ffffff;
       --muted: #a3a3a3; --line: #292929;
       --ledger-canvas: #050505; --ledger-panel: #111111; --ledger-ink: #ffffff;
-      --display: 'Archivo', system-ui, sans-serif; --sans: 'Inter', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
+      --display: 'Space Grotesk', system-ui, sans-serif; --display-ui: 'Manrope', system-ui, sans-serif; --sans: 'Inter', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
       --radius-control: 9px; --radius-card: 16px; --radius-panel: 22px; --radius-pill: 999px;
       --ease-product: cubic-bezier(.22, 1, .36, 1); --duration-quick: .16s; --duration-calm: .34s;
       --focus-ring: 0 0 0 3px var(--accent-wash);
@@ -53,26 +53,29 @@
       --brass: #15803d; --brass-strong: #16a34a; --on-brand: #ffffff;
     }
     html[data-theme="noir"] body, html[data-theme="brutal"] body { background: var(--ledger-canvas); color: var(--ledger-ink); }
-    #webgl { position: fixed; inset: 0; z-index: 1; width: 100%; height: 100%; outline: none; background: #050505; }
+    #webgl { position: fixed; inset: 0; z-index: 3; width: 100%; height: 100%; outline: none; }
+    .studio-vignette { position: fixed; inset: 0; z-index: 4; pointer-events: none; background: radial-gradient(120% 92% at 50% 6%, transparent 42%, rgba(0, 0, 0, .5) 100%); }
+    html[data-theme="brutal"] .studio-vignette { background: radial-gradient(120% 92% at 50% 6%, transparent 48%, rgba(19, 19, 19, .16) 100%); }
+    body.dashboard-open .studio-vignette { visibility: hidden; }
     .cursor-inner, .cursor-outer { position: fixed; top: 0; left: 0; border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; }
     .cursor-inner { z-index: 9999; width: 5px; height: 5px; border: 0; background: var(--accent); box-shadow: 0 0 10px rgba(133, 133, 133, 70%); }
     .cursor-outer { z-index: 9998; width: 34px; height: 34px; border: 1px solid rgba(133, 133, 133, 45%); background: rgba(133, 133, 133, 5%); transition: width .22s var(--ease-product), height .22s var(--ease-product), border-color .22s, background .22s; }
     body.cursor-hover .cursor-outer { width: 50px; height: 50px; border-color: rgba(133, 133, 133, 80%); background: rgba(133, 133, 133, 8%); }
 
-    .cinematic-container { position: fixed; inset: 0; z-index: 10; display: flex; flex-direction: column; justify-content: space-between; padding: 0 clamp(20px, 4.5vw, 72px) clamp(28px, 4vh, 52px); pointer-events: none; }
-    .main-header { position: relative; z-index: 20; display: flex; width: 100%; min-height: 76px; align-items: center; justify-content: space-between; gap: 24px; padding: 16px clamp(12px, 1.6vw, 24px); border: 1px solid var(--line); border-radius: var(--radius-card); background: color-mix(in srgb, var(--ledger-panel) 72%, transparent); backdrop-filter: blur(18px); box-shadow: 0 18px 50px rgba(0, 0, 0, 24%); pointer-events: auto; }
+    .cinematic-container { position: fixed; inset: 0; z-index: 10; display: flex; flex-direction: column; justify-content: space-between; padding: env(safe-area-inset-top) max(clamp(20px, 4.5vw, 72px), env(safe-area-inset-right)) max(clamp(28px, 4vh, 52px), env(safe-area-inset-bottom)) max(clamp(20px, 4.5vw, 72px), env(safe-area-inset-left)); pointer-events: none; }
+    .main-header { position: relative; z-index: 20; display: flex; width: 100%; min-height: 68px; align-items: center; justify-content: space-between; gap: 24px; padding: 10px 0; border: 0; border-radius: 0; background: linear-gradient(to bottom, color-mix(in srgb, var(--ledger-canvas) 55%, transparent), color-mix(in srgb, var(--ledger-canvas) 0%, transparent)); box-shadow: none; pointer-events: auto; }
     .brand { color: var(--ledger-ink); font-size: 15px; font-weight: 700; letter-spacing: 4px; text-decoration: none; text-transform: uppercase; white-space: nowrap; }
     .brand span { color: var(--brass); }
     .header-nav { display: flex; align-items: center; justify-content: center; gap: 20px; }
-    .nav-link { padding: 8px 10px; border: 0; border-radius: var(--radius-pill); color: color-mix(in srgb, var(--ledger-ink) 72%, transparent); background: transparent; font: 500 10px var(--mono); letter-spacing: 1.6px; text-decoration: none; text-transform: uppercase; transition: color var(--duration-quick), background var(--duration-quick); white-space: nowrap; }
+    .nav-link { padding: 8px 10px; border: 0; border-radius: var(--radius-pill); color: color-mix(in srgb, var(--ledger-ink) 72%, transparent); background: transparent; font: 500 12.5px var(--sans); letter-spacing: 0; text-decoration: none; transition: color var(--duration-quick), background var(--duration-quick); white-space: nowrap; }
     .nav-link:hover, .nav-link:focus-visible { color: var(--ledger-ink); background: var(--accent-wash); }
     .nav-dot { width: 3px; height: 3px; flex: 0 0 3px; border-radius: 50%; background: color-mix(in srgb, var(--ledger-ink) 24%, transparent); }
     .header-actions { display: flex; align-items: center; gap: 10px; }
-    .privacy-note { display: inline-flex; align-items: center; gap: 8px; min-height: 34px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--radius-pill); color: var(--muted); font: 500 9px var(--mono); letter-spacing: .8px; white-space: nowrap; }
+    .privacy-note { display: inline-flex; align-items: center; gap: 8px; min-height: 34px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--radius-pill); color: var(--muted); font: 500 11.5px var(--sans); white-space: nowrap; }
     .privacy-note i { width: 6px; height: 6px; border-radius: 50%; background: var(--brass); box-shadow: 0 0 10px rgba(169, 169, 169, 70%); }
-    .contact-btn { display: inline-flex; min-height: 40px; align-items: center; gap: 10px; padding: 0 18px; border: 1px solid transparent; border-radius: var(--radius-pill); color: var(--on-brand, #000000); background: var(--brand, #ffffff); font: 600 10px var(--sans); letter-spacing: 1px; text-decoration: none; text-transform: uppercase; transition: transform var(--duration-quick) var(--ease-product), box-shadow var(--duration-quick), background var(--duration-quick); white-space: nowrap; box-shadow: 0 10px 28px rgba(97, 97, 97, 32%); }
+    .contact-btn { display: inline-flex; min-height: 40px; align-items: center; gap: 10px; padding: 0 18px; border: 1px solid transparent; border-radius: var(--radius-pill); color: var(--on-brand, #000000); background: var(--brand, #ffffff); font: 600 13px var(--sans); letter-spacing: 0; text-decoration: none; transition: transform var(--duration-quick) var(--ease-product), box-shadow var(--duration-quick), background var(--duration-quick); white-space: nowrap; box-shadow: 0 10px 28px rgba(97, 97, 97, 32%); }
     .contact-btn:hover { transform: translateY(-1px); background: var(--brand-strong, #6c6c6c); box-shadow: none; }
-    .currency-open-shortcut { display: none; min-height: 38px; align-items: center; padding: 0 13px; border: 1px solid var(--line); border-radius: var(--radius-pill); color: var(--ledger-ink); background: transparent; font: 500 9px var(--mono); letter-spacing: .8px; text-transform: uppercase; transition: border-color var(--duration-quick), background var(--duration-quick), color var(--duration-quick); }
+    .currency-open-shortcut { display: none; min-height: 38px; align-items: center; padding: 0 13px; border: 1px solid var(--line); border-radius: var(--radius-pill); color: var(--ledger-ink); background: transparent; font: 500 12px var(--sans); letter-spacing: 0; transition: border-color var(--duration-quick), background var(--duration-quick), color var(--duration-quick); }
     #open-auth-modal, [data-theme-toggle] { display: inline-flex; align-items: center; justify-content: center; }
     .currency-open-shortcut:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-wash); }
     .btn-circle { width: 7px; height: 7px; border: 0; border-radius: 50%; background: currentColor; opacity: .8; }
@@ -81,27 +84,26 @@
     .slide.active { pointer-events: auto; opacity: 1; visibility: visible; transform: none; }
     #slide-1 { bottom: 8%; width: min(860px, calc(100% - clamp(48px, 9vw, 144px))); }
     #slide-1 .slide-title { margin-left: 0; }
-    #slide-1 .desc-row { position: relative; display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: clamp(18px, 3vw, 44px); align-items: end; margin-top: 8px; }
-    #slide-1 .col-1, #slide-1 .col-2 { width: auto; max-width: 430px; margin: 0; }
     #slide-2 { bottom: 8%; left: clamp(24px, 4.5vw, 72px); width: min(620px, calc(100% - clamp(48px, 9vw, 144px))); }
     #slide-3 { bottom: 8%; left: clamp(24px, 4.5vw, 72px); width: min(680px, calc(100% - clamp(48px, 9vw, 144px))); }
     #slide-4 { bottom: 8%; left: clamp(24px, 4.5vw, 72px); width: min(760px, calc(100% - clamp(48px, 9vw, 144px))); }
-    .slide-index { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 16px; color: var(--brass); font: 500 10px var(--mono); letter-spacing: 2px; text-transform: uppercase; }
-    .slide-index::after { width: 54px; height: 1px; background: var(--brass); content: ''; }
     .slide-title { margin-bottom: 20px; color: var(--ledger-ink); font-family: var(--display); font-size: clamp(56px, 7.2vw, 112px); font-weight: 650; letter-spacing: -.035em; line-height: .98; text-wrap: balance; }
     #slide-2 .slide-title, #slide-3 .slide-title, #slide-4 .slide-title { font-size: clamp(50px, 6.4vw, 96px); }
     .slide-title .char { display: inline-block; opacity: 0; transform: translateY(.55em); filter: blur(10px); transition: opacity .58s var(--ease-product), transform .58s var(--ease-product), filter .58s var(--ease-product); will-change: transform, opacity, filter; }
     .slide.active .slide-title .char { opacity: 1; transform: none; filter: blur(0); }
-    .slide-desc { max-width: 430px; color: color-mix(in srgb, var(--ledger-ink) 74%, transparent); font-size: 15px; font-weight: 400; letter-spacing: .1px; line-height: 1.7; opacity: 0; transform: translateY(20px); transition: opacity .7s var(--ease-product), transform .7s var(--ease-product); transition-delay: .18s; }
+    .slide-desc { max-width: 520px; color: color-mix(in srgb, var(--ledger-ink) 74%, transparent); font-size: 16px; font-weight: 400; letter-spacing: .1px; line-height: 1.7; opacity: 0; transform: translateY(20px); transition: opacity .7s var(--ease-product), transform .7s var(--ease-product); transition-delay: .18s; }
     .slide.active .slide-desc { opacity: 1; transform: none; }
-    .slide-kicker { display: block; margin-bottom: 14px; color: var(--accent); font: 600 10px var(--mono); letter-spacing: 2.2px; text-transform: uppercase; }
-    #slide-1 .slide-kicker, #slide-2 .slide-kicker, #slide-3 .slide-kicker, #slide-4 .slide-kicker { margin-left: 0; }
-    .slide-cta { display: inline-flex; align-items: center; gap: 12px; margin-top: 26px; padding: 12px 18px; border: 1px solid transparent; border-radius: var(--radius-pill); color: var(--on-brand, #000000); background: var(--brand, #ffffff); font: 600 10px var(--sans); letter-spacing: 1.1px; text-decoration: none; text-transform: uppercase; transition: gap .24s var(--ease-product), box-shadow .24s, transform .24s var(--ease-product); pointer-events: auto; box-shadow: 0 12px 30px rgba(97, 97, 97, 28%); }
+    .slide-cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; opacity: 0; transform: translateY(20px); transition: opacity .7s var(--ease-product), transform .7s var(--ease-product); transition-delay: .26s; pointer-events: none; }
+    .slide.active .slide-cta-row { opacity: 1; transform: none; pointer-events: auto; }
+    .slide-cta-row .slide-cta { margin-top: 0; }
+    .slide-cta-ghost { border-color: var(--line-strong); color: var(--ledger-ink); background: transparent; box-shadow: none; }
+    .slide-cta { display: inline-flex; align-items: center; gap: 12px; margin-top: 26px; padding: 12px 18px; border: 1px solid transparent; border-radius: var(--radius-pill); color: var(--on-brand, #000000); background: var(--brand, #ffffff); font: 600 12.5px var(--sans); letter-spacing: .2px; text-decoration: none; transition: gap .24s var(--ease-product), box-shadow .24s, transform .24s var(--ease-product); pointer-events: auto; box-shadow: 0 12px 30px rgba(97, 97, 97, 28%); }
     .slide-cta:hover { gap: 18px; transform: translateY(-1px); }
     .slide-cta span { font-size: 16px; }
-    .hero-proof { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; max-width: 620px; margin-top: 26px; pointer-events: none; }
-    .hero-proof-item { padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius-card); background: color-mix(in srgb, var(--ledger-panel) 78%, transparent); backdrop-filter: blur(12px); }
-    .hero-proof-item span { display: block; color: var(--muted); font: 600 8px var(--mono); letter-spacing: 1.4px; text-transform: uppercase; }
+    .hero-proof { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; max-width: 620px; margin-top: 30px; pointer-events: none; opacity: 0; transform: translateY(20px); transition: opacity .7s var(--ease-product), transform .7s var(--ease-product); transition-delay: .34s; }
+    .slide.active .hero-proof { opacity: 1; transform: none; }
+    .hero-proof-item { padding: 2px 0; }
+    .hero-proof-item span { display: block; color: var(--muted); font: 600 11px var(--sans); }
     .hero-proof-item strong { display: block; margin-top: 7px; color: var(--ledger-ink); font: 500 12px var(--mono); letter-spacing: -.01em; }
     .hero-proof-item strong.tick { animation: hero-tick .6s var(--ease-product); }
     @keyframes hero-tick { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
@@ -114,8 +116,8 @@
     .preview-head { display: flex; align-items: center; justify-content: space-between; padding-bottom: 18px; border-bottom: 1px solid var(--line); color: var(--muted); font: 600 9px var(--mono); letter-spacing: 1.3px; }
     .preview-mark { display: inline-flex; align-items: center; gap: 9px; }
     .preview-mark b { display: grid; width: 25px; height: 25px; place-items: center; border: 1px solid color-mix(in srgb, var(--brass) 65%, transparent); border-radius: 8px; color: var(--brass); background: color-mix(in srgb, var(--brass) 12%, transparent); font-family: var(--display); font-size: 15px; font-weight: 700; }
-    .preview-status { color: var(--muted); font-size: 8px; }
-    .balance-label { display: flex; align-items: center; gap: 10px; margin-top: 24px; color: var(--muted); font: 600 8px var(--mono); letter-spacing: 1.7px; }
+    .preview-status { color: var(--muted); font-size: 9.5px; }
+    .balance-label { display: flex; align-items: center; gap: 10px; margin-top: 24px; color: var(--muted); font: 600 9.5px var(--mono); letter-spacing: 1.7px; }
     .balance-label em { padding: 5px 7px; border: 1px solid var(--line); border-radius: 5px; color: var(--faint, var(--muted)); font-size: 7px; font-style: normal; letter-spacing: .7px; }
     .balance-value { display: flex; align-items: baseline; gap: 12px; margin-top: 10px; color: var(--ledger-ink); font: 500 clamp(28px, 2.6vw, 38px)/1 var(--mono); letter-spacing: -.04em; }
     .balance-change { padding: 5px 8px; border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent); border-radius: 999px; color: var(--accent); background: var(--accent-wash); font: 500 9px var(--mono); letter-spacing: 0; }
@@ -132,13 +134,13 @@
     .preview-metrics span { color: var(--muted); font: 600 7px var(--mono); letter-spacing: .9px; }
     .preview-metrics strong { overflow: hidden; color: var(--ledger-ink); font: 500 clamp(11px, 1.15vw, 15px) var(--mono); white-space: nowrap; }
     .preview-metrics small { color: var(--muted); font-size: 7px; white-space: nowrap; }
-    .preview-caption { display: flex; align-items: center; gap: 8px; margin-top: 12px; color: var(--muted); font-size: 8px; letter-spacing: .2px; }
+    .preview-caption { display: flex; align-items: center; gap: 8px; margin-top: 12px; color: var(--muted); font-size: 9.5px; letter-spacing: .2px; }
     .preview-caption i { width: 5px; height: 5px; border-radius: 50%; background: var(--brass); }
     .preview-rows { display: grid; margin-top: 14px; }
     .preview-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
     .preview-row:last-child { border-bottom: 0; }
     .preview-row-name { overflow: hidden; color: var(--ledger-ink); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
-    .preview-row-meta { color: var(--muted); font: 500 8px var(--mono); letter-spacing: .7px; text-transform: uppercase; }
+    .preview-row-meta { color: var(--muted); font: 500 9.5px var(--mono); letter-spacing: .7px; text-transform: uppercase; }
     .preview-row-amount { grid-row: span 2; align-self: center; color: var(--ledger-ink); font: 500 11px var(--mono); }
     [hidden] { display: none !important; }
     .preview-row-amount.is-in { color: var(--accent); }
@@ -149,7 +151,7 @@
     .preview-goal-pct { color: var(--brass); font: 500 9px var(--mono); }
     .preview-goal-bar { height: 6px; margin-top: 7px; overflow: hidden; border-radius: 999px; background: color-mix(in srgb, var(--ledger-ink) 10%, transparent); }
     .preview-goal-bar i { display: block; height: 100%; border-radius: inherit; background: var(--accent); }
-    .preview-goal-meta { margin-top: 6px; color: var(--muted); font-size: 8px; letter-spacing: .3px; }
+    .preview-goal-meta { margin-top: 6px; color: var(--muted); font-size: 9.5px; letter-spacing: .3px; }
 
     .dashboard-view { position: fixed; inset: 0; z-index: 100; display: none; overflow-y: auto; overscroll-behavior: contain; color: #ffffff; background: #050505; }
     .dashboard-view.open { display: block; }
@@ -168,7 +170,7 @@
     .dash-side-link.active svg, .dash-side-link:hover svg { color: var(--accent); }
     .dash-sidebar-bottom { display: grid; gap: 18px; margin-top: auto; }
     .dash-side-note { padding: 14px; border: 1px solid rgba(255, 255, 255, 9%); border-radius: 8px; background: rgba(255, 255, 255, 2%); }
-    .dash-side-note span { display: block; margin-bottom: 7px; color: var(--accent); font-size: 8px; font-weight: 600; letter-spacing: 1.3px; text-transform: uppercase; }
+    .dash-side-note span { display: block; margin-bottom: 7px; color: var(--accent); font-size: 9.5px; font-weight: 600; letter-spacing: 1.3px; text-transform: uppercase; }
     .dash-side-note p { color: #8a8a8a; font-size: 11px; line-height: 1.6; }
     .dash-main { min-width: 0; padding: 0 clamp(26px, 5vw, 76px) 70px; }
     .dash-topbar { display: flex; min-height: 78px; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid rgba(255, 255, 255, 9%); }
@@ -184,7 +186,7 @@
     .dash-content { width: min(1120px, 100%); margin: 0 auto; }
     .dash-welcome { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; margin: 48px 0 27px; }
     .dash-eyebrow { display: block; margin-bottom: 12px; color: var(--accent); font-size: 9px; font-weight: 600; letter-spacing: 1.8px; text-transform: uppercase; }
-    .dash-welcome h1 { color: #f0f0f0; font-family: var(--display); font-size: clamp(36px, 4.4vw, 58px); font-weight: 400; letter-spacing: -.5px; line-height: 1; }
+    .dash-welcome h1 { color: #f0f0f0; font-family: var(--display-ui); font-size: clamp(36px, 4.4vw, 58px); font-weight: 400; letter-spacing: -.5px; line-height: 1; }
     .dash-welcome p { margin-top: 12px; color: #8c8c8c; font-size: 12px; font-weight: 300; line-height: 1.6; }
     .dash-welcome .dash-demo-disclosure { max-width: 620px; margin-top: 7px; color: #6a6a6a; font-size: 9px; line-height: 1.6; }
     .dash-primary { display: inline-flex; min-height: 40px; flex: 0 0 auto; align-items: center; justify-content: center; gap: 9px; padding: 0 16px; border: 1px solid rgba(227, 227, 227, 68%); border-radius: 5px; color: var(--on-brand); background: var(--accent); font: 600 10px var(--sans); letter-spacing: .4px; transition: transform .2s, background .2s; }
@@ -209,18 +211,18 @@
     .dash-panel-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
     .dash-panel-heading h2 { color: #e5e5e5; font-size: 13px; font-weight: 400; }
     .dash-panel-heading p { margin-top: 5px; color: #7b7b7b; font-size: 9px; }
-    .dash-period { padding: 6px 8px; border: 1px solid rgba(255, 255, 255, 10%); border-radius: 4px; color: #a4a4a4; font-size: 8px; }
+    .dash-period { padding: 6px 8px; border: 1px solid rgba(255, 255, 255, 10%); border-radius: 4px; color: #a4a4a4; font-size: 9.5px; }
     .dash-chart { position: relative; height: 143px; margin-top: 12px; }
     .dash-chart svg { width: 100%; height: 100%; overflow: visible; }
-    .dash-chart-labels { position: absolute; right: 0; bottom: 0; left: 0; display: flex; justify-content: space-between; color: #6a6a6a; font-size: 8px; letter-spacing: .4px; }
-    .dash-chart-legend { display: flex; gap: 18px; margin-top: 6px; color: #8d8d8d; font-size: 8px; }
+    .dash-chart-labels { position: absolute; right: 0; bottom: 0; left: 0; display: flex; justify-content: space-between; color: #6a6a6a; font-size: 9.5px; letter-spacing: .4px; }
+    .dash-chart-legend { display: flex; gap: 18px; margin-top: 6px; color: #8d8d8d; font-size: 9.5px; }
     .dash-chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
     .dash-chart-legend i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
     .dash-chart-legend span:last-child i { background: #c5c5c5; }
     .dash-insight-card { position: relative; overflow: hidden; }
     .dash-insight-card::after { position: absolute; right: -36px; bottom: -55px; width: 150px; height: 150px; border: 1px solid rgba(227, 227, 227, 12%); border-radius: 50%; box-shadow: 0 0 0 22px rgba(227, 227, 227, 2%), 0 0 0 44px rgba(227, 227, 227, 2%); content: ''; }
-    .dash-insight-tag { display: inline-flex; margin-top: 25px; padding: 5px 7px; border: 1px solid rgba(227, 227, 227, 22%); border-radius: 3px; color: #ececec; background: rgba(227, 227, 227, 5%); font-size: 8px; letter-spacing: .4px; }
-    .dash-insight-card h3 { max-width: 230px; margin-top: 11px; color: #e8e8e8; font-family: var(--display); font-size: 23px; font-weight: 400; line-height: 1.2; }
+    .dash-insight-tag { display: inline-flex; margin-top: 25px; padding: 5px 7px; border: 1px solid rgba(227, 227, 227, 22%); border-radius: 3px; color: #ececec; background: rgba(227, 227, 227, 5%); font-size: 9.5px; letter-spacing: .4px; }
+    .dash-insight-card h3 { max-width: 230px; margin-top: 11px; color: #e8e8e8; font-family: var(--display-ui); font-size: 23px; font-weight: 400; line-height: 1.2; }
     .dash-insight-card > p { max-width: 245px; margin-top: 8px; color: #8c8c8c; font-size: 10px; line-height: 1.65; }
     .dash-activity { margin-top: 14px; padding: 20px 21px 8px; }
     .dash-activity-top { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
@@ -231,14 +233,19 @@
     .dash-search::placeholder { color: #686868; }
     .dash-search:focus { border-color: rgba(227, 227, 227, 46%); }
     .dash-filter { height: 33px; padding: 0 9px; border: 1px solid rgba(255, 255, 255, 11%); border-radius: 4px; outline: none; color: #aeaeae; background: #141414; font: 9px var(--sans); }
+    .month-chip { display: inline-flex; align-items: center; gap: 4px; border-color: color-mix(in srgb, var(--accent) 42%, transparent); color: var(--text); background: var(--accent-wash); font: 500 10px var(--mono); cursor: pointer; }
+    .month-chip[hidden] { display: none; }
+    .pulse-jump { flex: 0 0 auto; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0; font-size: 15px; cursor: pointer; }
+    #dash-context-nav:not([hidden]) { animation: context-in .2s var(--ease-product); }
+    @keyframes context-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
     .dash-list { margin-top: 15px; }
     .dash-row { display: grid; min-height: 58px; grid-template-columns: minmax(180px, 1.4fr) minmax(95px, .75fr) minmax(115px, .8fr) 110px; align-items: center; gap: 10px; border-top: 1px solid rgba(255, 255, 255, 7%); }
-    .dash-row.head { min-height: 31px; border-top: 0; color: #737373; font-size: 8px; letter-spacing: .9px; text-transform: uppercase; }
+    .dash-row.head { min-height: 31px; border-top: 0; color: #737373; font-size: 9.5px; letter-spacing: .9px; text-transform: uppercase; }
     .dash-transaction { display: flex; min-width: 0; align-items: center; gap: 10px; }
     .dash-transaction-icon { display: grid; width: 31px; height: 31px; flex: 0 0 31px; place-items: center; border: 1px solid rgba(255, 255, 255, 9%); border-radius: 7px; color: #c3c3c3; background: rgba(255, 255, 255, 3%); font-size: 13px; }
     .dash-transaction-icon.is-income { border-color: rgba(227, 227, 227, 19%); color: var(--accent); background: rgba(227, 227, 227, 5%); }
     .dash-transaction-name { overflow: hidden; color: #dadada; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
-    .dash-transaction-sub { margin-top: 3px; color: #797979; font-size: 8px; }
+    .dash-transaction-sub { margin-top: 3px; color: #797979; font-size: 9.5px; }
     .dash-category, .dash-date { color: #9a9a9a; font-size: 9px; }
     .dash-amount { color: #e5e5e5; font-size: 10px; text-align: right; white-space: nowrap; }
     .dash-amount.is-income { color: #dcdcdc; }
@@ -249,7 +256,7 @@
     .tx-modal.open { display: grid; }
     .tx-form { width: min(420px, 100%); padding: 25px; border: 1px solid rgba(255, 255, 255, 13%); border-radius: 9px; background: #141414; box-shadow: 0 30px 90px rgba(0, 0, 0, 55%); }
     .tx-form-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 21px; }
-    .tx-form-head h2 { color: #eeeeee; font-family: var(--display); font-size: 29px; font-weight: 400; }
+    .tx-form-head h2 { color: #eeeeee; font-family: var(--display-ui); font-size: 29px; font-weight: 400; }
     .tx-form-head p { margin-top: 4px; color: #898989; font-size: 10px; }
     .tx-close { width: 28px; height: 28px; border: 1px solid rgba(255, 255, 255, 12%); border-radius: 50%; color: #b2b2b2; background: transparent; font-size: 17px; line-height: 1; }
     .tx-field { display: grid; gap: 7px; margin-top: 14px; }
@@ -264,8 +271,8 @@
     .currency-tools-dialog::backdrop { background: rgba(4, 4, 4, 78%); }
     .currency-tools-shell { padding: clamp(20px, 3.2vw, 38px); }
     .currency-tools-dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 25px; }
-    .currency-tools-label { color: #b8b8b8; font-size: 8px; font-weight: 600; letter-spacing: 1.7px; }
-    .currency-tools-dialog-header h2 { margin-top: 8px; color: #f5f5f5; font: 400 clamp(27px, 4vw, 42px)/1.06 var(--display); }
+    .currency-tools-label { color: #b8b8b8; font-size: 9.5px; font-weight: 600; letter-spacing: 1.7px; }
+    .currency-tools-dialog-header h2 { margin-top: 8px; color: #f5f5f5; font: 400 clamp(27px, 4vw, 42px)/1.06 var(--display-ui); }
     .currency-tools-dialog-header h2 span { color: #cacaca; }
     .currency-tools-dialog-header p { max-width: 490px; margin-top: 9px; color: #989898; font-size: 11px; line-height: 1.65; }
     .currency-close { display: grid; width: 35px; height: 35px; flex: 0 0 35px; place-items: center; border: 1px solid rgba(255, 255, 255, 13%); border-radius: 50%; color: #b1b1b1; background: rgba(255, 255, 255, 3%); font-size: 22px; line-height: 1; }
@@ -300,14 +307,14 @@
     .currency-rate-facts p { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; color: #8d8d8d; font-size: 9px; }
     .currency-rate-facts strong { max-width: 68%; color: #dadada; font-size: 9px; font-weight: 450; text-align: right; }
     .currency-rate-message { min-height: 0; margin-top: 8px; color: #bbbbbb; font-size: 9px; line-height: 1.55; }
-    .currency-source { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 7%); color: #6a6a6a; font-size: 8px; line-height: 1.6; }
+    .currency-source { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 7%); color: #6a6a6a; font-size: 9.5px; line-height: 1.6; }
     .currency-source strong { color: #b7b7b7; font-weight: 500; }
     .currency-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
     .currency-actions button { min-height: 30px; padding: 0 9px; border: 1px solid rgba(255, 255, 255, 10%); border-radius: 5px; color: #b1b1b1; background: rgba(255, 255, 255, 3%); font: 400 8px var(--sans); }
     .currency-actions button:hover:not(:disabled) { border-color: rgba(227, 227, 227, 48%); color: #f0f0f0; background: rgba(227, 227, 227, 8%); }
     .currency-actions button:disabled { opacity: .45; cursor: not-allowed !important; }
     .currency-actions button[aria-pressed="true"] { border-color: rgba(227, 227, 227, 38%); color: #ececec; }
-    .currency-action-feedback { min-height: 14px; margin-top: 5px; color: #b9b9b9; font-size: 8px; }
+    .currency-action-feedback { min-height: 14px; margin-top: 5px; color: #b9b9b9; font-size: 9.5px; }
     .currency-saved-pairs, .currency-recent, .currency-popular { margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 7%); }
     .currency-saved-pairs > span, .currency-recent > span, .currency-popular > span { color: #8d8d8d; font-family: 'IBM Plex Mono', monospace; font-size: 7.5px; letter-spacing: 1.2px; }
     .currency-popular > div { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
@@ -324,7 +331,7 @@
     .currency-quote-intro { margin: -7px 0 15px; color: #919191; font-size: 9px; line-height: 1.6; }
     .quote-rate-field { margin-bottom: 12px; }
     .currency-field span { display: flex; justify-content: space-between; gap: 8px; }
-    .currency-field small { color: #6a6a6a; font-size: 8px; font-weight: 400; letter-spacing: 0; }
+    .currency-field small { color: #6a6a6a; font-size: 9.5px; font-weight: 400; letter-spacing: 0; }
     .currency-fee-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .tax-field { margin-top: 12px; }
     .currency-quote-results { display: grid; gap: 9px; margin-top: 15px; padding-top: 13px; border-top: 1px solid rgba(255, 255, 255, 8%); }
@@ -336,13 +343,26 @@
     .currency-quote-results .quote-difference .negative { color: #bebebe; }
     .currency-quote-results .quote-difference .positive { color: #c7c7c7; }
     .quote-placeholder { color: #6a6a6a; font-size: 10px; line-height: 1.6; }
-    .currency-assumptions { margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 7%); color: #6a6a6a; font-size: 8px; line-height: 1.65; }
-    .currency-provider-attribution { margin-top: 14px; color: #6a6a6a; font-size: 8px; line-height: 1.6; }
+    .currency-assumptions { margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 7%); color: #6a6a6a; font-size: 9.5px; line-height: 1.65; }
+    .currency-provider-attribution { margin-top: 14px; color: #6a6a6a; font-size: 9.5px; line-height: 1.6; }
     .currency-provider-attribution a { color: #ececec; text-decoration-color: rgba(192, 192, 192, 40%); text-underline-offset: 2px; }
     .currency-provider-attribution a:hover { color: #e7e7e7; }
     .currency-tools-dialog button:focus-visible, .currency-tools-dialog input:focus-visible, .currency-tools-dialog select:focus-visible { outline: 2px solid #e3e3e3; outline-offset: 2px; }
-    .currency-tools-dialog[open] { animation: dialog-in .2s ease-out; }
-    @keyframes dialog-in { from { opacity: 0; transform: translateY(8px) scale(.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .currency-tools-dialog[open] {
+      opacity: 1;
+      transform: none;
+      transition: opacity .2s ease-out, transform .28s cubic-bezier(.22, 1, .36, 1), overlay .28s allow-discrete, display .28s allow-discrete;
+    }
+    @starting-style {
+      .currency-tools-dialog[open] { opacity: 0; transform: translateY(12px) scale(.99); }
+    }
+    .currency-tools-dialog::backdrop {
+      background: rgba(4, 4, 4, 78%);
+      transition: background .28s allow-discrete, overlay .28s allow-discrete, display .28s allow-discrete;
+    }
+    @starting-style {
+      .currency-tools-dialog::backdrop { background: rgba(4, 4, 4, 0%); }
+    }
 
     .grid-horizontal-line { position: fixed; top: 70px; right: 0; left: 0; z-index: 5; height: 1px; background: var(--line); pointer-events: none; }
     .grid-lines { position: fixed; top: 0; right: 40px; left: 40px; z-index: 5; display: flex; width: calc(100% - 80px); height: 100vh; justify-content: space-between; pointer-events: none; }
@@ -378,7 +398,7 @@
       .dash-top-actions { gap: 8px; }
     }
     @media (max-width: 760px) {
-      body { min-height: 460vh; }
+      body { min-height: 320vh; }
       .dash-layout { display: block; }
       .dash-sidebar { display: none; }
       .dash-main { padding: 0 22px 45px; }
@@ -399,18 +419,18 @@
       .main-header { min-height: 65px; gap: 12px; padding: 14px 0; }
       .brand { font-size: 12px; letter-spacing: 3px; }
       .header-nav { gap: 11px; }
-      .nav-link { font-size: 8px; letter-spacing: .8px; }
+      .nav-link { font-size: 11.5px; }
       .nav-dot { width: 2px; height: 2px; flex-basis: 2px; }
-      .contact-btn { min-height: 34px; gap: 7px; padding: 0 11px; font-size: 8px; }
+      .contact-btn { min-height: 34px; gap: 7px; padding: 0 11px; font-size: 9.5px; }
       .slide-title { margin-bottom: 14px; font-size: clamp(48px, 9vw, 72px); }
       #slide-2 .slide-title, #slide-3 .slide-title, #slide-4 .slide-title { font-size: clamp(46px, 8.2vw, 68px); }
       .slide-desc { max-width: 460px; font-size: 12px; line-height: 1.65; }
       #slide-1 { bottom: 10%; }
-      #slide-1 .slide-title, #slide-1 .slide-kicker { margin-left: 0; }
+      #slide-1 .slide-title { margin-left: 0; }
       #slide-1 .desc-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 0 2px; }
       #slide-1 .col-1, #slide-1 .col-2 { position: static; width: auto; max-width: 100%; margin: 0; }
       #slide-2 { bottom: 9%; left: 0; width: min(92vw, 480px); }
-      #slide-2 .slide-kicker, #slide-2 .slide-title, #slide-2 .slide-desc { margin-left: 0; }
+      #slide-2 .slide-title, #slide-2 .slide-desc { margin-left: 0; }
       #slide-2 .slide-desc { width: min(92vw, 480px); max-width: 480px; }
       #slide-3 { bottom: 12%; left: 0; width: min(92vw, 560px); }
       #slide-3 .slide-title { white-space: normal; }
@@ -438,12 +458,12 @@
       .cinematic-container { padding-right: 19px; padding-left: 19px; }
       .header-nav { display: none; }
       .header-actions { margin-left: auto; }
-      .currency-open-shortcut { min-height: 32px; padding: 0 9px; font-size: 8px; }
+      .currency-open-shortcut { min-height: 32px; padding: 0 9px; font-size: 9.5px; }
       .contact-btn { min-height: 32px; gap: 6px; padding: 0 9px; font-size: 7px; }
       .dash-main { padding: 0 16px 36px; }
       .dash-topbar { min-height: 58px; }
       .dash-live { display: none; }
-      .dash-back { min-height: 31px; padding: 0 9px; font-size: 8px; }
+      .dash-back { min-height: 31px; padding: 0 9px; font-size: 9.5px; }
       .dash-welcome { display: block; margin: 29px 0 20px; }
       .dash-welcome h1 { font-size: 42px; }
       .dash-welcome p { max-width: 290px; }
@@ -485,7 +505,6 @@
       .balance-value { font-size: 26px; }
       .preview-chart { height: 65px; }
       .slide-desc { max-width: 420px; font-size: 11px; }
-      .slide-kicker { margin-bottom: 9px; font-size: 8px; }
       .slide-cta { margin-top: 14px; }
       .cursor-inner, .cursor-outer { display: none; }
       body, * { cursor: auto !important; }
@@ -503,7 +522,7 @@
     .auth-modal { position: fixed; inset: 0; z-index: 200; display: none; place-items: center; padding: 20px; background: rgba(0, 0, 0, 72%); }
     .auth-modal.open { display: grid; }
     .auth-form { width: min(400px, 100%); padding: 24px; border: 1px solid rgba(255, 255, 255, 13%); border-radius: 9px; background: #141414; }
-    .auth-form h2 { color: #eeeeee; font-family: var(--display); font-size: 28px; font-weight: 400; }
+    .auth-form h2 { color: #eeeeee; font-family: var(--display-ui); font-size: 28px; font-weight: 400; }
     .auth-form p { margin-top: 4px; color: #898989; font-size: 10px; }
     .auth-form input { width: 100%; height: 38px; margin-top: 10px; padding: 0 11px; border: 1px solid rgba(255, 255, 255, 12%); border-radius: 4px; outline: none; color: #e4e4e4; background: #0c0c0c; font: 11px var(--sans); }
     .auth-form input:focus { border-color: rgba(227, 227, 227, 52%); }
@@ -512,7 +531,7 @@
     .auth-row button { flex: 1; min-height: 38px; border-radius: 5px; font: 600 10px var(--sans); cursor: pointer; }
     .auth-primary { border: 1px solid rgba(227, 227, 227, 68%); color: #131313; background: #e3e3e3; }
     .auth-ghost { border: 1px solid rgba(255, 255, 255, 14%); color: #d9d9d9; background: transparent; }
-    .cloud-pill { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 6px; padding: 5px 9px; border: 1px solid rgba(255, 255, 255, 12%); border-radius: 20px; color: #b1b1b1; font-size: 8px; letter-spacing: .5px; white-space: nowrap; }
+    .cloud-pill { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 6px; padding: 5px 9px; border: 1px solid rgba(255, 255, 255, 12%); border-radius: 20px; color: #b1b1b1; font-size: 9.5px; letter-spacing: .5px; white-space: nowrap; }
     .cloud-pill i { width: 5px; height: 5px; border-radius: 50%; background: #737373; }
     .cloud-pill.on i { background: #e3e3e3; box-shadow: 0 0 8px rgba(227, 227, 227, 70%); }
     #cloud-account { height: 32px; padding: 0 8px; border: 1px solid rgba(255, 255, 255, 11%); border-radius: 4px; color: #aeaeae; background: #141414; font: 9px var(--sans); }
@@ -536,10 +555,10 @@
     .dashboard-view {
       --bg: #070707; --surface: #111111; --surface-2: #171717; --surface-3: #1b1b1b;
       --line: rgba(255, 255, 255, 10%); --line-strong: rgba(255, 255, 255, 20%);
-      --text: #f0f0f0; --muted: #8f8f8f; --faint: #6c6c6c;
+      --text: #f0f0f0; --muted: #8f8f8f; --faint: #8a8a8a;
       --accent: #e3e3e3; --accent-dim: #c0c0c0; --accent-wash: rgba(227, 227, 227, 12%);
       --green: #b4b4b4; --amber: #bcbcbc; --red: #a3a3a3;
-      --display: 'Archivo', system-ui, sans-serif; --sans: 'Inter', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
+      --display: 'Space Grotesk', system-ui, sans-serif; --sans: 'Inter', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
       color: var(--text); background: var(--bg);
       font-family: var(--sans); font-size: 15px; line-height: 1.5;
       -webkit-font-smoothing: antialiased;
@@ -568,7 +587,7 @@
     .dash-topbar { min-height: 70px; border-bottom: 1px solid var(--line); }
     .dash-breadcrumb { color: var(--faint); font-family: var(--mono); font-size: 10px; letter-spacing: .3px; }
     .dash-breadcrumb b { margin: 0 8px; color: var(--faint); font-weight: 400; }
-    .dash-breadcrumb strong { color: var(--text); font-family: var(--display); font-size: 15px; font-weight: 400; letter-spacing: .2px; }
+    .dash-breadcrumb strong { color: var(--text); font-family: var(--display-ui); font-size: 15px; font-weight: 400; letter-spacing: .2px; }
     .dash-live { color: var(--muted); font-family: var(--mono); font-size: 9px; letter-spacing: .4px; white-space: nowrap; }
     .dash-topbar .select { width: 168px; flex: 0 0 168px; }
     .dash-topbar .select-trigger { min-height: 34px; height: 34px; font-size: 10.5px; }
@@ -598,7 +617,7 @@
     .view-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 26px; margin: 34px 0 22px; }
     .view-head-copy { max-width: 640px; }
     .view-head .dash-eyebrow { margin-bottom: 11px; }
-    .view-head h1 { color: #f3f3f3; font-family: var(--display); font-size: clamp(34px, 3.6vw, 50px); font-weight: 400; letter-spacing: -.4px; line-height: 1.06; text-wrap: balance; }
+    .view-head h1 { color: #f3f3f3; font-family: var(--display-ui); font-size: clamp(34px, 3.6vw, 50px); font-weight: 400; letter-spacing: -.4px; line-height: 1.06; text-wrap: balance; }
     .view-head p { margin-top: 11px; color: var(--muted); font-size: 13.5px; font-weight: 300; line-height: 1.65; }
     .view-head-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 10px; }
     .view-label { display: block; margin-bottom: 12px; color: var(--accent); font-family: var(--mono); font-size: 9.5px; font-weight: 500; letter-spacing: 1.8px; text-transform: uppercase; }
@@ -621,19 +640,19 @@
     .dash-stat small { display: block; margin-top: 6px; color: var(--faint); font-size: 9.5px; }
     .dash-columns { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(240px, .8fr); gap: 12px; margin-top: 12px; }
     .dash-chart-card, .dash-insight-card { min-height: 246px; padding: 20px 22px; }
-    .dash-panel-heading h2, .dash-activity-top h2, .cloud-grid h3 { color: #e8e8e8; font-family: var(--display); font-size: 20px; font-weight: 400; letter-spacing: -.2px; }
+    .dash-panel-heading h2, .dash-activity-top h2, .cloud-grid h3 { color: #e8e8e8; font-family: var(--display-ui); font-size: 20px; font-weight: 400; letter-spacing: -.2px; }
     .dash-panel-heading p, .dash-activity-top p, .cloud-grid p { margin-top: 5px; color: var(--muted); font-size: 11.5px; line-height: 1.55; }
     .dash-period { padding: 6px 10px; border: 1px solid var(--line-strong); border-radius: 7px; color: var(--muted); font-family: var(--mono); font-size: 9px; letter-spacing: .6px; }
     .dash-chart { position: relative; height: 150px; margin-top: 14px; }
-    .dash-chart-labels { color: var(--faint); font-family: var(--mono); font-size: 8px; letter-spacing: .5px; }
+    .dash-chart-labels { color: var(--faint); font-family: var(--mono); font-size: 9.5px; letter-spacing: .5px; }
     .dash-chart-legend { display: flex; gap: 18px; margin-top: 8px; color: var(--muted); font-size: 9px; }
     .dash-chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
     .dash-chart-legend i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
     .dash-chart-legend span:last-child i { background: #c5c5c5; }
     .dash-insight-card { position: relative; overflow: hidden; }
     .dash-insight-card::after { position: absolute; right: -40px; bottom: -58px; width: 156px; height: 156px; border: 1px solid rgba(227, 227, 227, 14%); border-radius: 50%; box-shadow: 0 0 0 24px rgba(227, 227, 227, 3%), 0 0 0 48px rgba(227, 227, 227, 3%); content: ''; }
-    .dash-insight-tag { display: inline-flex; margin-top: 22px; padding: 5px 9px; border: 1px solid rgba(227, 227, 227, 26%); border-radius: 5px; color: #d1d1d1; background: rgba(227, 227, 227, 7%); font-family: var(--mono); font-size: 8px; letter-spacing: 1px; }
-    .dash-insight-card h3 { max-width: 250px; margin-top: 12px; color: #e9e9e9; font-family: var(--display); font-size: 24px; font-weight: 400; line-height: 1.22; }
+    .dash-insight-tag { display: inline-flex; margin-top: 22px; padding: 5px 9px; border: 1px solid rgba(227, 227, 227, 26%); border-radius: 5px; color: #d1d1d1; background: rgba(227, 227, 227, 7%); font-family: var(--mono); font-size: 9.5px; letter-spacing: 1px; }
+    .dash-insight-card h3 { max-width: 250px; margin-top: 12px; color: #e9e9e9; font-family: var(--display-ui); font-size: 24px; font-weight: 400; line-height: 1.22; }
     .dash-insight-card > p { max-width: 260px; margin-top: 9px; color: var(--muted); font-size: 11px; line-height: 1.65; }
     .dash-primary { display: inline-flex; min-height: 40px; flex: 0 0 auto; align-items: center; justify-content: center; gap: 9px; padding: 0 17px; border: 1px solid rgba(227, 227, 227, 62%); border-radius: 8px; color: var(--on-brand); background: var(--accent); font-family: var(--sans); font-size: 10px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; transition: transform .16s, background .16s, box-shadow .16s; }
     .dash-primary:hover { transform: translateY(-1px); background: #ececec; box-shadow: 0 8px 24px rgba(227, 227, 227, 18%); }
@@ -687,6 +706,7 @@
     .row-del { display: grid; width: 24px; height: 24px; place-items: center; border: 1px solid var(--line); border-radius: 7px; color: var(--faint); background: transparent; font-size: 12px; line-height: 1; cursor: pointer; transition: border-color .16s, color .16s; }
     .row-del:hover { border-color: rgba(163, 163, 163, 55%); color: var(--red); }
     .row-del:disabled { opacity: .32; cursor: not-allowed; }
+    .row-del svg { width: 13px; height: 13px; flex: 0 0 13px; }
     .cloud-pill { display: inline-flex; align-items: center; gap: 7px; padding: 6px 11px; border: 1px solid var(--line-strong); border-radius: 18px; color: var(--muted); font-family: var(--mono); font-size: 8.5px; font-weight: 500; letter-spacing: .8px; }
     .cloud-pill i { width: 5px; height: 5px; border-radius: 50%; background: var(--faint); }
     .cloud-pill.on { border-color: rgba(227, 227, 227, 40%); color: #f4f4f4; }
@@ -696,7 +716,7 @@
     .tx-modal, .auth-modal { background: rgba(5, 5, 5, 76%); }
     .tx-form, .auth-form { width: min(440px, 100%); padding: 26px; border: 1px solid var(--line-strong); border-radius: 16px; background: var(--surface); box-shadow: 0 34px 90px rgba(0, 0, 0, 62%); }
     .tx-form-head { margin-bottom: 20px; }
-    .tx-form-head h2, .auth-form h2 { color: #f0f0f0; font-family: var(--display); font-size: 27px; font-weight: 400; }
+    .tx-form-head h2, .auth-form h2 { color: #f0f0f0; font-family: var(--display-ui); font-size: 27px; font-weight: 400; }
     .tx-form-head p, .auth-form p { margin-top: 5px; color: var(--muted); font-size: 11px; }
     .tx-close, .currency-close { display: grid; width: 30px; height: 30px; flex: 0 0 30px; place-items: center; border: 1px solid var(--line-strong); border-radius: 50%; color: var(--muted); background: rgba(255, 255, 255, 3%); font-size: 16px; line-height: 1; cursor: pointer; transition: border-color .16s, color .16s, background .16s; }
     .tx-close:hover, .currency-close:hover { border-color: rgba(227, 227, 227, 60%); color: #ffffff; background: rgba(227, 227, 227, 12%); }
@@ -728,9 +748,9 @@
     /* currency dialog — unified */
     .currency-tools-dialog { border: 1px solid var(--line-strong); border-radius: 16px; color: #eaeaea; background: var(--surface); box-shadow: 0 40px 120px rgba(0, 0, 0, 70%); }
     .currency-tools-label { color: var(--accent); font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: 1.7px; }
-    .currency-tools-dialog-header h2 { font-family: var(--display); font-weight: 400; }
+    .currency-tools-dialog-header h2 { font-family: var(--display-ui); font-weight: 400; }
     .currency-tool-card { border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); }
-    .currency-tool-card-heading h3 { font-family: var(--display); font-size: 17px; font-weight: 400; }
+    .currency-tool-card-heading h3 { font-family: var(--display-ui); font-size: 17px; font-weight: 400; }
     .currency-field span, .currency-search-field, .currency-amount-field { color: var(--muted); font-family: var(--mono); font-size: 9px; letter-spacing: .4px; }
     .currency-field small { color: var(--faint); }
     .currency-search-field input, .currency-amount-field input, .currency-field input, .currency-field select { border: 1px solid var(--line-strong); border-radius: 9px; color: #eaeaea; background: #0f0f0f; font-family: var(--sans); font-size: 12px; }
@@ -749,7 +769,7 @@
     .currency-quote-results > div strong { color: #e2e2e2; font-weight: 500; }
     .currency-provider-attribution { color: var(--faint); font-family: var(--mono); font-size: 8.5px; }
     .currency-provider-attribution a { color: #ececec; }
-    .rate-badge, .estimate-badge { font-family: var(--mono); font-size: 8px; letter-spacing: .6px; }
+    .rate-badge, .estimate-badge { font-family: var(--mono); font-size: 9.5px; letter-spacing: .6px; }
 
     /* cursor */
     .cursor-inner { width: 5px; height: 5px; border: 0; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px rgba(227, 227, 227, 85%); transition: transform .12s ease, opacity .12s ease; }
@@ -795,15 +815,14 @@
     /* ============ THEME v3 — TERMINAL NOIR (white on near-black, brutalist) ============ */
     :root {
       --accent: #16a34a; --accent-dim: #15803d; --muted: #a3a3a3; --line: #292929;
-      --display: 'Archivo', system-ui, sans-serif; --sans: 'Inter', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
+      --display: 'Space Grotesk', system-ui, sans-serif; --sans: 'Inter', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
     }
     body { font-family: var(--sans); }
     .brand { font-family: var(--display); font-weight: 700; letter-spacing: 4px; }
     .slide-title { font-family: var(--display); font-weight: 600; letter-spacing: -.035em; line-height: .98; }
     .slide-title .char { transition: opacity .6s cubic-bezier(.25,1,.5,1), transform .6s cubic-bezier(.25,1,.5,1), filter .6s cubic-bezier(.25,1,.5,1); }
-    .slide-kicker, .currency-tools-label, .preview-mark, .dash-eyebrow, .view-label { font-family: var(--mono); font-weight: 500; letter-spacing: 2px; }
+    .currency-tools-label, .preview-mark, .dash-eyebrow, .view-label { font-family: var(--mono); font-weight: 500; letter-spacing: 2px; }
     .slide-desc { font-family: var(--sans); font-weight: 300; }
-    .nav-link { font-family: var(--mono); font-size: 9px; letter-spacing: 1.6px; }
     .privacy-note { font-family: var(--mono); }
     .contact-btn { border: 2px solid var(--accent); border-radius: 3px; color: var(--on-brand); background: var(--accent); font-family: var(--mono); font-weight: 600; letter-spacing: 1px; box-shadow: 4px 4px 0 rgba(0, 0, 0, 55%); transition: transform .16s, box-shadow .16s, background .16s; }
     .contact-btn:hover { transform: translate(-2px, -2px); background: #efefef; box-shadow: 6px 6px 0 rgba(0, 0, 0, 55%); }
@@ -820,10 +839,10 @@
     .dashboard-view {
       --bg: #090909; --surface: #111111; --surface-2: #171717; --surface-3: #1e1e1e;
       --line: #262626; --line-strong: #3f3f3f;
-      --text: #eaeaea; --muted: #8f8f8f; --faint: #6c6c6c;
+      --text: #eaeaea; --muted: #8f8f8f; --faint: #8a8a8a;
       --accent: #e3e3e3; --accent-dim: #c0c0c0; --accent-wash: rgba(227, 227, 227, 12%);
       --green: #cbcbcb; --amber: #c5c5c5; --red: #9b9b9b;
-      --display: 'Archivo', system-ui, sans-serif; --sans: 'Inter', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
+      --display: 'Space Grotesk', system-ui, sans-serif; --sans: 'Inter', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
       font-family: var(--sans);
     }
     .dashboard-view::before { background: var(--bg); }
@@ -897,7 +916,7 @@
     .currency-tools-dialog { border: 1.5px solid var(--line-strong); border-radius: 8px; background: #0e0e0e; }
     .currency-tools-dialog-header h2 { font-family: var(--display); font-weight: 600; letter-spacing: -.03em; }
     .currency-tool-card { border: 1px solid var(--line); border-radius: 6px; background: #131313; }
-    .currency-tool-card-heading h3 { font-family: var(--display); font-weight: 600; }
+    .currency-tool-card-heading h3 { font-family: var(--display-ui); font-weight: 600; }
     .currency-field span, .currency-search-field, .currency-amount-field { font-family: var(--mono); }
     .currency-search-field input, .currency-amount-field input, .currency-field input, .currency-field select { border: 1.5px solid var(--line-strong); border-radius: 4px; }
     .currency-search-field input:focus, .currency-amount-field input:focus, .currency-field input:focus, .currency-field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(227, 227, 227, 14%); }
@@ -923,10 +942,9 @@
     /* ============ THEME: NEO-BRUTALIST PAPER (paper + ink + charcoal) ============ */
     [data-theme="brutal"] {
       --accent: #5a5a5a; --accent-dim: #3c3c3c; --accent-wash: rgba(90, 90, 90, 10%);
-      --display: 'Archivo', system-ui, sans-serif; --sans: 'Inter', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
+      --display: 'Space Grotesk', system-ui, sans-serif; --sans: 'Inter', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
     }
     [data-theme="brutal"] body { background: #ffffff; color: #000000; font-family: var(--sans); }
-    [data-theme="brutal"] #webgl { background: #ffffff; }
     [data-theme="brutal"] .cursor-inner { background: var(--accent); box-shadow: 0 0 0 2px #131313; }
     [data-theme="brutal"] .cursor-outer { border: 2px solid var(--accent); background: transparent; }
     [data-theme="brutal"] body.cursor-hover .cursor-outer { border-color: #131313; background: rgba(90, 90, 90, 10%); }
@@ -949,7 +967,6 @@
     [data-theme="brutal"] .story-dash { background: rgba(19, 19, 19, 18%); }
     [data-theme="brutal"] .story-dash-fill { background: var(--accent); }
     [data-theme="brutal"] .slide-title { color: #131313; }
-    [data-theme="brutal"] .slide-kicker { color: var(--accent); }
     [data-theme="brutal"] .slide-desc { color: #3b3b3b; }
     [data-theme="brutal"] .slide-cta { color: #ffffff; font-weight: 700; }
     [data-theme="brutal"] .slide-cta:hover { color: #ffffff; }
@@ -1375,7 +1392,8 @@
        One shared geometry, refined neutral surfaces, white interaction
        accent, gray detail, and a calm editorial type hierarchy.
        ============================================================ */
-    @font-face { font-family: 'Archivo'; src: url('/fonts/archivo-latin.woff2') format('woff2'); font-style: normal; font-weight: 400 700; font-display: swap; }
+    @font-face { font-family: 'Space Grotesk'; src: url('/fonts/space-grotesk-latin.woff2') format('woff2-variations'); font-style: normal; font-weight: 300 700; font-display: swap; }
+    @font-face { font-family: 'Manrope'; src: url('/fonts/manrope-latin.woff2') format('woff2-variations'); font-style: normal; font-weight: 200 800; font-display: swap; }
     @font-face { font-family: 'Inter'; src: url('/fonts/inter-latin.woff2') format('woff2'); font-style: normal; font-weight: 400 600; font-display: swap; }
     @font-face { font-family: 'IBM Plex Mono'; src: url('/fonts/ibm-plex-mono-400-latin.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
     @font-face { font-family: 'IBM Plex Mono'; src: url('/fonts/ibm-plex-mono-500-latin.woff2') format('woff2'); font-style: normal; font-weight: 500; font-display: swap; }
@@ -1388,7 +1406,7 @@
       --accent: #939393; --accent-dim: #787878; --accent-wash: rgba(147, 147, 147, 12%);
       --brand: #939393; --brand-strong: #a9a9a9; --brass: #adadad;
       --green: #a5a5a5; --amber: #acacac; --red: #9a9a9a;
-      --display: 'Archivo', system-ui, sans-serif; --sans: 'Inter', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
+      --display: 'Space Grotesk', system-ui, sans-serif; --sans: 'Inter', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
       --shadow-card: 0 1px 0 rgba(255, 255, 255, 3%), 0 14px 34px rgba(0, 0, 0, 22%);
     }
     html[data-theme="brutal"] {
@@ -1399,7 +1417,7 @@
       --accent: #5a5a5a; --accent-dim: #3c3c3c; --accent-wash: rgba(90, 90, 90, 9%);
       --brand: #5a5a5a; --brand-strong: #3c3c3c; --brass: #747474;
       --green: #6b6b6b; --amber: #656565; --red: #6a6a6a;
-      --display: 'Archivo', system-ui, sans-serif; --sans: 'Inter', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
+      --display: 'Space Grotesk', system-ui, sans-serif; --sans: 'Inter', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
       --shadow-card: 0 1px 2px rgba(19, 19, 19, 5%), 0 12px 30px rgba(19, 19, 19, 5%);
     }
     html[data-theme="noir"] .dashboard-view {
@@ -1408,7 +1426,7 @@
       --text: #eeeeee; --muted: #adadad; --faint: #898989;
       --accent: #939393; --accent-dim: #787878; --accent-wash: rgba(147, 147, 147, 12%);
       --green: #a5a5a5; --amber: #acacac; --red: #9a9a9a;
-      --display: 'Archivo', system-ui, sans-serif; --sans: 'Inter', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
+      --display: 'Space Grotesk', system-ui, sans-serif; --sans: 'Inter', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
     }
     html[data-theme="brutal"] .dashboard-view {
       --bg: #f0f0f0; --surface: #f8f8f8; --surface-2: #ffffff; --surface-3: #e5e5e5;
@@ -1416,11 +1434,9 @@
       --text: #141414; --muted: #515151; --faint: #6b6b6b;
       --accent: #5a5a5a; --accent-dim: #3c3c3c; --accent-wash: rgba(90, 90, 90, 9%);
       --green: #6b6b6b; --amber: #656565; --red: #6a6a6a;
-      --display: 'Archivo', system-ui, sans-serif; --sans: 'Inter', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
+      --display: 'Space Grotesk', system-ui, sans-serif; --sans: 'Inter', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
     }
     html[data-theme] body { background: var(--bg); color: var(--text); font-family: var(--sans); }
-    html[data-theme="noir"] #webgl { background: #050505; }
-    html[data-theme="brutal"] #webgl { background: #ffffff; }
     html[data-theme] .brand, html[data-theme] .dash-brand { font-family: var(--display); }
     html[data-theme] .privacy-note { color: var(--muted); }
     html[data-theme] .privacy-note i { background: var(--accent); box-shadow: none; }
@@ -1461,7 +1477,29 @@
     html[data-theme] .dash-main { padding: 0 clamp(24px, 4vw, 56px) 96px; }
     html[data-theme] .dash-content { max-width: 1180px; }
     html[data-theme] .view-head { margin: 38px 0 26px; align-items: flex-end; }
-    html[data-theme] .view-head h1 { color: var(--text); font-family: var(--display); font-size: clamp(30px, 3.2vw, 44px); font-weight: 600; letter-spacing: -.035em; line-height: 1.05; }
+    html[data-theme] .view-head h1 { color: var(--text); font-family: var(--display-ui); font-size: clamp(30px, 3.2vw, 44px); font-weight: 600; letter-spacing: -.035em; line-height: 1.05; }
+
+    /* Motion-pass reveals (Moorly reference): heading rise, card stagger,
+       bar grow, chart draw. Reduced-motion users get instant content. */
+    .view-title-in { animation: view-title-in .5s var(--ease-product) both; }
+    @keyframes view-title-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    html[data-theme] .dash-chart-card, html[data-theme] .dash-insight-card { transition: transform .3s var(--ease-product), border-color .3s var(--ease-product), box-shadow .3s var(--ease-product); cursor: pointer; }
+    html[data-theme] .dash-chart-card:hover, html[data-theme] .dash-insight-card:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--accent) 30%, var(--line)); box-shadow: 0 18px 44px rgba(0, 0, 0, .28); }
+    .card-enter { animation: card-enter .55s var(--ease-product) both; }
+    @keyframes card-enter { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    .card-enter .bar > i { animation: bar-grow .75s var(--ease-product) .2s both; }
+    @keyframes bar-grow { from { width: 0; } }
+    .chart-svg .chart-bar { transform: scaleY(0); transform-box: fill-box; transform-origin: bottom; transition: transform .65s var(--ease-product); }
+    .chart-svg:not(.chart-pending) .chart-bar { transform: none; }
+    .metric-spark { display: block; height: 26px; margin-top: 9px; }
+    .metric-spark svg { display: block; width: 100%; height: 100%; overflow: visible; }
+    .metric-spark path { fill: none; stroke-width: 1.6; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
+    #income-spark path { stroke: var(--accent); }
+    #expense-spark path { stroke: var(--negative); }
+    .metric-delta { display: inline-flex; align-items: center; margin-left: 8px; padding: 2px 8px; border-radius: 999px; font: 500 9.5px var(--mono); letter-spacing: .2px; vertical-align: middle; }
+    .metric-delta.up { color: var(--positive); background: color-mix(in srgb, var(--positive) 12%, transparent); }
+    .metric-delta.down { color: var(--negative); background: color-mix(in srgb, var(--negative) 12%, transparent); }
+    .metric-delta[hidden] { display: none; }
     html[data-theme] .view-head p { color: var(--muted); font-size: 14px; line-height: 1.65; }
     html[data-theme] .view-label { color: var(--accent); font-size: 10.5px; font-weight: 500; letter-spacing: 1.4px; }
     html[data-theme] .dash-card { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow-card); }
@@ -1479,7 +1517,7 @@
     html[data-theme] .dash-stat.income .dash-stat-icon { border-color: color-mix(in srgb, var(--green) 40%, transparent); color: var(--green); }
     html[data-theme] .dash-stat.expenses .dash-stat-icon { border-color: color-mix(in srgb, var(--red) 40%, transparent); color: var(--red); }
     html[data-theme] .dash-columns { gap: 14px; margin-top: 14px; }
-    html[data-theme] .dash-panel-heading h2, html[data-theme] .dash-activity-top h2, html[data-theme] .cloud-grid h3 { color: var(--text); font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: -.02em; }
+    html[data-theme] .dash-panel-heading h2, html[data-theme] .dash-activity-top h2, html[data-theme] .cloud-grid h3 { color: var(--text); font-family: var(--display-ui); font-size: 19px; font-weight: 600; letter-spacing: -.02em; }
     html[data-theme] .dash-panel-heading p, html[data-theme] .dash-activity-top p, html[data-theme] .cloud-grid p { color: var(--muted); font-size: 12px; line-height: 1.55; }
     html[data-theme] .dash-chart-card, html[data-theme] .dash-insight-card { min-height: 250px; }
     html[data-theme] .dash-chart { height: 178px; }
@@ -1490,7 +1528,7 @@
     html[data-theme] .chart-bar.expense { fill: var(--amber); }
     html[data-theme] .dash-insight-card { background: var(--surface-2); }
     html[data-theme] .dash-insight-card::after { border-color: color-mix(in srgb, var(--accent) 22%, transparent); box-shadow: 0 0 0 24px color-mix(in srgb, var(--accent) 4%, transparent), 0 0 0 48px color-mix(in srgb, var(--accent) 3%, transparent); opacity: .55; }
-    html[data-theme] .dash-insight-card h3 { color: var(--text); font-family: var(--display); font-size: 22px; font-weight: 600; }
+    html[data-theme] .dash-insight-card h3 { color: var(--text); font-family: var(--display-ui); font-size: 22px; font-weight: 600; }
     html[data-theme] .dash-insight-card > p { color: var(--muted); font-size: 11.5px; }
     html[data-theme] .dash-insight-tag { border: 1px solid color-mix(in srgb, var(--brass) 45%, transparent); border-radius: 4px; color: var(--brass); background: color-mix(in srgb, var(--brass) 8%, transparent); font-size: 9px; }
     html[data-theme] .dash-primary, html[data-theme] .auth-primary { border: 1px solid var(--brand); border-radius: 8px; color: var(--on-brand); background: var(--brand); box-shadow: none; font-family: var(--sans); font-size: 11px; font-weight: 600; letter-spacing: .1px; text-transform: none; }
@@ -1529,7 +1567,7 @@
     dialog.tx-modal, dialog.auth-modal { width: 100vw; height: 100vh; max-width: none; max-height: none; margin: 0; border: 0; }
     dialog.tx-modal::backdrop, dialog.auth-modal::backdrop { background: transparent; }
     html[data-theme] .tx-form, html[data-theme] .auth-form { border: 1px solid var(--line-strong); border-radius: 14px; background: var(--surface); box-shadow: 0 24px 70px rgba(0, 0, 0, 32%); }
-    html[data-theme] .tx-form-head h2, html[data-theme] .auth-form h2 { color: var(--text); font-family: var(--display); font-size: 25px; font-weight: 600; letter-spacing: -.025em; }
+    html[data-theme] .tx-form-head h2, html[data-theme] .auth-form h2 { color: var(--text); font-family: var(--display-ui); font-size: 25px; font-weight: 600; letter-spacing: -.025em; }
     html[data-theme] .tx-form-head p, html[data-theme] .auth-form p { color: var(--muted); font-size: 11.5px; }
     html[data-theme] .tx-close, html[data-theme] .currency-close { width: 36px; height: 36px; border: 1px solid var(--line-strong); border-radius: 8px; color: var(--muted); background: transparent; font-size: 18px; }
     html[data-theme] .tx-close:hover, html[data-theme] .currency-close:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-wash); }
@@ -1555,11 +1593,11 @@
 
     /* converter & pulse refinements */
     html[data-theme] .currency-tools-dialog { border: 1px solid var(--line-strong); border-radius: 16px; color: var(--text); background: var(--surface); box-shadow: 0 30px 90px rgba(0, 0, 0, 35%); }
-    html[data-theme] .currency-tools-dialog-header h2 { color: var(--text); font-family: var(--display); font-size: clamp(30px, 3.6vw, 44px); font-weight: 600; letter-spacing: -.035em; }
+    html[data-theme] .currency-tools-dialog-header h2 { color: var(--text); font-family: var(--display-ui); font-size: clamp(30px, 3.6vw, 44px); font-weight: 600; letter-spacing: -.035em; }
     html[data-theme] .currency-tools-dialog-header h2 span { color: var(--accent); }
     html[data-theme] .currency-tools-dialog-header p { color: var(--muted); font-size: 12.5px; }
     html[data-theme] .currency-tool-card { border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); }
-    html[data-theme] .currency-tool-card-heading h3 { color: var(--text); font-family: var(--display); font-size: 18px; font-weight: 600; }
+    html[data-theme] .currency-tool-card-heading h3 { color: var(--text); font-family: var(--display-ui); font-size: 18px; font-weight: 600; }
     html[data-theme] .currency-field span, html[data-theme] .currency-search-field, html[data-theme] .currency-amount-field { color: var(--muted); font-size: 10px; }
     html[data-theme] .currency-search-field input, html[data-theme] .currency-amount-field input, html[data-theme] .currency-field input, html[data-theme] .currency-field select { min-height: 42px; border: 1px solid var(--line-strong); border-radius: 8px; color: var(--text); background: var(--surface); font-size: 12.5px; }
     html[data-theme] .currency-actions button { min-height: 38px; border: 1px solid var(--line-strong); border-radius: 8px; color: var(--text); background: transparent; font-size: 10px; }
@@ -1805,8 +1843,22 @@
     dialog.tx-modal:not([open]), dialog.auth-modal:not([open]) { display: none; }
     dialog.tx-modal[open], dialog.auth-modal[open] { display: grid; width: min(500px, calc(100vw - 32px)); height: auto; max-height: calc(100vh - 48px); max-width: none; margin: auto; border: 0; border-radius: 20px; padding: 0; overflow: visible; background: transparent; box-shadow: none; }
     dialog.tx-modal::backdrop, dialog.auth-modal::backdrop { background: rgba(4, 4, 4, 62%); }
-    dialog.tx-modal[open], dialog.auth-modal[open] { animation: roviel-dialog-in .24s var(--ease-product); }
-    @keyframes roviel-dialog-in { from { opacity: 0; transform: translateY(14px) scale(.985); } to { opacity: 1; transform: none; } }
+    /* Smooth open AND close: discrete transitions cover both directions,
+       including the backdrop fade, replacing the open-only keyframes. */
+    dialog.tx-modal[open], dialog.auth-modal[open] {
+      opacity: 1;
+      transform: none;
+      transition: opacity .2s var(--ease-product), transform .26s var(--ease-product), overlay .26s allow-discrete, display .26s allow-discrete;
+    }
+    @starting-style {
+      dialog.tx-modal[open], dialog.auth-modal[open] { opacity: 0; transform: translateY(14px) scale(.985); }
+    }
+    dialog.tx-modal::backdrop, dialog.auth-modal::backdrop {
+      transition: background .26s allow-discrete, overlay .26s allow-discrete, display .26s allow-discrete;
+    }
+    @starting-style {
+      dialog.tx-modal::backdrop, dialog.auth-modal::backdrop { background: rgba(4, 4, 4, 0%); }
+    }
     html[data-theme] .tx-form, html[data-theme] .auth-form { width: 100%; border-radius: 20px; padding: 26px; box-shadow: 0 40px 110px rgba(0, 0, 0, 45%); }
     html[data-theme] .tx-form-head h2, html[data-theme] .auth-form h2 { font-size: 27px; letter-spacing: -.03em; }
     html[data-theme] .tx-field input, html[data-theme] .tx-field select, html[data-theme] .auth-form input { min-height: 46px; border-radius: 11px; font-size: 13px; }
@@ -2004,8 +2056,6 @@
     html[data-theme] .currency-tools-dialog { background: var(--surface); color: var(--text); }
     html[data-theme] .currency-tool-card { background: var(--surface-2); }
     html[data-theme] .dash-insight-card { background: var(--surface-2); }
-    html[data-theme="noir"] #webgl { background: #050505; }
-    html[data-theme="brutal"] #webgl { background: #ffffff; }
     html[data-theme] .dashboard-view::before { background: var(--bg); }
     html[data-theme] .no-webgl::before { background: var(--bg); }
     html[data-theme] .contact-btn { color: var(--on-brand); background: var(--brand); box-shadow: none; }
@@ -2268,7 +2318,9 @@
     html[data-theme] .dash-main { min-width: 0; padding: 0; }
     html[data-theme] .dash-content { width: min(100% - 48px, 1220px); max-width: none; margin: 0 auto; padding: 0 0 120px; }
 
-    html[data-theme] .dash-topbar.dash-globalbar { position: sticky; top: 0; z-index: 60; display: block; min-height: 62px; padding: 0; border-bottom: 1px solid var(--line); background: var(--bg); }
+    html[data-theme] .dash-topbar.dash-globalbar { position: sticky; top: 0; z-index: 60; display: block; min-height: calc(62px + env(safe-area-inset-top)); padding: env(safe-area-inset-top) 0 0; border-bottom: 1px solid color-mix(in srgb, var(--line) 72%, transparent); background: color-mix(in srgb, var(--bg) 72%, transparent); backdrop-filter: blur(20px) saturate(150%); transition: box-shadow .35s var(--ease-product); }
+    body.dash-scrolled .dash-topbar.dash-globalbar { box-shadow: 0 14px 38px rgba(0, 0, 0, .24); }
+    html[data-theme] .dash-contextbar { background: color-mix(in srgb, var(--surface) 76%, transparent); backdrop-filter: blur(16px) saturate(140%); }
     html[data-theme] .dash-global-inner { display: flex; width: min(100% - 48px, 1220px); min-height: 62px; margin: 0 auto; align-items: center; gap: 20px; }
     html[data-theme] .dash-globalbar .dash-brand { flex: 0 0 auto; color: var(--text); font-size: 16px; letter-spacing: 3px; }
     html[data-theme] .dash-brand-word { display: inline; }
@@ -2284,7 +2336,7 @@
     html[data-theme] .dash-global-link.active .dash-global-count { border-color: color-mix(in srgb, var(--accent) 45%, transparent); color: var(--positive); background: var(--accent-wash); }
     html[data-theme] .dash-globalbar .dash-top-actions { margin-left: auto; flex: 0 0 auto; gap: 6px; }
 
-    html[data-theme] .dash-contextbar { position: sticky; top: 62px; z-index: 55; min-height: 46px; border-bottom: 1px solid var(--line); background: var(--surface); }
+    html[data-theme] .dash-contextbar { position: sticky; top: calc(62px + env(safe-area-inset-top)); z-index: 55; min-height: 46px; border-bottom: 1px solid var(--line); background: var(--surface); }
     html[data-theme] .dash-context-inner { display: flex; width: min(100% - 48px, 1220px); min-height: 46px; margin: 0 auto; align-items: center; gap: 22px; }
     html[data-theme] .dash-breadcrumb { display: flex; flex: 0 0 auto; align-items: center; gap: 7px; overflow: hidden; color: var(--faint); font-size: 12px; white-space: nowrap; }
     html[data-theme] .dash-crumb-root { color: var(--muted); }
@@ -2315,10 +2367,10 @@
     }
 
     @media (max-width: 900px) {
-      html[data-theme] .dash-globalbar { min-height: 60px; }
+      html[data-theme] .dash-globalbar { min-height: calc(60px + env(safe-area-inset-top)); }
       html[data-theme] .dash-global-inner { width: calc(100% - 32px); min-height: 60px; gap: 10px; }
       html[data-theme] .dash-global-nav { display: none; }
-      html[data-theme] .dash-contextbar { top: 60px; min-height: 44px; }
+      html[data-theme] .dash-contextbar { top: calc(60px + env(safe-area-inset-top)); min-height: 44px; }
       html[data-theme] .dash-context-inner { width: calc(100% - 32px); min-height: 44px; gap: 12px; }
       html[data-theme] .dash-context-nav { justify-content: flex-start; }
       html[data-theme] .dash-context-link { min-height: 43px; padding: 0 10px; font-size: 12px; }
@@ -2345,7 +2397,7 @@
       --glass-hover: rgba(27, 30, 27, 58%);
       --glass-shadow: 0 24px 70px rgba(0, 0, 0, 38%);
       --glass-blur: 22px;
-      --glass-glow: rgba(22, 163, 74, 24%);
+      --glass-glow: rgba(19, 19, 19, 8%);
     }
     html[data-theme="brutal"] {
       --glass-bg: rgba(255, 255, 255, 66%);
@@ -2359,15 +2411,15 @@
       --glass-hover: rgba(255, 255, 255, 72%);
       --glass-shadow: 0 24px 60px rgba(16, 24, 19, 8%);
       --glass-blur: 22px;
-      --glass-glow: rgba(22, 163, 74, 14%);
+      --glass-glow: rgba(19, 19, 19, 7%);
     }
     html[data-theme] .dashboard-view {
       background:
         radial-gradient(ellipse 42% 34% at 8% 18%, var(--glass-glow), transparent 70%),
         radial-gradient(ellipse 34% 28% at 92% 20%, rgba(255, 255, 255, 9%), transparent 72%),
-        radial-gradient(ellipse 48% 34% at 22% 54%, rgba(22, 163, 74, 9%), transparent 72%),
+        radial-gradient(ellipse 48% 34% at 22% 54%, rgba(19, 19, 19, 5%), transparent 72%),
         radial-gradient(ellipse 40% 30% at 84% 58%, rgba(255, 255, 255, 5%), transparent 72%),
-        radial-gradient(ellipse 44% 36% at 74% 88%, rgba(22, 163, 74, 11%), transparent 72%),
+        radial-gradient(ellipse 44% 36% at 74% 88%, rgba(19, 19, 19, 6%), transparent 72%),
         radial-gradient(ellipse 65% 55% at 48% -8%, rgba(255, 255, 255, 4%), transparent 72%),
         var(--bg);
       background-attachment: fixed;
@@ -2376,11 +2428,11 @@
       background:
         radial-gradient(ellipse 42% 34% at 8% 18%, var(--glass-glow), transparent 70%),
         radial-gradient(ellipse 34% 28% at 92% 20%, rgba(255, 255, 255, 96%), transparent 72%),
-        radial-gradient(ellipse 48% 34% at 22% 54%, rgba(22, 163, 74, 6%), transparent 72%),
+        radial-gradient(ellipse 48% 34% at 22% 54%, rgba(19, 19, 19, 4%), transparent 72%),
         radial-gradient(ellipse 40% 30% at 84% 58%, rgba(255, 255, 255, 84%), transparent 72%),
-        radial-gradient(ellipse 44% 36% at 74% 88%, rgba(22, 163, 74, 7%), transparent 72%),
+        radial-gradient(ellipse 44% 36% at 74% 88%, rgba(19, 19, 19, 4%), transparent 72%),
         radial-gradient(ellipse 65% 55% at 48% -8%, rgba(255, 255, 255, 90%), transparent 72%),
-        #f5f7f4;
+        #f4f4f4;
       background-attachment: fixed;
     }
     html[data-theme] .dashboard-view::before { background: transparent; }
@@ -2392,6 +2444,8 @@
 
     }
     html[data-theme="brutal"] .dash-topbar.dash-globalbar { box-shadow: inset 0 1px var(--glass-highlight), 0 12px 30px rgba(16, 24, 19, 6%); }
+    body.dash-scrolled html[data-theme] .dash-topbar.dash-globalbar { box-shadow: inset 0 1px var(--glass-highlight), 0 18px 48px rgba(0, 0, 0, 26%); }
+    body.dash-scrolled html[data-theme="brutal"] .dash-topbar.dash-globalbar { box-shadow: inset 0 1px var(--glass-highlight), 0 14px 38px rgba(16, 24, 19, 12%); }
     html[data-theme] .dash-contextbar {
       background: color-mix(in srgb, var(--glass-bg) 88%, transparent);
       border-bottom-color: var(--glass-border);
@@ -2655,6 +2709,9 @@
       html[data-theme] .dash-global-link,
       html[data-theme] .dash-context-link,
       html[data-theme] .mobile-more-grid button { min-height: 44px; }
+      html[data-theme] .pulse-tabs button,
+      html[data-theme] .seg button { min-height: 44px; }
+      html[data-theme] .mobile-more-head button { min-width: 44px; min-height: 44px; }
       html[data-theme] .dash-top-actions .dash-back,
       html[data-theme] .dash-top-actions .dash-command { min-height: 44px; height: 44px; }
       html[data-theme] .tx-close,
@@ -2665,10 +2722,13 @@
       html[data-theme] .rec-row .row-del { width: 44px; height: 44px; }
     }
 
-    @media (pointer: coarse) and (max-width: 900px) {
+    @media (pointer: coarse) {
       html[data-theme] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
       html[data-theme] select,
       html[data-theme] textarea { font-size: 16px; }
+    }
+
+    @media (pointer: coarse) and (max-width: 900px) {
       html[data-theme] .tx-field input,
       html[data-theme] .tx-field select,
       html[data-theme] .auth-form input,
@@ -2688,7 +2748,6 @@
       html[data-theme] #slide-4 { bottom: 5% !important; }
       html[data-theme] .slide-title { margin-bottom: 8px; font-size: clamp(30px, 7.4vh, 54px) !important; }
       html[data-theme] .slide-desc { max-width: 560px; font-size: 11px; line-height: 1.45; }
-      html[data-theme] .slide-kicker { margin-bottom: 5px; }
       html[data-theme] .slide-cta { margin-top: 8px; min-height: 36px; }
       html[data-theme] .hero-proof { max-width: 480px; margin-top: 10px; gap: 6px; }
       html[data-theme] .hero-proof-item { padding: 6px 8px; }
@@ -2731,9 +2790,9 @@
     <header class="main-header">
       <a class="brand" href="#slide-1" aria-label="Roviel home">ROVIEL<span>.</span></a>
       <nav class="header-nav" aria-label="Story navigation">
-        <a href="#slide-1" class="nav-link">Overview</a><span class="nav-dot" aria-hidden="true"></span>
-        <a href="#slide-2" class="nav-link">Clarity</a><span class="nav-dot" aria-hidden="true"></span>
-        <a href="#slide-3" class="nav-link">Activity</a><span class="nav-dot" aria-hidden="true"></span>
+        <a href="#slide-1" class="nav-link">Overview</a>
+        <a href="#slide-2" class="nav-link">Clarity</a>
+        <a href="#slide-3" class="nav-link">Activity</a>
         <a href="#slide-4" class="nav-link">Next step</a><span class="nav-dot" aria-hidden="true"></span>
         <button class="nav-link nav-tool-button" id="open-currency-tools-nav" type="button" aria-haspopup="dialog" aria-controls="currency-tools-dialog">Currency tools</button>
       </nav>
@@ -2741,18 +2800,17 @@
         <span class="privacy-note"><i></i> Public converter · no sign-up</span>
         <button class="currency-open-shortcut" id="open-currency-tools-mobile" type="button" aria-haspopup="dialog" aria-controls="currency-tools-dialog">Convert</button>
         <button class="currency-open-shortcut" id="open-auth-modal" type="button">Sign in</button>
-        <button class="currency-open-shortcut" type="button" data-theme-toggle aria-label="Switch to paper theme">PAPER</button>
+        <button class="currency-open-shortcut" type="button" data-theme-toggle aria-label="Switch to paper theme">Paper</button>
         <a class="contact-btn" href="#dashboard" aria-controls="dashboard-view">Open dashboard <span class="btn-circle" aria-hidden="true"></span></a>
       </div>
     </header>
 
     <section class="slide active" id="slide-1" aria-labelledby="title-1">
-      <span class="slide-index">01 · Ledger</span>
-      <span class="slide-kicker">A clearer way to handle money</span>
       <h1 class="slide-title" id="title-1">Give every<br>currency a<br>direction.</h1>
-      <div class="desc-row">
-        <p class="slide-desc col-1">Understand your money across currencies. Compare dated reference rates, provider quotes, and fees.</p>
-        <p class="slide-desc col-2">Start with a public converter. No account is needed.</p>
+      <p class="slide-desc">Understand your money across currencies — dated reference rates, provider quotes and fees, side by side. Start with the public converter; no account is needed.</p>
+      <div class="slide-cta-row">
+        <button type="button" class="slide-cta" id="hero-converter-cta">Open the converter <span aria-hidden="true">↗</span></button>
+        <a class="slide-cta slide-cta-ghost" href="#dashboard" aria-controls="dashboard-view">Open dashboard</a>
       </div>
       <div class="hero-proof" aria-label="Live product facts">
         <div class="hero-proof-item"><span>Live reference</span><strong id="hero-rate">Loading rate…</strong></div>
@@ -2835,39 +2893,22 @@
     </div>
 
     <section class="slide" id="slide-2" aria-labelledby="title-2">
-      <span class="slide-index">02 · Clarity</span>
-      <span class="slide-kicker">See it clearly</span>
       <h2 class="slide-title" id="title-2">One view of<br>your money.</h2>
       <p class="slide-desc">Income, spending, and what remains sit together, so the picture is easy to understand.</p>
     </section>
 
     <section class="slide" id="slide-3" aria-labelledby="title-3">
-      <span class="slide-index">03 · Activity</span>
-      <span class="slide-kicker">Follow the flow</span>
       <h2 class="slide-title" id="title-3">Know where<br>it goes.</h2>
       <p class="slide-desc">Find your recent activity, follow useful trends, and spot the patterns that matter.</p>
     </section>
 
     <section class="slide" id="slide-4" aria-labelledby="title-4">
-      <span class="slide-index">04 · Next step</span>
-      <span class="slide-kicker">Move with intent</span>
       <h2 class="slide-title" id="title-4">Make the next<br>step yours.</h2>
       <p class="slide-desc">Set a goal, keep a buffer, or simply check in. Roviel gives you room to decide.</p>
       <a class="slide-cta" href="#dashboard" aria-controls="dashboard-view">Open your dashboard <span aria-hidden="true">↗</span></a>
     </section>
   </main>
 
-  <div class="grid-horizontal-line" aria-hidden="true"></div>
-  <div class="grid-lines" aria-hidden="true">
-    <div class="grid-line"><i class="grid-dot top"></i><i class="grid-dot bottom"></i></div>
-    <div class="grid-line"><i class="grid-dot top"></i><i class="grid-dot bottom"></i></div>
-    <div class="grid-line"><i class="grid-dot top"></i><i class="grid-dot bottom"></i></div>
-    <div class="grid-line"><i class="grid-dot top"></i><i class="grid-dot bottom"></i></div>
-    <div class="grid-line story-progress-container">
-      <i class="grid-dot top"></i><i class="grid-dot bottom"></i>
-      <div class="story-dashes"><div class="story-dash"><div class="story-dash-fill" id="dash-fill-1"></div></div><div class="story-dash"><div class="story-dash-fill" id="dash-fill-2"></div></div><div class="story-dash"><div class="story-dash-fill" id="dash-fill-3"></div></div><div class="story-dash"><div class="story-dash-fill" id="dash-fill-4"></div></div></div>
-    </div>
-  </div>
   <section class="dashboard-view" id="dashboard-view" aria-label="Roviel dashboard" aria-hidden="true" tabindex="-1" data-lenis-prevent>
     <div class="dash-layout">
       <div class="dash-main">
@@ -2889,7 +2930,7 @@
                 <kbd>⌘K</kbd>
               </button>
               <div class="dash-toolgroup dash-utility-group">
-                <button class="dash-back theme-toggle" type="button" data-theme-toggle aria-label="Switch to paper theme" title="Switch theme">PAPER</button>
+                <button class="dash-back theme-toggle" type="button" data-theme-toggle aria-label="Switch to paper theme" title="Switch theme">Paper</button>
                 <button class="dash-back icon-only" type="button" id="sound-toggle" aria-pressed="true" aria-label="Toggle interface sounds" title="Toggle interface sounds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
               </div>
               <div class="dash-toolgroup dash-session-group">
@@ -2923,7 +2964,7 @@
               <button class="dash-primary" type="button" id="open-transaction"><span>+</span> Add transaction</button>
             </div>
           </header>
-          <p class="dash-demo-disclosure" id="demo-disclosure">Local demo · single-currency INR sample data stored in this browser. Sign in for multi-currency accounts, budgets, goals and cross-device sync.</p>
+          <p class="dash-demo-disclosure" id="demo-disclosure">Sign in for multi-currency accounts, budgets, goals and cross-device sync.</p>
           <section class="dash-metrics" aria-label="Financial summary">
             <button class="dash-card dash-balance-card metric-card" type="button" data-metric="balance" aria-label="Balance by account, open details">
               <span class="dash-card-label">Total balance <em class="metric-hint">Details</em></span>
@@ -2933,10 +2974,14 @@
             <button class="dash-card dash-stat income metric-card" type="button" data-metric="income" aria-label="Income by month, open details">
               <span class="dash-card-label">Income</span>
               <strong id="total-income">₹25,000</strong><small id="income-count">1 recorded entry</small>
+              <span class="metric-spark" id="income-spark" aria-hidden="true"></span>
+              <em class="metric-delta" id="income-delta" hidden></em>
             </button>
             <button class="dash-card dash-stat expenses metric-card" type="button" data-metric="expense" aria-label="Spending by category, open details">
               <span class="dash-card-label">Spending</span>
               <strong id="total-expenses">₹11,410</strong><small id="expense-count">4 recorded entries</small>
+              <span class="metric-spark" id="expense-spark" aria-hidden="true"></span>
+              <em class="metric-delta" id="expense-delta" hidden></em>
             </button>
           </section>
           <section class="dash-columns">
@@ -2949,7 +2994,7 @@
                 <div class="chart-tooltip" id="chart-tooltip" hidden></div>
               </article>
               <article class="dash-card dash-insight-card" id="dashboard-insights">
-                <div class="dash-panel-heading"><div><h2>Financial pulse</h2><p>A quiet check-in on your month</p></div><span aria-hidden="true" style="color:var(--accent);font-size:16px">↗</span></div>
+                <div class="dash-panel-heading"><div><h2>Financial pulse</h2><p>A quiet check-in on your month</p></div><button type="button" class="dash-secondary pulse-jump" data-jump="insights" aria-label="Open insights">↗</button></div>
                 <span class="dash-insight-tag">Room to breathe</span>
                 <h3 id="insight-heading">You’re keeping more than you spend.</h3>
                 <p id="insight-copy">Your recorded income is ahead of spending this month. Keep going at a pace that feels right.</p>
@@ -2980,6 +3025,7 @@
             <div class="dash-activity-top">
               <div><h2>Recent activity</h2><p id="activity-caption">A clear trail of where your money moves.</p></div>
               <div class="dash-activity-tools">
+                <button type="button" id="month-filter-chip" class="dash-filter month-chip" hidden aria-label="Clear month filter"><span></span> ×</button>
                 <input class="dash-search" id="transaction-search" type="search" placeholder="Search activity" aria-label="Search transactions">
                 <select class="dash-filter" id="transaction-filter" aria-label="Filter transactions"><option value="all">All activity</option><option value="income">Money in</option><option value="expense">Money out</option><option value="transfer">Transfers</option></select>
                 <select class="dash-filter" id="transaction-sort" aria-label="Sort activity"><option value="date-desc">Newest first</option><option value="date-asc">Oldest first</option><option value="amount-desc">Largest amount</option><option value="amount-asc">Smallest amount</option></select>
@@ -3098,7 +3144,7 @@
           <button type="button" id="mobile-more-toggle" aria-expanded="false" aria-controls="mobile-more-sheet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span>More</span></button>
         </nav>
         <div class="mobile-more-scrim" id="mobile-more-scrim" hidden aria-hidden="true"></div>
-        <div class="mobile-more-sheet" id="mobile-more-sheet" role="dialog" aria-modal="false" aria-labelledby="mobile-more-title" hidden>
+        <div class="mobile-more-sheet" id="mobile-more-sheet" role="dialog" aria-modal="true" aria-labelledby="mobile-more-title" hidden>
           <div class="mobile-more-head"><span id="mobile-more-title">More views</span><button type="button" id="mobile-more-close" aria-label="Close more views">×</button></div>
           <div class="mobile-more-grid">
             <button type="button" data-view="budgets">Budgets</button>
@@ -3206,6 +3252,7 @@
     </form>
   </dialog>
   <canvas id="webgl" aria-hidden="true"></canvas>
+  <div class="studio-vignette" aria-hidden="true"></div>
 
   <script type="module">
     import { autoUpdate, computePosition, flip, offset, shift, size } from '@floating-ui/dom';
@@ -3241,12 +3288,17 @@
     });
 
     let canvas = document.querySelector('#webgl');
-    let scene, camera, renderer, modelPivot, sparkParticles, coinCurrency;
+    let scene, camera, renderer, modelPivot, sparkParticles, coinCurrency, rateParticles;
+    let dissolvePoints = null, dissolveGeo = null, dissolveHome = null, dissolveSeed = null, dissolveCount = 0, dissolveAmt = 0;
+    let coinMeshes = [];
     let clock = null;
     let currentScroll = 0;
+    let scrollSpin = 0;
     let mouseX = 0, mouseY = 0, targetMouseX = 0, targetMouseY = 0;
     let cursorX = window.innerWidth / 2, cursorY = window.innerHeight / 2;
     let outerCursorX = cursorX, outerCursorY = cursorY;
+    let _cameraTarget = null, _lookTarget = null; // allocated once THREE is ready
+
     const shaderUniforms = {
       uTime: { value: 0 },
       uResolution: { value: null },
@@ -3415,7 +3467,7 @@
       edgeTexture.colorSpace = THREE.SRGBColorSpace;
       edgeTexture.wrapS = THREE.RepeatWrapping;
       edgeTexture.repeat.set(4, 1);
-      const edge = new THREE.MeshStandardMaterial({ map: edgeTexture, color: '#ffffff', metalness: .94, roughness: .36, emissive: theme().coin.wash[2], emissiveIntensity: .18 });
+      const edge = new THREE.MeshStandardMaterial({ map: edgeTexture, color: '#ffffff', metalness: .94, roughness: .36, emissive: theme().coin.wash[2], emissiveIntensity: .34 });
       const coin = new THREE.Mesh(new THREE.CylinderGeometry(1.03, 1.03, .16, 192, 4), [edge, edge, edge]);
       coin.rotation.x = Math.PI / 2;
       modelPivot.add(coin);
@@ -3454,51 +3506,106 @@
         const bezel = new THREE.Mesh(new THREE.TorusGeometry(.885, .009, 12, 220), bezelMaterial);
         bezel.position.z = z;
         modelPivot.add(bezel);
+
+      // Dissolve cloud: points sampled from the coin's faces and reeded edge.
+      // Scroll carries the coin from solid → particles → solid again.
+      dissolveCount = 3200;
+      dissolveHome = new Float32Array(dissolveCount * 3);
+      dissolveSeed = new Float32Array(dissolveCount * 3);
+      const pColor = new Float32Array(dissolveCount * 3);
+      for (let i = 0; i < dissolveCount; i++) {
+        const roll = Math.random();
+        let x, y, z;
+        if (roll < .82) { // faces
+          const a = Math.random() * Math.PI * 2;
+          const r = .985 * Math.sqrt(Math.random());
+          x = Math.cos(a) * r; y = Math.sin(a) * r;
+          z = (Math.random() < .5 ? -1 : 1) * (.082 + Math.random() * .012);
+        } else { // reeded edge band
+          const a = Math.random() * Math.PI * 2;
+          x = Math.cos(a) * 1.03; y = Math.sin(a) * 1.03;
+          z = (Math.random() - .5) * .16;
+        }
+        dissolveHome[i * 3] = x; dissolveHome[i * 3 + 1] = y; dissolveHome[i * 3 + 2] = z;
+        const th = Math.random() * Math.PI * 2, ph = Math.acos(2 * Math.random() - 1), sp = .55 + Math.random() * 1.5;
+        dissolveSeed[i * 3] = Math.sin(ph) * Math.cos(th) * sp;
+        dissolveSeed[i * 3 + 1] = Math.cos(ph) * sp * .85 + .4;
+        dissolveSeed[i * 3 + 2] = Math.sin(ph) * Math.sin(th) * sp;
+        const v = currentTheme === 'noir' ? .72 + Math.random() * .28 : .16 + Math.random() * .2;
+        pColor[i * 3] = v; pColor[i * 3 + 1] = v; pColor[i * 3 + 2] = Math.min(1, v * 1.04);
+      }
+      dissolveGeo = new THREE.BufferGeometry();
+      dissolveGeo.setAttribute('position', new THREE.BufferAttribute(dissolveHome.slice(), 3));
+      dissolveGeo.setAttribute('color', new THREE.BufferAttribute(pColor, 3));
+      dissolvePoints = new THREE.Points(dissolveGeo, new THREE.PointsMaterial({
+        size: .014,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0,
+        depthWrite: false,
+        blending: currentTheme === 'noir' ? THREE.AdditiveBlending : THREE.NormalBlending,
+        sizeAttenuation: true,
+      }));
+      modelPivot.add(dissolvePoints);
+      if (symbolSlots[1]) symbolSlots[1].visible = false;
+      symbolSlots.forEach(slot => { slot.material.userData.decal = true; });
+      coinMeshes = modelPivot.children.filter(o => o.isMesh && o !== dissolvePoints);
+      coinMeshes.forEach(mesh => {
+        const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        mats.forEach(mat => { mat.transparent = true; });
+      });
       });
 
-      const halo = new THREE.PointLight(theme().coin.glow, .12, 3.8);
+      // Studio environment: a glossy dark floor that catches the key light,
+      // plus weightless dust in the beam. The mirror of the coin is built
+      // after the coin itself (see below).
+
+      // Weightless dust drifting through the key light.
+      const PARTICLE_COUNT = 90;
+      const pPositions = new Float32Array(PARTICLE_COUNT * 3);
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        pPositions[i * 3] = (Math.random() - .5) * 7;
+        pPositions[i * 3 + 1] = (Math.random() - .5) * 4 + .2;
+        pPositions[i * 3 + 2] = .6 - Math.random() * 7.5;
+      }
+      const particleGeo = new THREE.BufferGeometry();
+      particleGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
+      const spriteCanvas = document.createElement('canvas');
+      spriteCanvas.width = spriteCanvas.height = 64;
+      const spriteCtx = spriteCanvas.getContext('2d');
+      const spriteGrad = spriteCtx.createRadialGradient(32, 32, 0, 32, 32, 32);
+      spriteGrad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+      spriteGrad.addColorStop(.35, 'rgba(255, 255, 255, .5)');
+      spriteGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      spriteCtx.fillStyle = spriteGrad;
+      spriteCtx.fillRect(0, 0, 64, 64);
+      rateParticles = new THREE.Points(particleGeo, new THREE.PointsMaterial({
+        size: .055,
+        map: new THREE.CanvasTexture(spriteCanvas),
+        transparent: true,
+        opacity: currentTheme === 'noir' ? .38 : .26,
+        color: new THREE.Color(currentTheme === 'noir' ? '#ffffff' : '#3d3d3d'),
+        depthWrite: false,
+        blending: currentTheme === 'noir' ? THREE.AdditiveBlending : THREE.NormalBlending,
+        sizeAttenuation: true,
+      }));
+      scene.add(rateParticles);
+
+            const halo = new THREE.PointLight(theme().coin.glow, .12, 3.8);
       halo.position.set(.5, .4, 1.4);
       modelPivot.add(halo);
       // Edge light: keeps the milled rim legible as it turns away from the key light.
       const edgeLight = new THREE.PointLight('#ffffff', .55, 4.2, 2);
       edgeLight.position.set(-.75, 1.15, 1.25);
       modelPivot.add(edgeLight);
+
     }
 
-    function updateCoinCurrency(deltaTime) {
+    function updateCoinCurrency() {
+      // Static single symbol: the old dual-plane crossfade z-fought and flickered.
       if (!coinCurrency) return;
-      const state = coinCurrency;
-      if (!state.transitioning) {
-        state.elapsed += deltaTime;
-        if (state.elapsed >= 2.6) {
-          state.elapsed = 0;
-          state.nextIndex = (state.index + 1) % state.symbols.length;
-          const nextSlot = 1 - state.activeSlot;
-          state.slots[nextSlot].material.map = state.textures[state.nextIndex];
-          state.slots[nextSlot].material.opacity = 0;
-          state.transitionElapsed = 0;
-          state.transitioning = true;
-        }
-      } else {
-        state.transitionElapsed += deltaTime;
-        const progress = Math.min(1, state.transitionElapsed / .5);
-        const nextSlot = 1 - state.activeSlot;
-        if (progress < .5) {
-          state.slots[state.activeSlot].material.opacity = 1 - smoothProgress(progress, 0, .5);
-          state.slots[nextSlot].material.opacity = 0;
-        } else {
-          state.slots[state.activeSlot].material.opacity = 0;
-          state.slots[nextSlot].material.opacity = smoothProgress(progress, .5, 1);
-        }
-        if (progress >= 1) {
-          state.slots[state.activeSlot].material.opacity = 0;
-          state.activeSlot = 1 - state.activeSlot;
-          state.slots[state.activeSlot].material.opacity = 1;
-          state.index = state.nextIndex;
-          state.transitioning = false;
-          state.elapsed = 0;
-        }
-      }
+      coinCurrency.slots[0].material.opacity = 1;
+      if (coinCurrency.slots[1]) coinCurrency.slots[1].visible = false;
     }
 
     function smoothProgress(value, start, end) {
@@ -3519,27 +3626,31 @@
       if (!shaderUniforms.uResolution.value) shaderUniforms.uResolution.value = new THREE.Vector2(window.innerWidth, window.innerHeight);
       if (!shaderUniforms.uMouse.value) shaderUniforms.uMouse.value = new THREE.Vector2(0, 0);
       scene = new THREE.Scene();
-      scene.background = new THREE.Color(theme().bg);
+      scene.background = null; // transparent — the hyperspeed field shows through
       scene.fog = new THREE.FogExp2(theme().bg, .01);
       camera = new THREE.PerspectiveCamera(50, sizes.width / sizes.height, .1, 100);
       camera.position.set(0, .2, 3);
       scene.add(camera);
       try {
-        renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
+        renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+        renderer.setClearColor(0x000000, 0);
         renderer.setSize(sizes.width, sizes.height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        _cameraTarget = new THREE.Vector3();
+        _lookTarget = new THREE.Vector3();
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.14;
         renderer.toneMappingExposure = 1.3;
         canvas.__rovielRenderer = renderer;
       } catch (error) {
         document.body.classList.add('no-webgl');
         throw error;
       }
-      scene.add(new THREE.AmbientLight('#ffffff', .1));
-      const keyLight = new THREE.SpotLight('#ffffff', 2.8);
-      keyLight.position.set(4, 6, 3);
+      scene.add(new THREE.AmbientLight('#ffffff', .22));
+      const keyLight = new THREE.SpotLight('#ffffff', 3.4);
+      keyLight.position.set(.7, 3.4, 1.7);
       keyLight.angle = Math.PI / 4;
       keyLight.penumbra = .9;
       keyLight.castShadow = true;
@@ -3549,11 +3660,11 @@
       keyLight.shadow.camera.far = 15;
       keyLight.shadow.bias = -.001;
       scene.add(keyLight);
-      const rimLight = new THREE.DirectionalLight(theme().light.rim, 1.8);
-      rimLight.position.set(-5, 3, -4);
+      const rimLight = new THREE.DirectionalLight(theme().light.rim, 2.4);
+      rimLight.position.set(-2.6, 1.5, -2.4);
       scene.add(rimLight);
-      const fillLight = new THREE.DirectionalLight(theme().light.fill, .8);
-      fillLight.position.set(-2, -4, 2);
+      const fillLight = new THREE.DirectionalLight(theme().light.fill, 1.1);
+      fillLight.position.set(2.3, -.5, 1.9);
       scene.add(fillLight);
       createSparks();
       createCoinScene();
@@ -3591,7 +3702,7 @@
       camera.aspect = sizes.width / sizes.height;
       camera.updateProjectionMatrix();
       renderer.setSize(sizes.width, sizes.height);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
       shaderUniforms.uResolution.value.set(sizes.width, sizes.height);
       frameCoin();
     }
@@ -3610,16 +3721,17 @@
     function updateSlides(scroll) {
       for (let i = 1; i <= 4; i++) {
         const fill = document.getElementById(`dash-fill-${i}`);
-        const start = (i - 1) * .25;
-        const end = i * .25;
+        const stops = [0, .36, .68, 1.0001];
+        const start = stops[i - 1];
+        const end = stops[i];
         const progress = Math.max(0, Math.min(1, (scroll - start) / (end - start)));
         if (fill) fill.style.height = `${progress * 100}%`;
       }
-      const activeRanges = [[-.1, .12], [.28, .4], [.56, .68], [.84, 1.05]];
+      const activeRanges = [[-.1, .18], [.24, .48], [.56, .8], [.8, 1.06]];
       activeRanges.forEach(([start, end], index) => {
         document.getElementById(`slide-${index + 1}`).classList.toggle('active', scroll >= start && scroll <= end);
       });
-      [['slide-2-img', .28, .4], ['slide-3-img', .56, .68], ['slide-4-img', .84, 1.05]].forEach(([id, start, end]) => {
+      [['slide-2-img', .24, .48], ['slide-3-img', .56, .8], ['slide-4-img', .8, 1.06]].forEach(([id, start, end]) => {
         const mask = document.getElementById(id);
         if (mask) mask.classList.toggle('active', scroll >= start && scroll <= end);
       });
@@ -4207,6 +4319,14 @@
       if (name === 'pulse') { try { window.RovielPreparePulse?.(); } catch {} }
       try { window.__motion?.onViewChange(name); } catch {}
       try { splitViewHeading(name); } catch {}
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.querySelectorAll('#view-' + name + ' > .dash-card, #view-' + name + ' > * > .dash-card').forEach((card, i) => {
+          card.classList.remove('card-enter');
+          void card.offsetWidth;
+          card.style.animationDelay = Math.min(i * 50, 340) + 'ms';
+          card.classList.add('card-enter');
+        });
+      }
       requestAnimationFrame(syncGlobalIndicator);
       requestAnimationFrame(() => {
         try { renderChart(); } catch {}
@@ -4975,7 +5095,7 @@
     function setupDashboard() {
       const closeButton = document.querySelector('.dash-top-actions [data-close-dashboard]');
       if (closeButton) closeButton.id = 'dashboard-close';
-      document.querySelectorAll('.contact-btn, .slide-cta').forEach(link => link.addEventListener('click', event => {
+      document.querySelectorAll('.contact-btn, .slide-cta:not(#hero-converter-cta)').forEach(link => link.addEventListener('click', event => {
         event.preventDefault();
         openDashboard(true);
       }));
@@ -5057,6 +5177,13 @@
       document.getElementById('open-transaction').addEventListener('click', () => openTransactionModal());
       document.getElementById('open-transaction-2')?.addEventListener('click', () => openTransactionModal());
       document.getElementById('open-pulse-cta')?.addEventListener('click', () => showView('pulse'));
+      document.querySelectorAll('.pulse-jump[data-jump]').forEach(button => {
+        button.addEventListener('click', () => showView(button.dataset.jump));
+      });
+      document.getElementById('hero-converter-cta')?.addEventListener('click', () => {
+        const dialog = document.getElementById('currency-tools-dialog');
+        if (dialog && typeof dialog.showModal === 'function') dialog.showModal();
+      });
       document.getElementById('open-converter-cta')?.addEventListener('click', () => {
         const dialog = document.getElementById('currency-tools-dialog');
         if (dialog && typeof dialog.showModal === 'function') dialog.showModal();
@@ -5071,6 +5198,18 @@
       document.getElementById('transaction-search').addEventListener('input', renderTransactionList);
       document.getElementById('transaction-filter').addEventListener('change', renderTransactionList);
       document.getElementById('transaction-sort').addEventListener('change', renderTransactionList);
+      document.getElementById('month-filter-chip')?.addEventListener('click', () => selectMonth(null));
+      // The two Overview hero cards navigate like every other tab. Clicks on
+      // interactive children (range segs, chart columns, the jump button) stay put.
+      const cardNavigate = (card, view) => {
+        card?.addEventListener('click', event => {
+          if (!(event.target instanceof Element)) return;
+          if (event.target.closest('button, a, input, select, .seg, .chart-col, .mini-form')) return;
+          showView(view);
+        });
+      };
+      cardNavigate(document.querySelector('.dash-chart-card'), 'transactions');
+      cardNavigate(document.getElementById('dashboard-insights'), 'insights');
       document.getElementById('view-all-activity')?.addEventListener('click', () => showView('transactions'));
       document.getElementById('transaction-type').addEventListener('change', event => {
         document.getElementById('category-field').style.display = event.target.value === 'income' ? 'none' : 'grid';
@@ -5177,8 +5316,17 @@
       if (dashboardHashInfo()) openDashboard(false);
     }
 
+    // The dashboard bar gains a soft shadow once the view is scrolled.
+    function setupDashboardBarShadow() {
+      const scroller = document.getElementById('dashboard-view');
+      if (!scroller) return;
+      scroller.addEventListener('scroll', () => {
+        document.body.classList.toggle('dash-scrolled', scroller.scrollTop > 10);
+      }, { passive: true });
+    }
+
     function setupNavigation() {
-      const targetScrolls = [0, .34, .62, .94];
+      const targetScrolls = [0, .36, .68, 1];
       document.querySelectorAll('.nav-link, .brand').forEach(link => {
         link.addEventListener('click', event => {
           const match = link.getAttribute('href')?.match(/slide-(\d)/);
@@ -5186,31 +5334,77 @@
           event.preventDefault();
           const slideIndex = Number(match[1]);
           const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-          window.scrollTo({ top: maxScroll * targetScrolls[slideIndex - 1], behavior: 'smooth' });
+          const motion = window.__motion;
+          if (motion && motion.lenis) motion.scrollTo(maxScroll * targetScrolls[slideIndex - 1], { duration: .9 });
+          else window.scrollTo({ top: maxScroll * targetScrolls[slideIndex - 1], behavior: 'smooth' });
         });
       });
     }
 
     const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    // One confident wheel gesture advances one story slide (desktop).
+    const storyStops = [0, .36, .68, 1];
+    let wheelLock = false;
+    window.addEventListener('wheel', event => {
+      if (reducedMotionQuery.matches) return;
+      if (document.body.classList.contains('dashboard-open')) return;
+      if (document.querySelector('dialog[open]')) return;
+      if (Math.abs(event.deltaY) < 18) return;
+      event.preventDefault();
+      event.stopImmediatePropagation(); // the motion engine's wheel listener must not double-advance
+      if (wheelLock) return;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      if (max <= 0) return;
+      const current = window.scrollY / max;
+      let nearest = 0, best = 1e9;
+      storyStops.forEach(stop => { const d = Math.abs(stop - current); if (d < best) { best = d; nearest = stop; } });
+      const idx = storyStops.indexOf(nearest);
+      const dir = event.deltaY > 0 ? 1 : -1;
+      const next = storyStops[Math.min(storyStops.length - 1, Math.max(0, idx + dir))];
+      if (Math.abs(next - current) < .005) return;
+      wheelLock = true;
+      const endY = next * max;
+      const motion = window.__motion;
+      if (motion && motion.lenis) {
+        motion.scrollTo(endY, { duration: .8 });
+        setTimeout(() => { wheelLock = false; }, 420);
+      } else {
+        const startY = window.scrollY;
+        const startTime = performance.now();
+        const DUR = 660;
+        const step = now => {
+          const prog = Math.min(1, (now - startTime) / DUR);
+          const eased = prog < .5 ? 4 * prog * prog * prog : 1 - Math.pow(-2 * prog + 2, 3) / 2;
+          window.scrollTo(0, startY + (endY - startY) * eased);
+          if (prog < 1) requestAnimationFrame(step);
+          else setTimeout(() => { wheelLock = false; }, 240);
+        };
+        requestAnimationFrame(step);
+      }
+    }, { passive: false });
+
     function animate() {
       requestAnimationFrame(animate);
       if (!renderer) return;
       const reduceMotion = reducedMotionQuery.matches;
       const deltaTime = clock.getDelta();
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollTop = window.scrollY !== undefined ? window.scrollY : (window.pageYOffset || document.documentElement.scrollTop);
-      const targetScroll = maxScroll > 0 ? scrollTop / maxScroll : 0;
-      currentScroll = reduceMotion ? targetScroll : currentScroll + (targetScroll - currentScroll) * .11;
-      mouseX += (targetMouseX - mouseX) * .05;
-      mouseY += (targetMouseY - mouseY) * .05;
       outerCursorX += (cursorX - outerCursorX) * .2;
       outerCursorY += (cursorY - outerCursorY) * .2;
       const cursorOuter = document.querySelector('.cursor-outer');
       if (cursorOuter) { cursorOuter.style.left = `${outerCursorX}px`; cursorOuter.style.top = `${outerCursorY}px`; }
+      // The landing scene sleeps while the tab is hidden or the dashboard covers it.
+      if (document.hidden || document.body.classList.contains('dashboard-open')) return;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollTop = window.scrollY !== undefined ? window.scrollY : (window.pageYOffset || document.documentElement.scrollTop);
+      const targetScroll = maxScroll > 0 ? scrollTop / maxScroll : 0;
+      currentScroll = reduceMotion ? targetScroll : currentScroll + (targetScroll - currentScroll) * .11;
+      const scrollVelocity = Math.abs(targetScroll - currentScroll);
+      mouseX += (targetMouseX - mouseX) * .05;
+      mouseY += (targetMouseY - mouseY) * .05;
       if (sparkParticles && !reduceMotion) {
         const positions = sparkParticles.geometry.attributes.position.array;
         const time = clock.elapsedTime;
-        const scrollVelocity = Math.abs(targetScroll - currentScroll);
         const speedMultiplier = 1 + scrollVelocity * 9;
         const turbulence = scrollVelocity * .8;
         for (let i = 0; i < sparkCount; i++) {
@@ -5230,37 +5424,103 @@
         }
         sparkParticles.geometry.attributes.position.needsUpdate = true;
       }
-      const phi = currentScroll * Math.PI * 2;
-      const y = .35 + Math.sin(currentScroll * Math.PI) * .8;
-      const radius = 4.2 - Math.sin(currentScroll * Math.PI) * .6;
+      const phi = currentScroll * Math.PI * .55;
+      const y = .3 + Math.sin(currentScroll * Math.PI) * .5;
+      const radius = 4.6 - Math.sin(currentScroll * Math.PI) * .4;
       const x = radius * Math.sin(phi);
       const z = radius * Math.cos(phi);
       const transitionProgress = Math.min(1, currentScroll / .28);
       const easeFactor = (Math.cos(transitionProgress * Math.PI) + 1) * .5;
-      const targetLookAt = new THREE.Vector3(-.9 * easeFactor, -.15, 0);
-      camera.position.lerp(new THREE.Vector3(x, y, z), .08);
-      camera.lookAt(targetLookAt);
+      camera.position.lerp(_cameraTarget.set(x, y, z), .08);
+      camera.lookAt(_lookTarget.set(-.9 * easeFactor, -.15, 0));
       if (modelPivot) {
-        const previewIn = smoothProgress(currentScroll, .2, .29);
-        const previewOut = 1 - smoothProgress(currentScroll, .98, 1.06);
-        const previewBlend = previewIn * previewOut;
-        const positionEase = 1 - Math.exp(-6 * deltaTime);
-        const xTarget = THREE.MathUtils.lerp(modelPivot.userData.baseX ?? 1.48, .32, previewBlend);
-        const yTarget = THREE.MathUtils.lerp(.62, .92, previewBlend);
-        const baseScale = modelPivot.userData.baseScale || .5;
-        const targetScale = THREE.MathUtils.lerp(baseScale, Math.min(baseScale, .39), previewBlend);
+        // Scroll choreography: the coin travels the story — hero right on the
+        // first slide, then left beside each preview card, turning edge-on for
+        // the ledger slide and receding for the plan. Scroll speed adds spin.
+        const aspect = (sizes?.width || window.innerWidth) / Math.max(1, sizes?.height || window.innerHeight);
+        const xf = THREE.MathUtils.clamp(aspect / 1.55, .58, 1);
+        const anchors = [
+          { x: 0, y: .04, z: -3.55, s: .48, tilt: .16 },
+          { x: 0, y: .46, z: -3.5, s: .38, tilt: .55 },
+          { x: 0, y: .4, z: -3.1, s: .4, tilt: 1.05 },
+          { x: 0, y: .05, z: -3.1, s: .56, tilt: -.28 },
+        ];
+        const stops = [0, .36, .68, 1];
+        let seg = 0;
+        while (seg < stops.length - 2 && currentScroll > stops[seg + 1]) seg++;
+        const span = Math.max(1e-4, stops[seg + 1] - stops[seg]);
+        const local = Math.min(1, Math.max(0, (currentScroll - stops[seg]) / span));
+        const ease = local * local * (3 - 2 * local);
+        const a = anchors[seg], b = anchors[Math.min(seg + 1, anchors.length - 1)];
+        const positionEase = 1 - Math.exp(-5 * deltaTime);
+        const xTarget = THREE.MathUtils.lerp(a.x, b.x, ease) * xf + mouseX * .1;
+        const yTarget = THREE.MathUtils.lerp(a.y, b.y, ease) + mouseY * .07;
+        const zTarget = THREE.MathUtils.lerp(a.z, b.z, ease);
+        const targetScale = THREE.MathUtils.lerp(a.s, b.s, ease) * (.78 + .22 * xf);
         modelPivot.position.x = THREE.MathUtils.lerp(modelPivot.position.x, xTarget, positionEase);
         modelPivot.position.y = THREE.MathUtils.lerp(modelPivot.position.y, yTarget, positionEase);
-        modelPivot.position.z = THREE.MathUtils.lerp(modelPivot.position.z, -4.2, positionEase);
-        const tiltX = reduceMotion ? 0 : Math.sin(clock.elapsedTime * .34) * .26;
-        const tiltY = reduceMotion ? 0 : Math.cos(clock.elapsedTime * .27) * .3;
-        modelPivot.rotation.x = THREE.MathUtils.damp(modelPivot.rotation.x, mouseY * .05 + tiltX, 5, deltaTime);
-        modelPivot.rotation.y = THREE.MathUtils.damp(modelPivot.rotation.y, mouseX * .06 + tiltY, 5, deltaTime);
+        modelPivot.position.z = THREE.MathUtils.lerp(modelPivot.position.z, zTarget, positionEase);
+        const tiltX = reduceMotion ? 0 : Math.sin(clock.elapsedTime * .28) * .13;
+        const tiltY = reduceMotion ? 0 : Math.cos(clock.elapsedTime * .22) * .16;
+        scrollSpin += scrollVelocity * 4;
+        scrollSpin *= Math.pow(.9, deltaTime * 60);
+        modelPivot.rotation.x = THREE.MathUtils.damp(modelPivot.rotation.x, mouseY * .09 + tiltX + THREE.MathUtils.lerp(a.tilt, b.tilt, ease), 5, deltaTime);
+        modelPivot.rotation.y = THREE.MathUtils.damp(modelPivot.rotation.y, mouseX * .14 + tiltY + scrollSpin, 4.2, deltaTime);
         modelPivot.rotation.z = THREE.MathUtils.damp(modelPivot.rotation.z, Math.sin(clock.elapsedTime * .19) * .045, 5, deltaTime);
         modelPivot.scale.setScalar(THREE.MathUtils.damp(modelPivot.scale.x, targetScale, 6, deltaTime));
       }
+      // Coin dissolve: solid at the story's edges, particle cloud through the middle.
+      const dRaw = currentScroll < .07 || currentScroll > .96 ? 0
+        : currentScroll < .5 ? smoothProgress(currentScroll, .07, .38)
+        : 1 - smoothProgress(currentScroll, .62, .94);
+      dissolveAmt += (dRaw - dissolveAmt) * Math.min(1, deltaTime * 6.5);
+      if (dissolvePoints) dissolvePoints.visible = dissolveAmt > .002;
+      if (dissolvePoints) {
+        dissolvePoints.material.opacity = Math.min(1, dissolveAmt * 1.7) * (currentTheme === 'noir' ? .8 : .9);
+        dissolvePoints.rotation.z += (0.06 + scrollVelocity * .5) * deltaTime;
+        if (dissolveAmt > .002) {
+          const arr = dissolveGeo.attributes.position.array;
+          const tt = clock.elapsedTime;
+          for (let i = 0; i < dissolveCount; i++) {
+            const scatter = dissolveAmt * (1.25 + ((i * 37) % 11) * .11);
+            const wob = Math.sin(tt * (.5 + (i % 13) * .06) + i * 1.7) * .13 * dissolveAmt;
+            arr[i * 3] = dissolveHome[i * 3] + dissolveSeed[i * 3] * scatter + wob;
+            arr[i * 3 + 1] = dissolveHome[i * 3 + 1] + dissolveSeed[i * 3 + 1] * scatter * .85 + Math.cos(tt * .45 + i * 1.3) * .1 * dissolveAmt;
+            arr[i * 3 + 2] = dissolveHome[i * 3 + 2] + dissolveSeed[i * 3 + 2] * scatter * .9;
+          }
+          dissolveGeo.attributes.position.needsUpdate = true;
+        } else if (dissolveGeo.attributes.position.array !== dissolveHome) {
+          dissolveGeo.attributes.position.array.set(dissolveHome);
+          dissolveGeo.attributes.position.needsUpdate = true;
+        }
+      }
+      if (rateParticles && !reduceMotion) {
+        const pArr = rateParticles.geometry.attributes.position.array;
+        const drift = (.1 + scrollVelocity * 1.4) * deltaTime;
+        for (let i = 0; i < pArr.length; i += 3) {
+          pArr[i + 2] += drift;
+          pArr[i + 1] += Math.sin(clock.elapsedTime * .3 + i) * .0004;
+          if (pArr[i + 2] > .7) {
+            pArr[i + 2] = -7.2;
+            pArr[i] = (Math.random() - .5) * 7;
+            pArr[i + 1] = (Math.random() - .5) * 4 + .2;
+          }
+        }
+        rateParticles.geometry.attributes.position.needsUpdate = true;
+      }
       if (!reduceMotion) updateCoinCurrency(deltaTime);
-      shaderUniforms.uTime.value = clock.elapsedTime;
+      const coinOpacity = 1 - Math.min(1, dissolveAmt * 1.5);
+      coinMeshes.forEach(mesh => {
+        const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        mats.forEach(mat => {
+          if (!mat || !mat.isMaterial) return;
+          if (mat.userData.decal) { mat.transparent = true; mat.opacity = coinOpacity; return; }
+          const solid = coinOpacity >= .999;
+          if (mat.transparent !== !solid) { mat.transparent = !solid; mat.needsUpdate = true; }
+          mat.opacity = coinOpacity;
+        });
+      });
+            shaderUniforms.uTime.value = clock.elapsedTime;
       shaderUniforms.uMouse.value.set(mouseX, -mouseY);
       shaderUniforms.uScroll.value = currentScroll;
       updateSlides(currentScroll);
@@ -5287,15 +5547,15 @@
         label: 'NOIR',
         bg: '#050505', accent: '#16a34a',
         shader: { c0shadow: [0.0018, 0.0018, 0.0018], c0w1: [0.025, 0.025, 0.025], c0w2: [0.016, 0.016, 0.016], c0crest: [0.19, 0.19, 0.19], c1shadow: [0.0012, 0.0012, 0.0012], c1w1: [0.021, 0.021, 0.021], c1w2: [0.011, 0.011, 0.011], c1crest: [0.27, 0.27, 0.27] },
-        coin: { wash: ['#f4f4f4', '#b8b8b8', '#666666', '#2a2a2a'], rim: '#16a34a', glow: '#4ade80', glyph: '#ffffff', orbit: '#4ade80', orbit2: '#16a34a', particle: [[0.09, 0.64, 0.29], [1, 1, 1]] },
-        light: { rim: '#ffffff', fill: '#d7f5e1' },
+        coin: { wash: ['#f4f4f4', '#b8b8b8', '#666666', '#2a2a2a'], rim: '#c2c2c2', glow: '#d6d6d6', glyph: '#ffffff', orbit: '#4ade80', orbit2: '#16a34a', particle: [[0.09, 0.64, 0.29], [1, 1, 1]] },
+        light: { rim: '#ffffff', fill: '#e8e8e8' },
       },
       brutal: {
-        label: 'PAPER',
+        label: 'Paper',
         bg: '#ffffff', accent: '#15803d',
         shader: { c0shadow: [0.69, 0.69, 0.69], c0w1: [0.84, 0.84, 0.84], c0w2: [0.77, 0.77, 0.77], c0crest: [0.95, 0.95, 0.95], c1shadow: [0.63, 0.63, 0.63], c1w1: [0.80, 0.80, 0.80], c1w2: [0.73, 0.73, 0.73], c1crest: [0.93, 0.93, 0.93] },
-        coin: { wash: ['#f5f5f5', '#b3b3b3', '#5c5c5c', '#2b2b2b'], rim: '#15803d', glow: '#16a34a', glyph: '#ffffff', orbit: '#15803d', orbit2: '#4ade80', particle: [[0.09, 0.64, 0.29], [0.55, 0.55, 0.55]] },
-        light: { rim: '#ffffff', fill: '#dcfce7' },
+        coin: { wash: ['#f5f5f5', '#b3b3b3', '#5c5c5c', '#2b2b2b'], rim: '#6f6f6f', glow: '#a8a8a8', glyph: '#ffffff', orbit: '#15803d', orbit2: '#4ade80', particle: [[0.09, 0.64, 0.29], [0.55, 0.55, 0.55]] },
+        light: { rim: '#ffffff', fill: '#ececec' },
       },
     };
     let currentTheme = 'noir';
@@ -5316,7 +5576,7 @@
       themeHasApplied = true;
       try { localStorage.setItem('roviel.theme', name); } catch (error) {}
       document.querySelectorAll('[data-theme-toggle]').forEach(button => {
-        const next = name === 'noir' ? 'PAPER' : 'INK';
+        const next = name === 'noir' ? 'Paper' : 'Ink';
         button.textContent = next;
         button.setAttribute('aria-label', 'Switch to ' + next.toLowerCase() + ' theme');
         button.setAttribute('title', 'Switch to ' + next.toLowerCase() + ' theme');
@@ -5331,7 +5591,7 @@
       canvas.replaceWith(fresh);
       canvas = fresh;
       scene = null; camera = null; renderer = null; clock = null;
-      modelPivot = null; sparkParticles = null; coinCurrency = null;
+      modelPivot = null; sparkParticles = null; coinCurrency = null; rateParticles = null; dissolvePoints = null; dissolveGeo = null; coinMeshes = []; dissolveAmt = 0;
       if (shaderUniforms.uResolution.value) shaderUniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
       if (shaderUniforms.uMouse.value) shaderUniforms.uMouse.value.set(0, 0);
       try {
@@ -5398,7 +5658,13 @@
           ...opts,
           headers: { ...(opts.body ? { 'Content-Type': 'application/json' } : {}), Authorization: 'Bearer ' + token, ...(opts.headers || {}) },
         });
-        if (res.status === 401) { expireSession(); throw new Error('Session expired. Sign in again.'); }
+        if (res.status === 401) {
+          // A 401 for a superseded token (e.g. right after a password reset
+          // bumped tokenVersion) must not clear a freshly signed-in session.
+          const current = localStorage.getItem('roviel.api.token');
+          if (!token || token === current) { expireSession(); throw new Error('Session expired. Sign in again.'); }
+          throw new Error('Session expired. Sign in again.');
+        }
         if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || 'Request failed');
         return res.status === 204 ? null : res.json();
       }
@@ -5406,17 +5672,25 @@
       function refreshStatus() {
         const on = !!(api() && api().isCloud());
         cloudMode = on;
-        if (status) { status.classList.toggle('on', on); status.innerHTML = '<i></i> ' + (on ? 'Cloud sync' : 'Local demo'); }
+        if (status) {
+          status.classList.toggle('on', on);
+          // Text exists only while signed in — callers (and tests) key off it.
+          status.innerHTML = on ? '<i></i> Cloud sync' : '';
+          status.style.display = on ? '' : 'none';
+        }
         const btn = document.getElementById('auth-button');
         if (btn) btn.textContent = on ? 'Sign out' : 'Sign in';
         document.getElementById('dashboard-overview').classList.toggle('is-cloud', on);
         const live = document.getElementById('sync-label');
-        if (live) live.innerHTML = '<i></i> ' + (on ? 'Synced to the cloud' : 'Saved on this device');
+        if (live) {
+          live.innerHTML = on ? '<i></i> Synced to the cloud' : '';
+          live.style.display = on ? '' : 'none';
+        }
         const disclosure = document.getElementById('demo-disclosure');
         if (disclosure) {
           disclosure.textContent = on
             ? 'Cloud workspace · your balances are stored in Postgres and valued in your home currency using the latest reference rates.'
-            : 'Local demo · single-currency INR sample data stored in this browser. Sign in for multi-currency accounts, budgets, goals and cross-device sync.';
+            : 'Sign in for multi-currency accounts, budgets, goals and cross-device sync.';
         }
         if (accountSel) accountSel.hidden = !on || cloudAccounts.length < 2;
         const txAccountField = document.getElementById('transaction-account-field');
@@ -5477,7 +5751,7 @@
       document.querySelectorAll('.cloud-gate-signin').forEach(b => b.addEventListener('click', () => openAuth()));
       document.getElementById('open-auth-modal')?.addEventListener('click', () => openAuth());
       document.getElementById('auth-button')?.addEventListener('click', () => {
-        if (api() && api().isCloud()) { api().logout(); cloudAccounts = []; dashState.summary = null; try { transactions = JSON.parse(localStorage.getItem('roviel.transactions.v1') || 'null') || transactions; } catch {} refreshStatus(); updateAmountLabel(); renderDashboard(); showDashboardToast('Signed out. Local demo active.'); }
+        if (api() && api().isCloud()) { api().logout(); cloudAccounts = []; dashState.summary = null; try { transactions = JSON.parse(localStorage.getItem('roviel.transactions.v1') || 'null') || transactions; } catch {} refreshStatus(); updateAmountLabel(); renderDashboard(); showDashboardToast('Signed out.'); }
         else openAuth();
       });
       document.getElementById('auth-close')?.addEventListener('click', closeAuth);
@@ -5962,6 +6236,16 @@
           <circle id="pulse-marker" class="pulse-marker" cx="0" cy="0" r="4" hidden />
         </svg>`;
         pulseMeta.textContent = `High ${formatRate(max)} · Low ${formatRate(min)} · ${data.length} observations`;
+        const pulsePath = pulseChart.querySelector('.pulse-line');
+        if (pulsePath && pulsePath.getTotalLength) {
+          const drawLen = pulsePath.getTotalLength();
+          pulsePath.style.strokeDasharray = `${drawLen}`;
+          pulsePath.style.strokeDashoffset = `${drawLen}`;
+          pulsePath.getBoundingClientRect();
+          pulsePath.style.transition = 'stroke-dashoffset 1s var(--ease-product)';
+          pulsePath.style.strokeDashoffset = '0';
+          setTimeout(() => { pulsePath.style.strokeDasharray = ''; pulsePath.style.transition = ''; }, 1080);
+        }
         pulseChart.setAttribute('aria-label', `${base}/${quote} ${data.length}-day chart. Latest ${data[data.length - 1].date}: 1 ${base} equals ${formatRate(data[data.length - 1].value)} ${quote}. High ${formatRate(max)}, low ${formatRate(min)}, change ${changePct >= 0 ? '+' : ''}${changePct.toFixed(2)} percent. Use left and right arrow keys to inspect a day.`);
         pulseDetail.textContent = `Hover, tap or focus the chart to inspect a day. Latest ${data[data.length - 1].date}: 1 ${base} = ${formatRate(data[data.length - 1].value)} ${quote}.`;
         pulseState = { data, coords, selected: -1, base, quote, width: W, height: H };
@@ -6212,8 +6496,9 @@
       async function removeTransaction(id) {
         if (!cloudMode || !api() || !api().isCloud()) return 'local';
         try {
-          const r = await fetch(api().base + '/api/transactions/' + id, { method: 'DELETE', headers: { Authorization: 'Bearer ' + localStorage.getItem('roviel.api.token') } });
-          if (r.status === 401) { expireSession(); return 'failed'; }
+          const reqToken = localStorage.getItem('roviel.api.token');
+        const r = await fetch(api().base + '/api/transactions/' + id, { method: 'DELETE', headers: { Authorization: 'Bearer ' + reqToken } });
+          if (r.status === 401 && (!reqToken || reqToken === localStorage.getItem('roviel.api.token'))) { expireSession(); return 'failed'; }
           if (!r.ok) { const j = await r.json().catch(() => ({})); showDashboardToast(j.error || 'Cannot remove linked entry.'); return 'failed'; }
           await loadCloud(); showDashboardToast('Removed from cloud.');
           return 'removed';
@@ -6312,7 +6597,7 @@
           document.getElementById('delete-account-confirm').value = '';
           try { transactions = JSON.parse(localStorage.getItem('roviel.transactions.v1') || 'null') || transactions; } catch {}
           refreshStatus(); renderDashboard();
-          showDashboardToast('Account deleted. Local demo active.');
+          showDashboardToast('Account deleted.');
         } catch (error) { showDashboardToast(String(error.message)); btn.disabled = false; }
       });
       try {
@@ -6359,42 +6644,47 @@
         if (ctx.state === 'suspended') ctx.resume().catch(() => {});
         return ctx;
       };
-      // Layered click: a short filtered noise transient (the "tick") plus two
-      // decaying partials (the "body"). Reads as a crisp, premium UI click.
+      // Bold, satisfying press: a pitch-bent "bop" with real weight — a sub
+      // floor underneath, and a soft lowpassed transient for the finger contact.
+      // Reads as a deep mechanical switch, not a high tick.
       function click() {
         if (!enabled) return;
         const audio = ensure();
         if (!audio) return;
         const t = audio.currentTime;
         try {
-          // transient
-          const frames = Math.floor(audio.sampleRate * 0.012);
+          const body = audio.createOscillator();
+          const bodyGain = audio.createGain();
+          body.type = 'sine';
+          body.frequency.setValueAtTime(330, t);
+          body.frequency.exponentialRampToValueAtTime(158, t + 0.09);
+          bodyGain.gain.setValueAtTime(0, t);
+          bodyGain.gain.linearRampToValueAtTime(0.17, t + 0.006);
+          bodyGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.13);
+          body.connect(bodyGain); bodyGain.connect(bus);
+          body.start(t); body.stop(t + 0.15);
+          const sub = audio.createOscillator();
+          const subGain = audio.createGain();
+          sub.type = 'sine';
+          sub.frequency.setValueAtTime(94, t);
+          subGain.gain.setValueAtTime(0, t);
+          subGain.gain.linearRampToValueAtTime(0.12, t + 0.01);
+          subGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
+          sub.connect(subGain); subGain.connect(bus);
+          sub.start(t); sub.stop(t + 0.17);
+          const frames = Math.floor(audio.sampleRate * 0.02);
           const buffer = audio.createBuffer(1, frames, audio.sampleRate);
           const data = buffer.getChannelData(0);
-          for (let i = 0; i < frames; i += 1) data[i] = (Math.random() * 2 - 1) * (1 - i / frames) ** 3;
+          for (let i = 0; i < frames; i += 1) data[i] = (Math.random() * 2 - 1) * (1 - i / frames) ** 2;
           const noise = audio.createBufferSource();
           noise.buffer = buffer;
-          const band = audio.createBiquadFilter();
-          band.type = 'bandpass';
-          band.frequency.value = 2600;
-          band.Q.value = 1.1;
+          const low = audio.createBiquadFilter();
+          low.type = 'lowpass';
+          low.frequency.value = 1150;
           const ng = audio.createGain();
-          ng.gain.value = 0.055;
-          noise.connect(band); band.connect(ng); ng.connect(bus);
+          ng.gain.value = 0.06;
+          noise.connect(low); low.connect(ng); ng.connect(bus);
           noise.start(t);
-          // body
-          [[1720, 0.055, 0.045], [860, 0.075, 0.028]].forEach(([freq, dur, vol]) => {
-            const osc = audio.createOscillator();
-            const gain = audio.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, t);
-            osc.frequency.exponentialRampToValueAtTime(freq * 0.72, t + dur);
-            gain.gain.setValueAtTime(0, t);
-            gain.gain.linearRampToValueAtTime(vol, t + 0.004);
-            gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-            osc.connect(gain); gain.connect(bus);
-            osc.start(t); osc.stop(t + dur + 0.02);
-          });
         } catch {}
       }
       function tone(freq, duration, type, volume, delay = 0) {
@@ -6468,30 +6758,8 @@
     function setupScrollSnap() {
       if (window.matchMedia('(pointer: coarse)').matches) return;
       const scrollBehavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
-      const STOPS = [0, 0.34, 0.62, 0.94];
-      let timer = 0;
-      let snapping = false;
+      const STOPS = [0, 0.36, 0.68, 1];
       const maxScroll = () => Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      const nearest = ratio => {
-        let best = STOPS[0];
-        let gap = Infinity;
-        STOPS.forEach(stop => { const d = Math.abs(stop - ratio); if (d < gap) { gap = d; best = stop; } });
-        return { stop: best, gap };
-      };
-      const snap = () => {
-        if (document.body.classList.contains('dashboard-open')) return;
-        const ratio = window.scrollY / maxScroll();
-        const { stop, gap } = nearest(ratio);
-        if (gap < 0.045) return;
-        snapping = true;
-        window.scrollTo({ top: stop * maxScroll(), behavior: scrollBehavior });
-        setTimeout(() => { snapping = false; }, 620);
-      };
-      window.addEventListener('scroll', () => {
-        if (snapping) return;
-        window.clearTimeout(timer);
-        timer = window.setTimeout(snap, 150);
-      }, { passive: true });
       window.addEventListener('keydown', event => {
         if (document.body.classList.contains('dashboard-open')) return;
         if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp' && event.key !== 'PageDown' && event.key !== 'PageUp') return;
@@ -6504,12 +6772,9 @@
         let next;
         if (forward) next = STOPS[Math.min(STOPS.length - 1, (index < 0 ? 0 : index) + 1)];
         else next = STOPS[Math.max(0, (index < 0 ? 0 : index) - 1)];
-        snapping = true;
         window.scrollTo({ top: next * maxScroll(), behavior: scrollBehavior });
-        setTimeout(() => { snapping = false; }, 620);
       });
     }
-
 
 
     /* ================= Custom select + bank suggestions ================= */
@@ -6770,15 +7035,19 @@
         },
         accounts: [], categories: [...byCategory.entries()].map(([category, amountMajor]) => ({ category, amountMajor })).sort((a, b) => b.amountMajor - a.amountMajor),
         months: buckets, budgets: [], goals: [],
-        disclaimer: 'Local demo — no account needed.',
+        disclaimer: 'Reference rates — no account needed.',
       };
     }
 
     async function fetchSummary(months = dashState.range) {
       if (window.RovielAPI && window.RovielAPI.isCloud() && window.RovielAPI.base) {
         try {
-          const res = await fetch(`${window.RovielAPI.base}/api/summary?months=${months}`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('roviel.api.token') } });
-          if (res.status === 401) { notifySessionExpired(); throw new Error('Session expired. Sign in again.'); }
+          const summaryReqToken = localStorage.getItem('roviel.api.token');
+          const res = await fetch(`${window.RovielAPI.base}/api/summary?months=${months}`, { headers: { Authorization: 'Bearer ' + summaryReqToken } });
+          if (res.status === 401) {
+            if (!summaryReqToken || summaryReqToken === localStorage.getItem('roviel.api.token')) { notifySessionExpired(); throw new Error('Session expired. Sign in again.'); }
+            throw new Error('Session expired. Sign in again.');
+          }
           if (res.ok) {
             const data = await res.json();
             dashState.summary = data;
@@ -6838,10 +7107,16 @@
       }).join('');
       const showEvery = data.length > 8 ? 2 : 1;
       const labels = data.map((d, i) => (i % showEvery === 0 || i === data.length - 1) ? `<text x="${(padL + i * stepX).toFixed(1)}" y="${H - 8}" class="chart-label${d.incomplete ? ' is-incomplete' : ''}" text-anchor="middle">${d.label}${d.incomplete ? '*' : ''}</text>` : '').join('');
-      host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" class="chart-svg">
+      host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" class="chart-svg chart-pending">
           ${gridLines}
           ${bars}${labels}
         </svg>`;
+
+      requestAnimationFrame(() => {
+        const svg = host.querySelector('.chart-svg');
+        svg?.querySelectorAll('.chart-bar').forEach((bar, i) => { bar.style.transitionDelay = Math.min(i * 55, 400) + 'ms'; });
+        svg?.classList.remove('chart-pending');
+      });
 
       const tooltip = document.getElementById('chart-tooltip');
       host.querySelectorAll('.chart-col').forEach(col => {
@@ -6869,6 +7144,49 @@
       if (hint) hint.textContent = key ? `Filtered to ${key}` : 'Click a month to filter';
       renderTransactionList();
       renderChart();
+      // A month click is a navigation: open the Transactions tab with the
+      // filter applied, the way every other tab opens.
+      if (key && activeView !== 'transactions') showView('transactions');
+      syncMonthFilterChip();
+    }
+
+    function syncMonthFilterChip() {
+      const chip = document.getElementById('month-filter-chip');
+      if (!chip) return;
+      if (dashState.selectedMonth) {
+        chip.hidden = false;
+        chip.querySelector('span').textContent = dashState.selectedMonth;
+      } else {
+        chip.hidden = true;
+      }
+    }
+
+    // Number ticker: eases a displayed money value from its previous frame to
+    // the new one. Display-only — the underlying figures stay exact.
+    function tickValue(el, text) {
+      if (!el) return;
+      const prev = el.dataset.tickValue;
+      el.dataset.tickValue = text;
+      const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      if (prev === undefined || prev === text || reduced) { el.textContent = text; return; }
+      const numRe = /-?\d[\d,]*(?:\.\d+)?/;
+      const fromRaw = (prev.match(numRe) || [''])[0].replace(/,/g, '');
+      const toRaw = (text.match(numRe) || [''])[0].replace(/,/g, '');
+      const from = parseFloat(fromRaw);
+      const to = parseFloat(toRaw);
+      if (!Number.isFinite(from) || !Number.isFinite(to) || fromRaw === '' || toRaw === '') { el.textContent = text; return; }
+      const decimals = (toRaw.split('.')[1] || '').length;
+      const startT = performance.now();
+      const DUR = 720;
+      const step = now => {
+        const prog = Math.min(1, (now - startT) / DUR);
+        const eased = 1 - Math.pow(1 - prog, 3);
+        const value = from + (to - from) * eased;
+        if (prog >= 1) { el.textContent = text; return; }
+        el.textContent = text.replace(numRe, value.toLocaleString('en-IN', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }));
+        requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
     }
 
     function renderMetricCards(summary) {
@@ -6876,9 +7194,9 @@
       const balance = document.getElementById('total-balance');
       const income = document.getElementById('total-income');
       const expense = document.getElementById('total-expenses');
-      if (balance) balance.textContent = fmtHome(t.balanceMajor);
-      if (income) income.textContent = fmtHome(t.incomeMajor);
-      if (expense) expense.textContent = fmtHome(t.expenseMajor);
+      if (balance) tickValue(balance, fmtHome(t.balanceMajor));
+      if (income) tickValue(income, fmtHome(t.incomeMajor));
+      if (expense) tickValue(expense, fmtHome(t.expenseMajor));
       const incCount = document.getElementById('income-count');
       const expCount = document.getElementById('expense-count');
       const ledger = transactions.filter(item => !isTransferEntry(item));
@@ -6886,6 +7204,50 @@
       const expenseRows = ledger.filter(t => t.type !== 'income').length;
       if (incCount) incCount.textContent = `${incomeRows} recorded ${incomeRows === 1 ? 'entry' : 'entries'}`;
       if (expCount) expCount.textContent = `${expenseRows} recorded ${expenseRows === 1 ? 'entry' : 'entries'}`;
+
+      // Reference pass: mini sparkline + vs-previous-month chip, both drawn
+      // from the same summary buckets the charts use — display only.
+      const nowKey = new Date().toISOString().slice(0, 7);
+      const complete = (summary.months || []).filter(m => m.key !== nowKey && !m.incomplete);
+      [['income', 'income-spark', 'income-delta', true], ['expense', 'expense-spark', 'expense-delta', false]].forEach(([field, sparkId, deltaId, risesGood]) => {
+        const spark = document.getElementById(sparkId);
+        const delta = document.getElementById(deltaId);
+        if (spark) {
+          const series = complete.slice(-6).map(m => Number(m[field]) || 0);
+          if (series.length >= 2) {
+            const max = Math.max(...series);
+            const min = Math.min(...series);
+            const span = max - min;
+            const step = 100 / (series.length - 1);
+            const points = series.map((v, i) => `${(i * step).toFixed(1)},${(span ? 24 - ((v - min) / span) * 20 : 12).toFixed(1)}`);
+            const line = `M${points[0]} L${points.slice(1).join(' L')}`;
+            spark.innerHTML = `<svg viewBox="0 0 100 26" preserveAspectRatio="none"><path d="${line}"/></svg>`;
+            const path = spark.querySelector('path');
+            if (path && path.getTotalLength) {
+              const len = path.getTotalLength();
+              path.style.strokeDasharray = `${len}`;
+              path.style.strokeDashoffset = `${len}`;
+              path.getBoundingClientRect();
+              path.style.transition = 'stroke-dashoffset .9s var(--ease-product)';
+              path.style.strokeDashoffset = '0';
+              setTimeout(() => { path.style.strokeDasharray = ''; path.style.transition = ''; }, 980);
+            }
+          } else spark.innerHTML = '';
+        }
+        if (delta) {
+          const cur = complete[complete.length - 1];
+          const prev = complete[complete.length - 2];
+          const a = prev ? Number(prev[field]) || 0 : 0;
+          const b = cur ? Number(cur[field]) || 0 : 0;
+          if (prev && cur && a > 0) {
+            const pct = Math.round(((b - a) / a) * 100);
+            const good = risesGood ? b >= a : b <= a;
+            delta.hidden = false;
+            delta.className = `metric-delta ${good ? 'up' : 'down'}`;
+            delta.textContent = `${b >= a ? '↑' : '↓'} ${Math.abs(pct)}% vs ${prev.label}`;
+          } else delta.hidden = true;
+        }
+      });
       const caption = document.getElementById('balance-caption');
       if (caption && summary.unavailable) {
         caption.textContent = 'Cloud data unavailable — no estimate shown.';
@@ -7277,6 +7639,7 @@
       setupSound();
       setupCursor();
       setupScrollSnap();
+      setupDashboardBarShadow();
       visualsReady.then(available => {
         if (!available) {
           document.documentElement.classList.add('no-webgl');

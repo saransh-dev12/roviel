@@ -83,6 +83,10 @@ export function initMotion() {
     dashboardClose() {
       if (lenis) lenis.start();
     },
+    scrollTo(target, options = {}) {
+      if (lenis) lenis.scrollTo(target, { duration: 0.9, easing: t => 1 - Math.pow(1 - t, 3), ...options });
+      else window.scrollTo({ top: target, behavior: options.behavior || 'smooth' });
+    },
     destroy: destroyMotion
   };
 

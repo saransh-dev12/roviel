@@ -1,8 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import SplitText from './SplitText.jsx';
 import ClickSpark from './ClickSpark.jsx';
-import Galaxy from './Galaxy.jsx';
-import './Galaxy.css';
 
 const splitRoots = new Map();
 let sparkEngine = null;
@@ -26,63 +24,28 @@ function trySplit(el, props) {
   }
 }
 
-// Hydrate a dashboard view heading with a real SplitText reveal.
+// Reveal a dashboard view heading with one clean rise+fade (no per-char split).
 export function splitViewHeading(name) {
   const el = document.querySelector(`#view-${name} .view-head h1`);
   if (!el) return false;
-  return trySplit(el, { delay: 20, duration: 0.85, splitType: 'chars', textAlign: 'left' });
+  el.classList.remove('view-title-in');
+  void el.offsetWidth;
+  el.classList.add('view-title-in');
+  return true;
 }
 
-// Keep the live insight heading animated when its verdict text changes.
+// Swap live heading text and re-run the same reveal.
 export function updateSplitHeading(el, text) {
   if (!el) return;
-  if (!splitRoots.has(el)) {
-    el.textContent = text;
-    trySplit(el, { delay: 20, duration: 0.85, splitType: 'chars', textAlign: 'left' });
-    return;
-  }
-  const root = splitRoots.get(el);
-  try {
-    root.render(<SplitText tag="span" trigger="load" delay={20} duration={0.85} splitType="chars" textAlign="left" text={text} />);
-  } catch (error) {
-    problems.push('split-update: ' + String(error?.message || error));
-    splitRoots.delete(el);
-    el.textContent = text;
-  }
+  el.textContent = text;
+  el.classList.remove('view-title-in');
+  void el.offsetWidth;
+  el.classList.add('view-title-in');
 }
 
 export function mountBits() {
-  const flags = { galaxy: false, sparks: false };
-  // 1. Galaxy starfield behind the landing scene (aria-hidden, non-interactive).
-  try {
-    const host = document.createElement('div');
-    host.id = 'bits-galaxy';
-    host.setAttribute('aria-hidden', 'true');
-    Object.assign(host.style, { position: 'fixed', inset: '0', zIndex: 2, pointerEvents: 'none' });
-    document.body.prepend(host);
-    createRoot(host).render(
-      <Galaxy
-        density={0.55}
-        speed={0.55}
-        mouseInteraction={false}
-        mouseRepulsion={false}
-        twinkleIntensity={0.25}
-        rotationSpeed={0.05}
-        glowIntensity={0.2}
-        saturation={0.15}
-        starColors={['#ffffff', '#a3a3a3', '#4ade80']}
-        transparent
-        opacity={0.85}
-        starSize={1}
-        layers={4}
-        intro={false}
-      />
-    );
-    flags.galaxy = true;
-  } catch (error) {
-    problems.push('galaxy: ' + String(error?.message || error));
-    document.getElementById('bits-galaxy')?.remove();
-  }
+  const flags = { sparks: false };
+  // 1. The landing scene's WebGL canvas (created inline) is the background.
 
   // 2. ClickSpark engine layer; sparks are fired imperatively on real control presses.
   try {
