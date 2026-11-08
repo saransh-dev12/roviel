@@ -18,7 +18,7 @@ Built as a portfolio-grade backend project — Express + TypeScript + PostgreSQL
 | **Public converter** | Full currency directory when online (starter set offline), dated reference rates, inverse rate, stale/offline states with a dated cache, popular pairs, favourites, recents, copy & share. |
 | **Quote comparator** | Enter a provider quote + fixed/percentage/tax fees; exact `BigInt` minor-unit maths with per-currency rounding. The reference rate is **never** auto-filled into the provider field. |
 | **Dashboard** | 8 dedicated views: Overview, Transactions, Accounts, Budgets, Goals, Recurring, Insights, Currency pulse. Overview previews the newest activity; Transactions supports search, type/sort controls, native date entry and account-aware rows; Budgets supports a month selector and ledger-backed category suggestions; Accounts has per-account detail drawers; Goals supports optional deadlines; command palette (`Ctrl/⌘+K`) jumps to views, actions and active accounts; detail drawers return focus after closing. Pulse includes an emerald pair mini-tab strip (derived from the existing pair catalogue), route-synced child state, and a 30-day accessible rate chart with high/low, observation date, source, freshness and keyboard/pointer inspection. |
-| **Cloud mode** | JWT auth with expiring sessions, zero-cost single-use recovery codes, optional email reset, multi-currency accounts, atomic transfers with FX capture, budgets with burn-down bars, goals with contributions plus edit/delete, recurring rules you can post in one tap, CSV export of the full ledger with currency-native precision, deterministic insights. |
+| **Cloud mode** | JWT auth with expiring sessions, zero-cost single-use recovery codes, optional email reset, multi-currency accounts, atomic transfers with FX capture, budgets with burn-down bars, goals with contributions plus edit/delete, recurring rules you can post in one tap, full-ledger export (server JSON, client-built CSV) with currency-native precision and formula-injection escaping, deterministic insights. |
 | **Offline-first** | The anonymous demo keeps working with no API — localStorage ledger, local analytics, and an explicit "local demo" state. |
 
 ## Architecture
@@ -27,7 +27,7 @@ Built as a portfolio-grade backend project — Express + TypeScript + PostgreSQL
 Browser (Vite, zero-framework UI)
   ├── index.html            landing + dashboard + converter (vanilla JS, ES modules)
   ├── public/roviel-api.js thin API client (additive; demo works without it)
-  ├── e2e/run.mjs           Playwright suite (149 checks, real browser)
+  ├── e2e/run.mjs           Playwright suite (150 checks, real browser)
   └── server/test/          Vitest money/maths unit tests (JPY, KWD, fees)
         │  HTTPS + Bearer JWT
         ▼
@@ -57,7 +57,7 @@ Roviel ships **two calibrated themes** built from one editorial design system, w
 | **Ink** (default) | Near-black `#050505` canvas, `#111111` elevated surfaces, white primary text, `#a3a3a3` secondary text, `#292929` borders, emerald `#16a34a` action/accent, and `#4ade80` positive data. Red is reserved for negative financial movement. |
 | **Paper** | White canvas, black text, neutral-gray surfaces and the same emerald system at light-theme contrast. Red remains semantic-only. |
 
-Typography is self-hosted from open-source SIL OFL families: **Archivo** for display, **Inter** for UI, and **IBM Plex Mono** with tabular figures for financial values. Shared across both themes: one spacing rhythm, one border/radius system, one purposeful motion language, native dialogs, portal-positioned selects, keyboard-operated command palette, reduced-motion support, and the same component set — cards, buttons, inputs, tabs, tables, pills, bars, modals, drawers, toasts, account-detail panels and grouped commands. App screens follow an audited pass (sentence-case labels, right-aligned tabular figures, neutral navigation, one emerald primary per screen, emerald/white/gray/red financial charts with real y-scales); see `index.html` (`TASTE-SKILL APP PASS`).
+Typography is self-hosted from open-source SIL OFL families: **Space Grotesk** for display, **Inter** for UI, and **IBM Plex Mono** with tabular figures for financial values. Shared across both themes: one spacing rhythm, one border/radius system, one purposeful motion language, native dialogs, portal-positioned selects, keyboard-operated command palette, reduced-motion support, and the same component set — cards, buttons, inputs, tabs, tables, pills, bars, modals, drawers, toasts, account-detail panels and grouped commands. App screens follow an audited pass (sentence-case labels, right-aligned tabular figures, neutral navigation, one emerald primary per screen, emerald/white/gray/red financial charts with real y-scales); see `index.html` (`TASTE-SKILL APP PASS`).
 
 ## Design references
 
@@ -105,16 +105,18 @@ Open <http://localhost:5173>. Use the public converter without an account; sign 
 ## Testing
 
 ```sh
-npm run test:unit     # minor-unit maths: JPY (1), KWD (1000), fees
-npm run test:e2e      # reseeds the demo, then runs 150 Playwright checks
-npm run test:responsive # viewport, safe-area, dialog and touch-layout checks
-npm run smoke:prod    # web, API/DB health, FX freshness and auth boundary
-npm run lint          # oxlint
+npm run test:unit       # minor-unit maths: JPY (1), KWD (1000), fees
+npm run test:api        # API integration (needs the API + Postgres running locally)
+npm run test:e2e        # reseeds the demo, then runs 150 Playwright checks
+npm run test:responsive # 16-viewport matrix × both themes (319 checks)
+npm run test:journey    # recorded user-journey walkthrough against the local stack
+npm run smoke:prod      # web, API/DB health, FX freshness and auth boundary (read-only)
+npm run lint            # oxlint
 ```
 
 The E2E suite drives a real Chromium instance and asserts exact values rather than labels. It also covers password-reset form states, recovery-code generation/reset, non-enumerating forgot-password responses, CSV formula neutralization, self-hosted visuals, command-palette navigation, account-detail drawers, goal deadlines, and mobile/offline behavior; the API integration suite exercises reset expiry, single-use tokens, session revocation, recovery-code reuse and signed-in password changes. A ₹250 expense must raise spending by exactly ₹250, a ₹2,000 budget must report a ₹2,000 limit and 0% spend, a ₹1,000 goal contribution must move the saved amount by ₹1,000, a transfer of ₹100 must debit the source by ₹100, conversions and quotes are compared against the displayed rate, and chart months are checked against `/api/summary`. It also covers landing scroll-snap, auth, every dashboard view, budgets/goals/recurring creation and deletion, CSV export, mobile layout, and a fully-blocked-network offline pass. The suite reseeds the demo account first, so it is repeatable.
 
-The responsive suite checks all dashboard views, both themes, safe-area spacing, mobile navigation, dialogs, transaction rows, charts and landscape layouts across phone, tablet, laptop and desktop viewports.
+The responsive suite runs a 16-viewport matrix (phone, landscape phone, tablet, laptop, desktop) across **both themes**, asserting landing and dashboard overflow, safe-area spacing, mobile navigation, dialogs, transaction rows, charts, cloud-view fit and reduced-motion usability. Unexpected browser page errors fail the suite, and cloud view checks fail rather than silently skip when sign-in breaks (set `RESPONSIVE_CLOUD_OPTIONAL=1` to record them as explicit skips). CI runs it as a separate release gate alongside the full E2E suite.
 
 ## API surface
 
@@ -156,7 +158,7 @@ Live URLs: web `https://roviel.vercel.app`, API `https://ledgerly-api-4yhc.onren
 1. **Database** — create a free Neon Postgres project through the Vercel Marketplace (Singapore `sin1`) and use the **direct/unpooled** connection string for Render. Keep the pooled URL for serverless clients if one is added later. Run `prisma migrate deploy` and restore the latest dump before pointing production at it.
 2. **API** — create a Render Docker web service with `rootDir: server`, health check `/health`, and env `DATABASE_URL` (Neon direct), `FRONTEND_URL` (comma-separated allow-list for the web origins), `APP_URL`, `JWT_SECRET`, plus `RESEND_API_KEY` and `EMAIL_FROM` when recovery email is enabled. The image installs OpenSSL 3 so Prisma's schema engine can run; the container executes `prisma migrate deploy` before starting the server. Auto-deploy is intentionally disabled on Render so database migrations are never triggered by an ordinary push.
 3. **Frontend** — the Vercel project is linked locally (`.vercel/`, gitignored) and `VITE_API_URL` is set for Production and Preview. Deploy with `vercel --prod`, which rebuilds the bundle with the API URL baked in; the value takes precedence over `meta[name="roviel-api"]` and the localStorage override. The project is not connected to GitHub yet, so pushing alone does not deploy the frontend.
-4. **Seed the demo** — `DATABASE_URL='<external-url>?sslmode=require' npm run db:seed`. The seed resets the demo user's data, so never point it at real users.
+4. **Seed the demo** — `DATABASE_URL='<external-url>?sslmode=require' ALLOW_NONLOCAL_SEED=1 npm run db:seed`. The seed resets the demo user's data; it **refuses any non-local `DATABASE_URL`** unless you set `ALLOW_NONLOCAL_SEED=1`, so an ordinary local run can never wipe the production demo. The API integration test enforces the same rule for its targets (`ALLOW_NONLOCAL_TEST_TARGET=1` to override).
 
 `FRONTEND_URL` is also the CORS allow-list: requests from other origins are rejected. Local development needs no env at all — the web app defaults to `http://localhost:4000` on localhost and keeps working offline in demo mode.
 
@@ -195,7 +197,7 @@ The script dumps the source, refuses a non-empty target, restores into it, compa
 
 ### Uptime checks
 
-`.github/workflows/uptime.yml` runs `npm run smoke:prod` every 30 minutes and on demand. It checks the web alias, `/health` (including the database when the deployed API reports it), a dated USD/EUR quote, the full currency directory and the 401 boundary on summary data. A failed run notifies repository watchers through GitHub Actions; no production credentials are stored in the workflow.
+`.github/workflows/uptime.yml` runs `npm run smoke:prod` every 30 minutes and on demand. It checks the web alias, `/health` (including the database when the deployed API reports it), a dated USD/EUR quote, the full currency directory and the 401 boundary on summary data. A failed run appears as a red scheduled run on the Actions tab (GitHub emails watchers who have Actions notifications enabled); no production credentials are stored in the workflow.
 
 ## Security and correctness notes
 
