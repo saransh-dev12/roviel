@@ -29,6 +29,7 @@ model User {
   recurring     RecurringRule[]
   resetTokens   PasswordResetToken[]
   recoveryCodes RecoveryCode[]
+  refreshTokens RefreshToken[]
 }
 
 model PasswordResetToken {
@@ -180,4 +181,16 @@ model ExchangeRate {
 
   @@unique([base, quote, date])
   @@index([base, quote])
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, expiresAt])
 }

@@ -93,6 +93,19 @@ async function run() {
   const login = await call('/api/auth/login', { method: 'POST', body: { email: `API.TEST+${stamp}-A@Example.COM`, password } });
   assert.equal(login.status, 200);
 
+  // Refresh tokens: issued on login, rotate on use, reuse revokes the family.
+  assert.ok(login.body.refreshToken, 'login issues a refresh token');
+  const r1 = await call('/api/auth/refresh', { method: 'POST', body: { refreshToken: login.body.refreshToken } });
+  assert.equal(r1.status, 200);
+  assert.notEqual(r1.body.token, login.body.token, 'access token rotates');
+  assert.ok(r1.body.refreshToken && r1.body.refreshToken !== login.body.refreshToken, 'refresh token rotates');
+  const reuse = await call('/api/auth/refresh', { method: 'POST', body: { refreshToken: login.body.refreshToken } });
+  assert.equal(reuse.status, 401, 'presenting a rotated token is reuse');
+  const dead = await call('/api/auth/refresh', { method: 'POST', body: { refreshToken: r1.body.refreshToken } });
+  assert.equal(dead.status, 401, 'reuse revokes the whole family');
+  const oldAccess = await call('/api/summary', { token: login.body.token });
+  assert.equal(oldAccess.status, 200, 'the still-valid access token keeps working until expiry');
+
   // Password recovery is single-use, expiring and non-enumerating.
   const c = await signup('c');
   const cUser = await db.user.findUnique({ where: { email: c.user.email } });

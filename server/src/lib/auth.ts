@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { prisma } from './db.js';
 import { jwtSecret } from '../config.js';
 
 export interface TokenPayload { sub: string; ver: number }
@@ -31,8 +32,27 @@ export function createRecoveryCodes(count = 10) {
   });
 }
 export function signToken(userId: string, tokenVersion = 0) {
-  return jwt.sign({ sub: userId, ver: tokenVersion }, jwtSecret(), { expiresIn: (process.env.JWT_EXPIRES_IN || '12h') as any });
+  return jwt.sign({ sub: userId, ver: tokenVersion, jti: crypto.randomBytes(12).toString('hex') }, jwtSecret(), { expiresIn: (process.env.JWT_EXPIRES_IN || '15m') as any });
 }
+// ---- Refresh tokens: hashed at rest, rotated on use, family-revoked on reuse ----
+const REFRESH_TTL_DAYS = 30;
+export function hashRefreshToken(token: string): string {
+  return crypto.createHash('sha256').update(token).digest('hex');
+}
+export function generateRefreshToken(): { token: string; tokenHash: string; expiresAt: Date } {
+  const token = crypto.randomBytes(48).toString('base64url');
+  const expiresAt = new Date(Date.now() + REFRESH_TTL_DAYS * 86400000);
+  return { token, tokenHash: hashRefreshToken(token), expiresAt };
+}
+export async function issueRefreshToken(userId: string): Promise<string> {
+  const { token, tokenHash, expiresAt } = generateRefreshToken();
+  await prisma.refreshToken.create({ data: { userId, tokenHash, expiresAt } });
+  return token;
+}
+export async function revokeAllRefreshTokens(userId: string): Promise<void> {
+  await prisma.refreshToken.deleteMany({ where: { userId } });
+}
+
 export function verifyToken(token: string): TokenPayload | null {
   try {
     const p = jwt.verify(token, jwtSecret()) as any;

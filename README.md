@@ -98,7 +98,7 @@ Neon needs the Postgres 18 Docker client (`backup-neon.sh`/`restore-neon.sh`); `
 
 ## Security & correctness
 
-- Startup refuses weak/missing `JWT_SECRET`, missing `DATABASE_URL`, or wildcard CORS. Access tokens last 12h; logout and password changes revoke old sessions server-side (`tokenVersion`).
+- Startup refuses weak/missing `JWT_SECRET`, missing `DATABASE_URL`, or wildcard CORS. Access tokens last 15 minutes and are renewed silently by a 30-day rotating refresh token (hashed at rest, reuse revokes the whole family); logout and password changes revoke everything server-side (`tokenVersion`).
 - Reset tokens are 256-bit, SHA-256-stored, single-use, 30-minute expiry; forgot-password responses never reveal whether an email exists. Without Resend configured, production returns a clear 503 — ten single-use recovery codes are the always-available fallback.
 - Accounts start at zero; entries match their account's currency; missing FX is reported `null`, never faked as `1`; deletion requires password + `DELETE`.
 - A `401` clears cloud state and asks you to sign in — a failed cloud write never silently falls back to the local ledger.

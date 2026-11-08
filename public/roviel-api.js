@@ -13,32 +13,69 @@
     return '';
   }
   const tokenKey = 'roviel.api.token';
+  const refreshKey = 'roviel.api.refresh';
+  function accessExpired() {
+    const token = localStorage.getItem(tokenKey);
+    if (!token) return true;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+      return !payload.exp || payload.exp * 1000 < Date.now() + 30000;
+    } catch { return true; }
+  }
+  async function refreshSession() {
+    const refresh = localStorage.getItem(refreshKey);
+    if (!refresh) return false;
+    try {
+      const res = await fetch(getBase() + '/api/auth/refresh', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken: refresh }),
+      });
+      if (!res.ok) { localStorage.removeItem(refreshKey); return false; }
+      const body = await res.json();
+      localStorage.setItem(tokenKey, body.token);
+      localStorage.setItem(refreshKey, body.refreshToken);
+      return true;
+    } catch { return false; }
+  }
   async function req(path, opts = {}) {
     const BASE = getBase();
-    const token = localStorage.getItem(tokenKey);
-    const res = await fetch(BASE + path, {
-      ...opts,
-      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}), ...(opts.headers || {}) },
-    });
+    if (accessExpired() && localStorage.getItem(refreshKey)) await refreshSession();
+    const doFetch = () => {
+      const token = localStorage.getItem(tokenKey);
+      return fetch(BASE + path, {
+        ...opts,
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}), ...(opts.headers || {}) },
+      });
+    };
+    let res = await doFetch();
+    if (res.status === 401 && localStorage.getItem(refreshKey)) {
+      if (await refreshSession()) res = await doFetch();
+    }
     if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || res.statusText);
     return res.json();
   }
   window.RovielAPI = {
     get base() { return getBase(); },
     isCloud() { return !!getBase() && !!localStorage.getItem(tokenKey); },
-    async signup(email, password) { const r = await req('/api/auth/signup', { method: 'POST', body: JSON.stringify({ email, password }) }); localStorage.setItem(tokenKey, r.token); return r; },
-    async login(email, password) { const r = await req('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }); localStorage.setItem(tokenKey, r.token); return r; },
+    refreshSession,
+    accessExpired,
+    async restoreSession() { const t = localStorage.getItem(tokenKey); if (!t || accessExpired()) await refreshSession(); return !!localStorage.getItem(tokenKey); },
+    async signup(email, password) { const r = await req('/api/auth/signup', { method: 'POST', body: JSON.stringify({ email, password }) }); localStorage.setItem(tokenKey, r.token); localStorage.setItem(refreshKey, r.refreshToken); return r; },
+    async login(email, password) { const r = await req('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }); localStorage.setItem(tokenKey, r.token); localStorage.setItem(refreshKey, r.refreshToken); return r; },
     forgotPassword: (email) => req('/api/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
     resetPassword: (token, password) => req('/api/auth/reset-password', { method: 'POST', body: JSON.stringify({ token, password }) }),
     recoverWithCode: (email, code, password) => req('/api/auth/recover-with-code', { method: 'POST', body: JSON.stringify({ email, code, password }) }),
     async changePassword(currentPassword, newPassword) {
       const r = await req('/api/auth/change-password', { method: 'POST', body: JSON.stringify({ currentPassword, newPassword }) });
       if (r.token) localStorage.setItem(tokenKey, r.token);
+      if (r.refreshToken) localStorage.setItem(refreshKey, r.refreshToken);
       return r;
     },
     async logout() {
       const token = localStorage.getItem(tokenKey);
       localStorage.removeItem(tokenKey);
+      localStorage.removeItem(refreshKey);
       if (!token) return;
       try { await fetch(getBase() + '/api/auth/logout', { method: 'POST', headers: { Authorization: 'Bearer ' + token } }); } catch {}
     },

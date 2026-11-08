@@ -4325,7 +4325,7 @@
       if (oldView) {
         oldView.classList.add('view-exit');
         await waitMs(150);
-        if (superseded()) return;
+        if (superseded()) { oldView.classList.remove('view-exit'); return; }
       }
       swap();
       const now = document.querySelector('.dash-view.active');
@@ -4357,6 +4357,7 @@
       const primary = primaryForView(name);
       document.querySelectorAll('.dash-view').forEach(view => {
         const on = view.id === 'view-' + name;
+        view.classList.remove('view-exit');   // stale exit classes blanked a back-navigated view
         view.classList.toggle('active', on);
         if (on) view.removeAttribute('hidden');
         else view.setAttribute('hidden', '');
@@ -5532,13 +5533,22 @@
           { x: 0, y: .4, z: -3.1, s: .4, tilt: 1.05 },
           { x: 0, y: .05, z: -3.1, s: .56, tilt: -.28 },
         ];
+        // Portrait phones: the coin rides above the headline like a crest, clear of the copy.
+        const eff = aspect < .75
+          ? [
+              { x: 0, y: .56, z: -3.7, s: .28, tilt: .16 },
+              { x: 0, y: .52, z: -3.8, s: .3, tilt: .55 },
+              { x: 0, y: .5, z: -3.6, s: .3, tilt: 1.15 },
+              { x: 0, y: .54, z: -3.8, s: .28, tilt: -.3 },
+            ]
+          : anchors;
         const stops = [0, .36, .68, 1];
         let seg = 0;
         while (seg < stops.length - 2 && currentScroll > stops[seg + 1]) seg++;
         const span = Math.max(1e-4, stops[seg + 1] - stops[seg]);
         const local = Math.min(1, Math.max(0, (currentScroll - stops[seg]) / span));
         const ease = local * local * (3 - 2 * local);
-        const a = anchors[seg], b = anchors[Math.min(seg + 1, anchors.length - 1)];
+        const src = eff; const a = src[seg], b = src[Math.min(seg + 1, src.length - 1)];
         const positionEase = 1 - Math.exp(-5 * deltaTime);
         const xTarget = THREE.MathUtils.lerp(a.x, b.x, ease) * xf + mouseX * .1;
         const yTarget = THREE.MathUtils.lerp(a.y, b.y, ease) + mouseY * .07;
@@ -5739,12 +5749,27 @@
         setAuthMessage('Your session expired. Sign in to continue syncing.');
         setTimeout(() => { expiring = false; }, 1500);
       }
+      // One authenticated-fetch funnel: pre-flight renewal, transparent
+      // refresh-on-401, and stale-token retry after a session swap.
+      async function authedFetch(path, opts = {}) {
+        const R = window.RovielAPI || {};
+        const tokenAtStart = localStorage.getItem('roviel.api.token');
+        if (!tokenAtStart || (R.accessExpired && R.accessExpired())) await R.refreshSession?.();
+        const doFetch = () => fetch(path, {
+          ...opts,
+          headers: { ...(opts.body ? { 'Content-Type': 'application/json' } : {}), Authorization: 'Bearer ' + localStorage.getItem('roviel.api.token'), ...(opts.headers || {}) },
+        });
+        let res = await doFetch();
+        if (res.status === 401) {
+          const current = localStorage.getItem('roviel.api.token');
+          if (current !== tokenAtStart) res = await doFetch();          // newer session exists — retry with it
+          else if (await R.refreshSession?.()) res = await doFetch();   // rotate and retry once
+        }
+        return res;
+      }
       async function cloudFetch(path, opts = {}) {
         const token = localStorage.getItem('roviel.api.token');
-        const res = await fetch(api().base + path, {
-          ...opts,
-          headers: { ...(opts.body ? { 'Content-Type': 'application/json' } : {}), Authorization: 'Bearer ' + token, ...(opts.headers || {}) },
-        });
+        const res = await authedFetch(api().base + path, { ...opts, headers: {} });
         if (res.status === 401) {
           // A 401 for a superseded token (e.g. right after a password reset
           // bumped tokenVersion) must not clear a freshly signed-in session.
@@ -6583,9 +6608,8 @@
       async function removeTransaction(id) {
         if (!cloudMode || !api() || !api().isCloud()) return 'local';
         try {
-          const reqToken = localStorage.getItem('roviel.api.token');
-        const r = await fetch(api().base + '/api/transactions/' + id, { method: 'DELETE', headers: { Authorization: 'Bearer ' + reqToken } });
-          if (r.status === 401 && (!reqToken || reqToken === localStorage.getItem('roviel.api.token'))) { expireSession(); return 'failed'; }
+          const r = await authedFetch(api().base + '/api/transactions/' + id, { method: 'DELETE' });
+        if (r.status === 401) { expireSession(); return 'failed'; }
           if (!r.ok) { const j = await r.json().catch(() => ({})); showDashboardToast(j.error || 'Cannot remove linked entry.'); return 'failed'; }
           await loadCloud(); showDashboardToast('Removed from cloud.');
           return 'removed';
@@ -7129,12 +7153,8 @@
     async function fetchSummary(months = dashState.range) {
       if (window.RovielAPI && window.RovielAPI.isCloud() && window.RovielAPI.base) {
         try {
-          const summaryReqToken = localStorage.getItem('roviel.api.token');
-          const res = await fetch(`${window.RovielAPI.base}/api/summary?months=${months}`, { headers: { Authorization: 'Bearer ' + summaryReqToken } });
-          if (res.status === 401) {
-            if (!summaryReqToken || summaryReqToken === localStorage.getItem('roviel.api.token')) { notifySessionExpired(); throw new Error('Session expired. Sign in again.'); }
-            throw new Error('Session expired. Sign in again.');
-          }
+          const res = await authedFetch(`${window.RovielAPI.base}/api/summary?months=${months}`);
+          if (res.status === 401) { notifySessionExpired(); throw new Error('Session expired. Sign in again.'); }
           if (res.ok) {
             const data = await res.json();
             dashState.summary = data;

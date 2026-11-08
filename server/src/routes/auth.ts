@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/db.js';
-import { createResetToken, createRecoveryCodes, hashPassword, hashRecoveryCode, hashResetToken, normalizeRecoveryCode, verifyPassword, signToken } from '../lib/auth.js';
+import { hashRefreshToken, issueRefreshToken, revokeAllRefreshTokens, createResetToken, createRecoveryCodes, hashPassword, hashRecoveryCode, hashResetToken, normalizeRecoveryCode, verifyPassword, signToken } from '../lib/auth.js';
 import { sendPasswordResetEmail } from '../lib/email.js';
 import { appBaseUrl, isProduction } from '../config.js';
 import { requireAuth, type AuthedRequest } from '../middleware/requireAuth.js';
@@ -19,6 +19,10 @@ const signupLimiter = rateLimit({
   windowMs: 60_000, max: 5, standardHeaders: true, legacyHeaders: false,
   keyGenerator: (req) => `signup:${req.ip}`,
   message: { error: 'Too many sign-up attempts. Try again in a minute.' },
+});
+const refreshLimiter = rateLimit({
+  windowMs: 60_000, max: 30, standardHeaders: true, legacyHeaders: false,
+  keyGenerator: (req) => `refresh:${req.ip}`,
 });
 const loginLimiter = rateLimit({
   windowMs: 60_000, max: 10, standardHeaders: true, legacyHeaders: false, skipSuccessfulRequests: true,
@@ -77,7 +81,8 @@ router.post('/signup', signupLimiter, async (req, res) => {
     }, include: { accounts: true },
   });
   const token = signToken(user.id, user.tokenVersion);
-  res.json({ token, user: { id: user.id, email: user.email, displayName: user.displayName, homeCurrency: user.homeCurrency } });
+  const refreshToken = await issueRefreshToken(user.id);
+  res.json({ token, refreshToken, user: { id: user.id, email: user.email, displayName: user.displayName, homeCurrency: user.homeCurrency } });
   } catch (e) { console.error('signup failed', e); res.status(503).json({ error: 'Database unavailable. Start Postgres and retry.' }); }
 });
 
@@ -90,7 +95,8 @@ router.post('/login', loginLimiter, async (req, res) => {
     res.status(401).json({ error: 'Invalid email or password' }); return;
   }
   const token = signToken(user.id, user.tokenVersion);
-  res.json({ token, user: { id: user.id, email: user.email, displayName: user.displayName, homeCurrency: user.homeCurrency } });
+  const refreshToken = await issueRefreshToken(user.id);
+  res.json({ token, refreshToken, user: { id: user.id, email: user.email, displayName: user.displayName, homeCurrency: user.homeCurrency } });
   } catch (e) { console.error('login failed', e); res.status(503).json({ error: 'Database unavailable. Start Postgres and retry.' }); }
 });
 
@@ -153,6 +159,7 @@ router.post('/reset-password', resetLimiter, async (req, res) => {
       data: { usedAt: new Date() },
     });
     await db.recoveryCode.updateMany({ where: { userId: user.id, usedAt: null }, data: { usedAt: new Date() } });
+    await db.refreshToken.deleteMany({ where: { userId: user.id } });
     return true;
   });
   if (!updated) {
@@ -210,6 +217,7 @@ router.post('/recover-with-code', recoveryUseLimiter, async (req, res) => {
     });
     await db.recoveryCode.updateMany({ where: { userId: record.userId, usedAt: null }, data: { usedAt: new Date() } });
     await db.passwordResetToken.updateMany({ where: { userId: record.userId, usedAt: null }, data: { usedAt: new Date() } });
+    await db.refreshToken.deleteMany({ where: { userId: record.userId } });
     return true;
   });
   if (!updated) { res.status(400).json({ error: INVALID_RECOVERY }); return; }
@@ -270,10 +278,38 @@ router.post('/change-password', requireAuth, changePasswordLimiter, async (req: 
     await db.recoveryCode.updateMany({ where: { userId: user.id, usedAt: null }, data: { usedAt: new Date() } });
     return next;
   });
-  res.json({ ok: true, token: signToken(updated.id, updated.tokenVersion) });
+  await revokeAllRefreshTokens(updated.id);
+  res.json({ ok: true, token: signToken(updated.id, updated.tokenVersion), refreshToken: await issueRefreshToken(updated.id) });
+});
+
+router.post('/refresh', refreshLimiter, async (req, res) => {
+  const parsed = z.object({ refreshToken: z.string().trim().min(20).max(200) }).safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: 'A refresh token is required.' }); return; }
+  const presented = parsed.data.refreshToken;
+  const stored = await prisma.refreshToken.findUnique({
+    where: { tokenHash: hashRefreshToken(presented) },
+    include: { user: { select: { id: true, tokenVersion: true, email: true, displayName: true, homeCurrency: true } } },
+  });
+  if (!stored) { res.status(401).json({ error: 'Invalid refresh token.' }); return; }
+  if (stored.revokedAt) {
+    // Reuse of an already-rotated token: treat the whole family as compromised.
+    await prisma.refreshToken.updateMany({ where: { userId: stored.userId, revokedAt: null }, data: { revokedAt: new Date() } });
+    res.status(401).json({ error: 'Refresh token reuse detected. All sessions were revoked.' });
+    return;
+  }
+  if (stored.expiresAt.getTime() <= Date.now()) {
+    await prisma.refreshToken.delete({ where: { id: stored.id } });
+    res.status(401).json({ error: 'Refresh token expired. Sign in again.' });
+    return;
+  }
+  const token = signToken(stored.user.id, stored.user.tokenVersion);
+  await prisma.refreshToken.update({ where: { id: stored.id }, data: { revokedAt: new Date() } });
+  const refreshToken = await issueRefreshToken(stored.user.id);
+  res.json({ ok: true, token, refreshToken, user: { id: stored.user.id, email: stored.user.email, displayName: stored.user.displayName, homeCurrency: stored.user.homeCurrency } });
 });
 
 router.post('/logout', requireAuth, async (req: AuthedRequest, res) => {
+  await revokeAllRefreshTokens(req.userId!);
   await prisma.user.update({ where: { id: req.userId! }, data: { tokenVersion: { increment: 1 } } });
   res.json({ ok: true });
 });

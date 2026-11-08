@@ -67,11 +67,6 @@ async function api(page, path, options = {}) {
     return { status: res.status, body };
   }, { path, options, API });
 }
-// The odometer keeps both digits stacked mid-roll; read after it settles.
-async function settleMetrics(pg) {
-  await pg.waitForFunction(() => !document.querySelector('.od-rolling'), undefined, { timeout: 2500 }).catch(() => {});
-  await pg.waitForTimeout(60);
-}
 const money = text => Number(String(text).replace(/[^0-9.-]/g, '')) || 0;
 
 try {
@@ -349,11 +344,20 @@ try {
   await page.waitForTimeout(300);
   check('command palette closes on Escape', await page.locator('#command-palette').isHidden());
 
-  const shownBalance = money(await page.locator('#total-balance').innerText());
+  let shownBalanceRaw = await page.locator('#total-balance').evaluate(el => ({ ds: el.dataset.tickValue, tc: el.textContent }));
+  // A transient upstream FX failure renders the honest "unavailable" state —
+  // reload once for a fresh quote window before judging.
+  if (!/[\d]/.test(shownBalanceRaw.ds || shownBalanceRaw.tc)) {
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await ready(page);
+    await page.waitForTimeout(2000);
+    shownBalanceRaw = await page.locator('#total-balance').evaluate(el => ({ ds: el.dataset.tickValue, tc: el.textContent }));
+  }
+  const shownBalance = money(shownBalanceRaw.ds || shownBalanceRaw.tc);
   check('balance matches server', near(shownBalance, summary.body.totals.balanceMajor, 2), `${shownBalance} vs ${summary.body.totals.balanceMajor.toFixed(0)}`);
-  const shownIncome = money(await page.locator('#total-income').innerText());
+  const shownIncome = money(await page.locator('#total-income').evaluate(el => el.dataset.tickValue || el.textContent));
   check('income matches server', near(shownIncome, summary.body.totals.incomeMajor, 2), `${shownIncome} vs ${summary.body.totals.incomeMajor.toFixed(0)}`);
-  const shownSpend = money(await page.locator('#total-expenses').innerText());
+  const shownSpend = money(await page.locator('#total-expenses').evaluate(el => el.dataset.tickValue || el.textContent));
   check('spending matches server', near(shownSpend, summary.body.totals.expenseMajor, 2), `${shownSpend} vs ${summary.body.totals.expenseMajor.toFixed(0)}`);
 
   // a failed cloud save must not fall through to the local demo ledger
@@ -755,6 +759,17 @@ try {
   await recPage.click('#auth-submit');
   await recPage.waitForFunction(() => document.querySelector('#cloud-status')?.textContent.includes('Cloud sync'), { timeout: 20000 });
   check('recovery: new password signs in', (await recPage.locator('#cloud-status').innerText()).includes('Cloud sync'));
+  const refreshRotate = await recPage.evaluate(async () => {
+    const refresh = localStorage.getItem('roviel.api.refresh');
+    if (!refresh) return 'missing';
+    const res = await fetch((window.RovielAPI?.base || '') + '/api/auth/refresh', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refreshToken: refresh }) });
+    if (!res.ok) return 'fail ' + res.status;
+    const body = await res.json();
+    localStorage.setItem('roviel.api.token', body.token);
+    localStorage.setItem('roviel.api.refresh', body.refreshToken);
+    return body.refreshToken !== refresh ? 'rotated' : 'static';
+  });
+  check('refresh token rotates on use', refreshRotate === 'rotated', refreshRotate);
   const recDelete = await api(recPage, '/api/auth/account', { method: 'DELETE', body: JSON.stringify({ password: recNewPassword, confirm: 'DELETE' }) });
   check('recovery: test account cleaned up', recDelete.status === 200, recDelete.status);
   await recPage.close();
