@@ -69,7 +69,7 @@ try {
   await sleep(300);
 
   // ---------- D. Transactions ----------
-  await page.click('.dash-side-nav [data-view="transactions"]');
+  await page.click('.dash-global-nav [data-view="transactions"]');
   await page.waitForSelector('#view-transactions.active');
   await sleep(400);
   const rows0 = await page.locator('#transaction-list .dash-row:not(.head)').count();
@@ -144,7 +144,7 @@ try {
   pass('test expense deleted');
 
   // ---------- C. Accounts ----------
-  await page.click('.dash-side-nav [data-view="accounts"]');
+  await page.click('.dash-global-nav [data-view="accounts"]');
   await sleep(800);
   const acctText = await page.locator('#account-list').innerText();
   pass('accounts list names, currencies, balances', acctText.replace(/\n/g, ' ').slice(0, 70));
@@ -192,7 +192,9 @@ try {
   } else fail('transfer recorded', 'need two INR accounts');
 
   // ---------- E. Budgets ----------
-  await page.click('.dash-side-nav [data-view="budgets"]');
+  await page.click('[data-nav-group="planning"]');
+  await page.waitForSelector('#dash-context-nav [data-view="budgets"]');
+  await page.click('#dash-context-nav [data-view="budgets"]');
   await sleep(800);
   pass('budgets render', (await page.locator('#budget-list').innerText()).replace(/\n/g, ' ').slice(0, 60));
   const CAT = `Journey Cat ${ts}`;
@@ -209,7 +211,9 @@ try {
   else fail('test budget deleted');
 
   // ---------- E. Goals ----------
-  await page.click('.dash-side-nav [data-view="goals"]');
+  await page.click('[data-nav-group="planning"]');
+  await page.waitForSelector('#dash-context-nav [data-view="goals"]');
+  await page.click('#dash-context-nav [data-view="goals"]');
   await sleep(800);
   const GOAL = `Journey Goal ${ts}`;
   await page.fill('#new-goal-title', GOAL);
@@ -233,7 +237,9 @@ try {
   else fail('test goal deleted');
 
   // ---------- F. Converter ----------
-  await page.click('.dash-side-nav [data-view="pulse"]');
+  await page.click('[data-nav-group="analytics"]');
+  await page.waitForSelector('#dash-context-nav [data-view="pulse"]');
+  await page.click('#dash-context-nav [data-view="pulse"]');
   await sleep(800);
   await page.click('#open-converter-cta');
   await page.waitForSelector('#currency-tools-dialog[open]');
@@ -265,7 +271,9 @@ try {
   pass('currency dialog closes');
 
   // ---------- G. Recurring + Insights ----------
-  await page.click('.dash-side-nav [data-view="recurring"]');
+  await page.click('[data-nav-group="planning"]');
+  await page.waitForSelector('#dash-context-nav [data-view="recurring"]');
+  await page.click('#dash-context-nav [data-view="recurring"]');
   await sleep(700);
   pass('recurring rules listed', (await page.locator('#recurring-list').innerText()).replace(/\n/g, ' ').slice(0, 60));
   const RULE = `Journey Rule ${ts}`;
@@ -279,7 +287,7 @@ try {
   await rrow.locator('[data-rec]').click();
   await sleep(2200);
   pass('rule posts exactly one ledger entry', (await page.locator('#dashboard-toast').innerText()).length > 2 ? 'posted' : 'missing');
-  await page.click('.dash-side-nav [data-view="transactions"]');
+  await page.click('.dash-global-nav [data-view="transactions"]');
   await sleep(700);
   await page.fill('#transaction-search', RULE);
   await sleep(500);
@@ -289,7 +297,9 @@ try {
   await sleep(700);
   await page.fill('#transaction-search', '');
   pass('posted test entry cleaned up');
-  await page.click('.dash-side-nav [data-view="insights"]');
+  await page.click('[data-nav-group="analytics"]');
+  await page.waitForSelector('#dash-context-nav [data-view="insights"]');
+  await page.click('#dash-context-nav [data-view="insights"]');
   await sleep(900);
   const cards = await page.locator('.insight-card').count();
   const ev = await page.locator('.insight-card .insight-more').allInnerTexts().catch(() => []);
@@ -305,7 +315,7 @@ try {
   else fail('theme switch visibly changes interface');
   await page.click('.dashboard-view [data-theme-toggle]');
   await sleep(1000);
-  await page.click('.dash-side-nav [data-view="accounts"]');
+  await page.click('.dash-global-nav [data-view="accounts"]');
   await sleep(600);
   await page.selectOption('#settings-home-currency', 'USD');
   await page.click('#save-settings');
@@ -328,7 +338,7 @@ try {
   else fail('session + data persist across reload');
   await page.click('#auth-button');
   await sleep(900);
-  if ((await page.locator('#cloud-status').innerText()).includes('Local demo') && (await page.locator('#auth-button').innerText()).includes('Sign in')) pass('sign-out returns to local demo');
+  if (await page.locator('#cloud-status').isHidden() && (await page.locator('#auth-button').innerText()).includes('Sign in')) pass('sign-out clears sync state');
   else fail('sign-out returns to local demo');
 } catch (e) {
   fail('journey aborted', String(e).slice(0, 200));

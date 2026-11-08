@@ -4,11 +4,24 @@ import fs from 'fs';
 const WEB = process.env.WEB || 'http://localhost:5173';
 const API = process.env.API || 'http://localhost:4000';
 const CAPTURE = process.env.CAPTURE === '1';
+// Cloud checks fail the suite when sign-in fails. Set RESPONSIVE_CLOUD_OPTIONAL=1
+// to record them as explicit skips (with the reason) instead of failures.
+const CLOUD_OPTIONAL = process.env.RESPONSIVE_CLOUD_OPTIONAL === '1';
+// Substrings of browser errors that are known and intentionally handled.
+// Keep this list empty unless a specific error is documented as handled.
+const KNOWN_HANDLED_ERRORS = [];
 const results = [];
+const skips = [];
 const check = (name, ok, detail = '') => {
   results.push({ name, ok, detail });
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? ' — ' + String(detail).slice(0, 140) : ''}`);
 };
+const skip = (name, reason) => {
+  skips.push({ name, reason });
+  console.log(`SKIP  ${name} — ${String(reason).slice(0, 140)}`);
+};
+
+const THEMES = ['noir', 'brutal'];
 
 const viewports = [
   { name: '320x568', width: 320, height: 568, touch: true },
@@ -73,16 +86,17 @@ async function rect(page, selector) {
   });
 }
 
-try {
+for (const theme of THEMES) {
   for (const viewport of viewports) {
-    const { context, page } = await newPage(viewport);
+    const tag = `[${theme}] ${viewport.name}`;
+    const { context, page } = await newPage(viewport, theme);
 
     await page.goto(WEB, { waitUntil: 'domcontentloaded' });
     await ready(page);
     const landingOverflow = await overflow(page);
-    check(`${viewport.name} landing has no horizontal overflow`, landingOverflow.doc <= 1 && landingOverflow.body <= 1, JSON.stringify(landingOverflow));
+    check(`${tag} landing has no horizontal overflow`, landingOverflow.doc <= 1 && landingOverflow.body <= 1, JSON.stringify(landingOverflow));
     const headerCta = await rect(page, '.contact-btn');
-    check(`${viewport.name} header CTA stays in viewport`, headerCta.top >= 0 && headerCta.bottom <= viewport.height + 1 && headerCta.left >= 0 && headerCta.right <= viewport.width + 1, JSON.stringify(headerCta));
+    check(`${tag} header CTA stays in viewport`, headerCta.top >= 0 && headerCta.bottom <= viewport.height + 1 && headerCta.left >= 0 && headerCta.right <= viewport.width + 1, JSON.stringify(headerCta));
 
     if (viewport.height <= 520) {
       await page.evaluate(() => {
@@ -93,47 +107,47 @@ try {
       await page.waitForTimeout(450);
       const cta = await rect(page, '#slide-4 .slide-cta');
       const ctaOpacity = await page.locator('#slide-4 .slide-cta').evaluate(element => parseFloat(getComputedStyle(element).opacity));
-      check(`${viewport.name} landscape story CTA stays in viewport`, ctaOpacity > .5 && cta.top >= 0 && cta.bottom <= viewport.height + 1 && cta.left >= 0 && cta.right <= viewport.width + 1, JSON.stringify({ ...cta, opacity: ctaOpacity }));
+      check(`${tag} landscape story CTA stays in viewport`, ctaOpacity > .5 && cta.top >= 0 && cta.bottom <= viewport.height + 1 && cta.left >= 0 && cta.right <= viewport.width + 1, JSON.stringify({ ...cta, opacity: ctaOpacity }));
     }
 
     if (viewport.width > 760 && viewport.width <= 900) {
       const convert = page.locator('#open-currency-tools-mobile');
-      check(`${viewport.name} landing currency tool stays reachable`, await convert.isVisible());
+      check(`${tag} landing currency tool stays reachable`, await convert.isVisible());
       await convert.click();
       await page.waitForSelector('#currency-tools-dialog[open]');
       const dialogRect = await rect(page, '#currency-tools-dialog');
-      check(`${viewport.name} currency tool fits the viewport`, dialogRect.top >= 0 && dialogRect.bottom <= viewport.height + 1 && dialogRect.left >= 0 && dialogRect.right <= viewport.width + 1, JSON.stringify(dialogRect));
+      check(`${tag} currency tool fits the viewport`, dialogRect.top >= 0 && dialogRect.bottom <= viewport.height + 1 && dialogRect.left >= 0 && dialogRect.right <= viewport.width + 1, JSON.stringify(dialogRect));
       await page.keyboard.press('Escape');
       await page.waitForFunction(() => !document.getElementById('currency-tools-dialog').open);
     }
 
     if (CAPTURE) {
       fs.mkdirSync('artifacts/responsive/after', { recursive: true });
-      await page.screenshot({ path: `artifacts/responsive/after/landing-${viewport.name}.png` });
+      await page.screenshot({ path: `artifacts/responsive/after/landing-${theme}-${viewport.name}.png` });
     }
 
     await openDashboard(page);
     const dashOverflow = await overflow(page);
-    check(`${viewport.name} dashboard has no horizontal overflow`, dashOverflow.doc <= 1 && dashOverflow.body <= 1, JSON.stringify(dashOverflow));
+    check(`${tag} dashboard has no horizontal overflow`, dashOverflow.doc <= 1 && dashOverflow.body <= 1, JSON.stringify(dashOverflow));
 
-    if (CAPTURE) await page.screenshot({ path: `artifacts/responsive/after/dashboard-${viewport.name}.png` });
+    if (CAPTURE) await page.screenshot({ path: `artifacts/responsive/after/dashboard-${theme}-${viewport.name}.png` });
 
     if (viewport.width <= 900) {
       const nav = page.locator('.mobile-nav');
-      check(`${viewport.name} bottom navigation is visible`, await nav.isVisible());
+      check(`${tag} bottom navigation is visible`, await nav.isVisible());
       const contextRow = await rect(page, '.dash-contextbar');
-      check(`${viewport.name} empty context row stays compact`, contextRow.height <= 46, `${Math.round(contextRow.height)}px`);
-      check(`${viewport.name} active mobile tab exposes aria-current`, await page.locator('.mobile-nav [data-view="overview"]').getAttribute('aria-current') === 'page');
+      check(`${tag} empty context row stays compact`, contextRow.height <= 46, `${Math.round(contextRow.height)}px`);
+      check(`${tag} active mobile tab exposes aria-current`, await page.locator('.mobile-nav [data-view="overview"]').getAttribute('aria-current') === 'page');
       const navRect = await rect(page, '.mobile-nav');
       const padding = await page.locator('.dash-content').evaluate(element => parseFloat(getComputedStyle(element).paddingBottom) || 0);
-      check(`${viewport.name} content clears bottom navigation`, padding >= navRect.height, `padding ${padding}, nav ${navRect.height}`);
+      check(`${tag} content clears bottom navigation`, padding >= navRect.height, `padding ${padding}, nav ${navRect.height}`);
       await page.evaluate(() => {
         const toast = document.getElementById('dashboard-toast');
         toast.textContent = 'Responsive check';
         toast.classList.add('show');
       });
       const toastRect = await rect(page, '.dash-toast');
-      check(`${viewport.name} toast sits above the bottom navigation`, toastRect.bottom <= navRect.top - 2, JSON.stringify({ toast: toastRect.bottom, nav: navRect.top }));
+      check(`${tag} toast sits above the bottom navigation`, toastRect.bottom <= navRect.top - 2, JSON.stringify({ toast: toastRect.bottom, nav: navRect.top }));
       await page.evaluate(() => document.getElementById('dashboard-toast').classList.remove('show'));
     }
 
@@ -143,14 +157,16 @@ try {
       const row = page.locator('#transaction-list .dash-row:not(.head)').first();
       if (await row.count()) {
         const sub = row.locator('.dash-mobile-sub');
-        check(`${viewport.name} transaction metadata stays visible`, await sub.isVisible());
+        check(`${tag} transaction metadata stays visible`, await sub.isVisible());
         const rowBox = await row.evaluate(element => {
           const box = element.getBoundingClientRect();
           return { left: box.left, right: box.right, width: box.width };
         });
         const nameBox = await row.locator('.dash-transaction-name').evaluate(element => element.getBoundingClientRect().width);
-        check(`${viewport.name} transaction description keeps useful width`, nameBox >= 72, `name ${Math.round(nameBox)}px`);
-        check(`${viewport.name} transaction row fits its card`, rowBox.left >= 0 && rowBox.right <= viewport.width + 1, JSON.stringify(rowBox));
+        check(`${tag} transaction description keeps useful width`, nameBox >= 72, `name ${Math.round(nameBox)}px`);
+        check(`${tag} transaction row fits its card`, rowBox.left >= 0 && rowBox.right <= viewport.width + 1, JSON.stringify(rowBox));
+      } else {
+        check(`${tag} transaction row available for responsive checks`, false, 'no transaction rows rendered');
       }
 
       const more = page.locator('#mobile-more-toggle');
@@ -159,30 +175,32 @@ try {
         await page.waitForSelector('#mobile-more-sheet:not([hidden])');
         await page.waitForTimeout(80);
         const focusedInside = await page.evaluate(() => document.getElementById('mobile-more-sheet')?.contains(document.activeElement));
-        check(`${viewport.name} More sheet moves focus inside`, focusedInside);
+        check(`${tag} More sheet moves focus inside`, focusedInside);
         await page.keyboard.press('Escape');
         await page.waitForTimeout(80);
-        check(`${viewport.name} Escape closes More without closing dashboard`,
+        check(`${tag} Escape closes More without closing dashboard`,
           await page.evaluate(() => document.getElementById('mobile-more-sheet').hidden && document.getElementById('dashboard-view').classList.contains('open')));
+      } else {
+        check(`${tag} More sheet toggle visible on mobile`, false, 'toggle not visible');
       }
 
       await page.evaluate(() => window.RovielShowView('overview'));
       await page.click('#open-transaction');
       await page.waitForSelector('#transaction-modal[open]');
       const font = await page.locator('#transaction-name').evaluate(element => parseFloat(getComputedStyle(element).fontSize));
-      if (viewport.touch) check(`${viewport.name} mobile form inputs avoid iOS zoom`, font >= 16, `font ${font}px`);
+      if (viewport.touch) check(`${tag} mobile form inputs avoid iOS zoom`, font >= 16, `font ${font}px`);
       const form = page.locator('#transaction-form');
       await form.evaluate(element => { element.scrollTop = element.scrollHeight; });
       const save = await rect(page, '.tx-submit');
-      check(`${viewport.name} transaction save action is reachable`, save.top >= 0 && save.bottom <= viewport.height + 1, JSON.stringify(save));
+      check(`${tag} transaction save action is reachable`, save.top >= 0 && save.bottom <= viewport.height + 1, JSON.stringify(save));
       const modalOverflow = await page.evaluate(() => {
         const form = document.getElementById('transaction-form');
         return { horizontal: form.scrollWidth - form.clientWidth, viewport: document.documentElement.scrollWidth - window.innerWidth };
       });
-      check(`${viewport.name} transaction modal does not overflow horizontally`, modalOverflow.horizontal <= 1 && modalOverflow.viewport <= 1, JSON.stringify(modalOverflow));
+      check(`${tag} transaction modal does not overflow horizontally`, modalOverflow.horizontal <= 1 && modalOverflow.viewport <= 1, JSON.stringify(modalOverflow));
       await page.keyboard.press('Escape');
       await page.waitForTimeout(100);
-      check(`${viewport.name} Escape closes transaction modal without closing dashboard`,
+      check(`${tag} Escape closes transaction modal without closing dashboard`,
         await page.evaluate(() => !document.getElementById('transaction-modal').open && document.getElementById('dashboard-view').classList.contains('open')));
 
       if (viewport.name === '844x390') {
@@ -191,10 +209,10 @@ try {
         const authForm = page.locator('#auth-modal .auth-form');
         await authForm.evaluate(element => { element.scrollTop = element.scrollHeight; });
         const authSubmit = await rect(page, '#auth-submit');
-        check(`${viewport.name} auth form scrolls and keeps submit reachable`, authSubmit.top >= 0 && authSubmit.bottom <= viewport.height + 1, JSON.stringify(authSubmit));
+        check(`${tag} auth form scrolls and keeps submit reachable`, authSubmit.top >= 0 && authSubmit.bottom <= viewport.height + 1, JSON.stringify(authSubmit));
         await page.keyboard.press('Escape');
         await page.waitForTimeout(120);
-        check(`${viewport.name} Escape closes auth without closing dashboard`,
+        check(`${tag} Escape closes auth without closing dashboard`,
           await page.evaluate(() => !document.getElementById('auth-modal').open && document.getElementById('dashboard-view').classList.contains('open')));
       }
     }
@@ -211,7 +229,7 @@ try {
         const activeBox = active.getBoundingClientRect();
         return { left: box.left, right: box.right, activeLeft: activeBox.left, activeRight: activeBox.right };
       });
-      check('pulse deep link keeps active tab on screen', !!tabs && tabs.activeLeft >= tabs.left - 1 && tabs.activeRight <= tabs.right + 1, JSON.stringify(tabs));
+      check(`${tag} pulse deep link keeps active tab on screen`, !!tabs && tabs.activeLeft >= tabs.left - 1 && tabs.activeRight <= tabs.right + 1, JSON.stringify(tabs));
 
       await page.evaluate(base => localStorage.setItem('roviel.api.base', base), API);
       await page.reload({ waitUntil: 'domcontentloaded' });
@@ -227,7 +245,12 @@ try {
         await page.waitForFunction(() => document.querySelector('#cloud-status')?.textContent.includes('Cloud sync'), { timeout: 15000 });
         signedIn = true;
       } catch (error) {
-        console.log('SKIP  cloud responsive checks — ' + String(error?.message || error).slice(0, 120));
+        const message = String(error?.message || error).slice(0, 160);
+        if (CLOUD_OPTIONAL) {
+          skip(`${tag} cloud responsive checks`, `sign-in failed (RESPONSIVE_CLOUD_OPTIONAL=1) — ${message}`);
+        } else {
+          check(`${tag} cloud sign-in succeeds for cloud view checks`, false, message);
+        }
       }
 
       if (signedIn) {
@@ -238,17 +261,22 @@ try {
             const host = document.getElementById('view-' + name);
             return { view: host.scrollWidth - host.clientWidth, page: document.documentElement.scrollWidth - window.innerWidth };
           }, view);
-          check(`${viewport.name} ${view} view fits`, viewOverflow.view <= 1 && viewOverflow.page <= 1, JSON.stringify(viewOverflow));
+          check(`${tag} ${view} view fits`, viewOverflow.view <= 1 && viewOverflow.page <= 1, JSON.stringify(viewOverflow));
         }
-        if (viewport.touch && await page.locator('#pulse-chart svg').count()) {
-          const chart = page.locator('#pulse-chart');
-          await chart.scrollIntoViewIfNeeded();
-          await page.waitForTimeout(200);
-          const box = await chart.boundingBox();
-          if (box) {
-            await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
-            await page.waitForTimeout(180);
-            check(`${viewport.name} pulse tooltip remains available to touch`, await page.locator('#pulse-tooltip').isVisible());
+        if (viewport.touch) {
+          const chartCount = await page.locator('#pulse-chart svg').count();
+          check(`${tag} pulse chart renders for touch checks`, chartCount > 0, chartCount ? '' : 'no pulse chart svg');
+          if (chartCount) {
+            const chart = page.locator('#pulse-chart');
+            await chart.scrollIntoViewIfNeeded();
+            await page.waitForTimeout(200);
+            const box = await chart.boundingBox();
+            check(`${tag} pulse chart has a bounding box for touch checks`, !!box, box ? '' : 'bounding box unavailable');
+            if (box) {
+              await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+              await page.waitForTimeout(180);
+              check(`${tag} pulse tooltip remains available to touch`, await page.locator('#pulse-tooltip').isVisible());
+            }
           }
         }
       }
@@ -270,15 +298,19 @@ try {
   await ready(reducedPage);
   await openDashboard(reducedPage);
   const reducedOverflow = await overflow(reducedPage);
-  check('reduced motion landing and dashboard remain usable', reducedOverflow.doc <= 1 && reducedOverflow.body <= 1);
+  check(`[${theme}] reduced motion landing and dashboard remain usable`, reducedOverflow.doc <= 1 && reducedOverflow.body <= 1);
   await reducedContext.close();
-} catch (error) {
-  check('responsive suite completed', false, error?.stack || String(error));
-} finally {
-  await browser.close();
 }
+
+await browser.close();
+
+const knownHandled = error => KNOWN_HANDLED_ERRORS.some(known => error.includes(known));
+const unexpectedErrors = pageErrors.filter(error => !knownHandled(error));
+check('no unexpected browser page errors across the suite', unexpectedErrors.length === 0, unexpectedErrors.slice(0, 3).join(' | '));
 
 const failures = results.filter(result => !result.ok);
 console.log(`\n${results.length - failures.length}/${results.length} responsive checks passed.`);
+if (skips.length) console.log(`${skips.length} check(s) skipped as explicitly optional:`);
+for (const { name, reason } of skips) console.log(`  SKIP  ${name} — ${reason}`);
 if (pageErrors.length) console.log('Page errors:', pageErrors.slice(0, 5));
 if (failures.length) process.exitCode = 1;

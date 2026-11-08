@@ -82,15 +82,12 @@ try {
 
   // scroll snap = one scroll, one section
   await page.evaluate(() => window.scrollTo({ top: (document.documentElement.scrollHeight - window.innerHeight) * 0.2, behavior: 'instant' }));
-  await page.waitForFunction(() => {
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    if (max <= 0) return false;
-    const ratio = window.scrollY / max;
-    return [0, 0.34, 0.62, 0.94].some(stop => Math.abs(stop - ratio) < 0.03);
-  }, { timeout: 6000 }).catch(() => {});
-  await page.waitForTimeout(200);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+  await page.waitForTimeout(300);
+  await page.evaluate(() => window.dispatchEvent(new WheelEvent('wheel', { deltaY: 260, cancelable: true })));
+  await page.waitForTimeout(1400);
   const snap = await page.evaluate(() => window.scrollY / (document.documentElement.scrollHeight - window.innerHeight));
-  check('scroll snaps to a section', Math.abs(snap - 0.34) < 0.03, 'ratio ' + snap.toFixed(3));
+  check('one flick lands on the next story slide', Math.abs(snap - 0.36) < 0.04, 'ratio ' + snap.toFixed(3));
   await page.waitForFunction(() => document.querySelector('#slide-2-img')?.classList.contains('active'), { timeout: 5000 }).catch(() => {});
   check('overview preview appears', await page.locator('#slide-2-img').evaluate(el => el.classList.contains('active')));
   await page.evaluate(() => window.scrollTo({ top: (document.documentElement.scrollHeight - window.innerHeight) * 0.62, behavior: 'instant' }));
@@ -324,7 +321,7 @@ try {
   // motion engine + React Bits islands
   const motion = await page.evaluate(() => window.__motion?.status?.());
   check('motion engine runs gsap, lenis and scroll triggers', !!motion && motion.gsap === true && motion.lenis === true && motion.triggers >= 2 && motion.reduced === false, JSON.stringify(motion));
-  check('split-text headings hydrated', (await page.locator('#view-overview .view-head h1 .split-char').count()) > 0);
+  check('view headings use the clean rise reveal', (await page.locator('#view-overview .view-head h1.view-title-in').count()) === 1);
   check('clickspark engine layer present', (await page.locator('#bits-sparks').count()) === 1);
 
   // command palette navigates with the keyboard
@@ -390,6 +387,7 @@ try {
   await monthCol.dispatchEvent('click');
   await page.waitForTimeout(600);
   check('chart month selection filters', (await page.locator('#chart-selection').innerText()).includes(tipMonth.key), await page.locator('#chart-selection').innerText());
+  check('month click opens the Transactions tab with a filter chip', (await page.evaluate(() => document.querySelector('.dash-view.active')?.id)) === 'view-transactions' && !(await page.locator('#month-filter-chip').isHidden()), await page.evaluate(() => document.querySelector('.dash-view.active')?.id));
   const monthRows = await page.locator('#transaction-list .dash-row:not(.head)').count();
   check('chart month filters the activity list', monthRows === expectedMonthRows && monthRows > 0, `${monthRows} rows vs ${expectedMonthRows} expected`);
   check('selected chart month is visibly pressed', (await monthCol.getAttribute('aria-pressed')) === 'true');
@@ -397,6 +395,10 @@ try {
   await page.waitForTimeout(600);
   const resetRows = await page.locator('#transaction-list .dash-row:not(.head)').count();
   check('clearing the chart month restores the list', resetRows === cloudLedger.length && resetRows > monthRows, `${monthRows} -> ${resetRows}`);
+  // The month click navigates to Transactions, so return to Overview before
+  // exercising the chart's range controls again.
+  await page.click('.dash-global-nav [data-view="overview"]');
+  await page.waitForTimeout(500);
   await page.click('[data-range="12"]');
   await page.waitForTimeout(1800);
   check('chart range switch works', (await page.locator('.chart-col').count()) === 12, (await page.locator('.chart-col').count()) + ' columns');
@@ -592,7 +594,7 @@ try {
   // sign out
   await page.click('#auth-button');
   await page.waitForTimeout(900);
-  check('sign out restores local demo', (await page.locator('#cloud-status').innerText()).includes('Local demo'));
+  check('sign out clears the sync pills', await page.locator('#cloud-status').isHidden());
   await page.close();
 
   // ================= MOBILE =================
@@ -637,7 +639,16 @@ try {
   await ready(off);
   await off.waitForTimeout(2500);
   await openDashboard(off);
-  check('offline: dashboard still opens', (await off.locator('#total-balance').innerText()).length > 1);
+  // Wait until the value is BOTH in textContent and actually readable via
+  // innerText — the local ledger renders in two passes offline.
+  const offBal = await off
+    .waitForFunction(() => {
+      const el = document.getElementById('total-balance');
+      return !!el && el.textContent?.length > 1 && !!el.innerText && el.innerText.length > 1;
+    }, { timeout: 12000 })
+    .then(() => off.locator('#total-balance').innerText())
+    .catch(() => '');
+  check('offline: dashboard still opens', offBal.trim().length > 1, `text="${offBal.slice(0, 24)}"`);
   await off.click('#open-transaction');
   await off.fill('#transaction-name', 'Offline entry');
   await off.fill('#transaction-amount', '99');
