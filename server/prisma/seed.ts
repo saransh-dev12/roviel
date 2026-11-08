@@ -1,6 +1,21 @@
 import { PrismaClient } from '@prisma/client';
 import { hashPassword } from '../src/lib/auth.js';
 
+// The seed deletes and recreates the demo user's data. Refuse to run against a
+// non-local database unless the operator explicitly overrides the guard.
+const target = process.env.DATABASE_URL ?? '';
+const host = (() => {
+  try { return new URL(target).hostname; } catch { return ''; }
+})();
+const local = ['localhost', '127.0.0.1', '::1'].includes(host);
+if (!local && process.env.ALLOW_NONLOCAL_SEED !== '1') {
+  console.error(
+    `Refusing to seed: DATABASE_URL host "${host || 'unknown'}" is not local and the seed deletes data.\n` +
+    'Point DATABASE_URL at a local database, or set ALLOW_NONLOCAL_SEED=1 to override deliberately.',
+  );
+  process.exit(1);
+}
+
 const prisma = new PrismaClient();
 
 const EMAIL = 'demo@ledgerly.app';

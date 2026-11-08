@@ -2,8 +2,23 @@ import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import { PrismaClient } from '@prisma/client';
 
+// These tests create and delete users. Refuse non-local targets unless the
+// operator explicitly overrides the guard.
+const isLocal = url => {
+  try { return ['localhost', '127.0.0.1', '::1'].includes(new URL(url).hostname); } catch { return false; }
+};
+const dbUrl = process.env.DATABASE_URL ?? '';
+const apiUrl = process.env.API_URL || 'http://localhost:4000';
+if ((!isLocal(dbUrl) || !isLocal(apiUrl)) && process.env.ALLOW_NONLOCAL_TEST_TARGET !== '1') {
+  console.error(
+    `Refusing to run: API_URL ("${apiUrl}") and DATABASE_URL host must be local.\n` +
+    'Set ALLOW_NONLOCAL_TEST_TARGET=1 to override deliberately.',
+  );
+  process.exit(1);
+}
+
 const db = new PrismaClient();
-const base = (process.env.API_URL || 'http://localhost:4000').replace(/\/$/, '');
+const base = apiUrl.replace(/\/$/, '');
 const stamp = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 const testIp = `198.51.100.${Math.floor(Math.random() * 200) + 20}`;
 let signupIpCounter = 20;
@@ -52,6 +67,15 @@ async function run() {
   assert.equal((await call('/api/fx/history?base=USD&quote=EUR&days=0')).status, 400);
   assert.equal((await call('/api/fx/history?base=USD&quote=EUR&days=366')).status, 400);
   assert.equal((await call('/api/fx/quote', { method: 'POST', body: { amountMajor: 10, refRate: 1, providerRate: 1, fromCur: 'ZZZ', toCur: 'EUR' } })).status, 400);
+
+  // A malformed JSON body is a client error (400), not a server outage (503).
+  const malformed = await fetch(`${base}/api/summary`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Forwarded-For': testIp },
+    body: '{"not json',
+  });
+  assert.equal(malformed.status, 400);
+  assert.equal((await malformed.json()).error, 'Malformed JSON body.');
 
   // Signup starts at zero, not a fabricated opening balance.
   const a = await signup('a');
@@ -229,6 +253,19 @@ async function run() {
   assert.equal((await call('/api/budgets', { method: 'POST', token: a.token, body: budgetBody })).status, 409);
   assert.equal((await call('/api/budgets', { method: 'POST', token: a.token, body: { ...budgetBody, category: 'Bad month', yearMonth: '2026-13' } })).status, 400);
   assert.equal((await call('/api/budgets?month=2026-13', { token: a.token })).status, 400);
+
+  // Defined acceptance case: a 2,000-unit budget shows a 2,000-unit limit and
+  // 0% spending while the ledger has no transactions in that category this month.
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  const acceptanceBudget = await call('/api/budgets', { method: 'POST', token: a.token, body: { category: 'V1 acceptance', limitMajor: 2000, currency: 'INR', yearMonth: currentMonth } });
+  assert.equal(acceptanceBudget.status, 201);
+  assert.equal(acceptanceBudget.body.limitMinor, '200000');
+  const monthBudgets = await call(`/api/budgets?month=${currentMonth}`, { token: a.token });
+  const acceptanceRow = monthBudgets.body.find(row => row.category === 'V1 acceptance');
+  assert.ok(acceptanceRow, 'acceptance budget visible for the current month');
+  assert.equal(acceptanceRow.limitMinor, '200000');
+  const monthLedger = await call('/api/transactions', { token: a.token });
+  assert.equal(monthLedger.body.filter(tx => tx.category === 'V1 acceptance' && String(tx.bookedAt).startsWith(currentMonth)).length, 0, 'acceptance category is untouched, so spending is 0%');
   const invalidMonths = await call('/api/summary?months=abc', { token: a.token });
   assert.equal(invalidMonths.status, 400);
   assert.equal((await call('/api/summary?months=0', { token: a.token })).status, 400);
@@ -246,6 +283,17 @@ async function run() {
   assert.equal((await call(`/api/goals/${goal.body.id}`, { method: 'DELETE', token: b.token })).status, 404);
   assert.equal((await call(`/api/goals/${goal.body.id}`, { method: 'DELETE', token: a.token })).status, 204);
   assert.ok(!(await call('/api/goals', { token: a.token })).body.some(item => item.id === goal.body.id));
+
+  // Defined acceptance case: a 1,000-unit contribution raises the saved amount
+  // by exactly 1,000 units.
+  const acceptanceGoal = await call('/api/goals', { method: 'POST', token: a.token, body: { title: 'V1 acceptance goal', targetMajor: 2000, currency: 'INR' } });
+  assert.equal(acceptanceGoal.status, 201);
+  assert.equal(acceptanceGoal.body.savedMinor, '0');
+  const contribution = await call(`/api/goals/${acceptanceGoal.body.id}/contribute`, { method: 'POST', token: a.token, body: { amountMajor: 1000 } });
+  assert.equal(contribution.status, 200);
+  assert.equal(contribution.body.savedMinor, '100000', 'saved amount must rise by exactly 1,000.00 INR');
+  assert.equal(contribution.body.targetMinor, '200000');
+  assert.equal((await call(`/api/goals/${acceptanceGoal.body.id}`, { method: 'DELETE', token: a.token })).status, 204);
 
   // CSV/export must not inherit the 200-row ledger view cap.
   await db.transaction.createMany({

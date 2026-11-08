@@ -1,13 +1,8 @@
 import { prisma } from './db.js';
-import { getRate } from './fx.js';
+import { getRate, isStale } from './fx.js';
 
 export type HomeQuote = { rate: number; date: string; stale: boolean; source: string };
 export type QuoteCache = Map<string, Promise<HomeQuote | null>>;
-
-function daysOld(date: string) {
-  const time = new Date(`${date}T00:00:00Z`).getTime();
-  return Number.isFinite(time) ? (Date.now() - time) / 86_400_000 : Infinity;
-}
 
 // Resolve one currency into the reporting currency. Missing data returns null;
 // callers must surface that state instead of assuming a 1:1 rate.
@@ -26,7 +21,7 @@ export async function homeQuote(currency: string, home: string, cache: QuoteCach
         where: { base: currency, quote: home }, orderBy: { date: 'desc' },
       }).catch(() => null);
       if (!cached) return null;
-      return { rate: Number(cached.rate), date: cached.date, stale: daysOld(cached.date) > 3, source: 'cache' };
+      return { rate: Number(cached.rate), date: cached.date, stale: isStale(cached.date), source: 'cache' };
     }
   })();
   cache.set(key, pending);

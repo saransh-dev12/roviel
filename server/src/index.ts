@@ -41,10 +41,19 @@ app.use('/api', finance);
 app.use('/api/summary', summary);
 app.use('/api/insights', insights);
 
-// Never crash on DB/network errors — return 503 instead.
+// Never crash on DB/network errors — return 503 instead. Client-caused body
+// errors get their proper status so monitoring is not flooded with fake 503s.
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('api error', err?.message || err);
   if (res.headersSent) return;
+  if (err?.type === 'entity.parse.failed') {
+    res.status(400).json({ error: 'Malformed JSON body.' });
+    return;
+  }
+  if (err?.type === 'entity.too.large') {
+    res.status(413).json({ error: 'Request body too large.' });
+    return;
+  }
   res.status(503).json({ error: 'Service temporarily unavailable. Retry.' });
 });
 
