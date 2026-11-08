@@ -14,7 +14,7 @@ let pressBound = false;
 
 function onPressDown(event) {
   const target = event.target instanceof Element
-    ? event.target.closest('.dash-primary, .metric-card, .command-item, .seg button, .mobile-nav button')
+    ? event.target.closest('.dash-primary, .dash-secondary, .dash-ghost, .metric-card, .command-item, .seg button, .mobile-nav button, .row-del, .pulse-jump')
     : null;
   if (!target) return;
   gsap.to(target, { scale: 0.97, duration: 0.12, ease: 'power2.out', overwrite: 'auto' });

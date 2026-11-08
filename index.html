@@ -47,15 +47,22 @@
       --focus-ring: 0 0 0 3px var(--accent-wash);
     }
     html[data-theme="brutal"] {
-      --ledger-canvas: #ffffff; --ledger-panel: #f7f7f7; --ledger-ink: #000000;
+      --ledger-canvas: #fbfaf7; --ledger-panel: #f7f6f2; --ledger-ink: #000000;
       --muted: #525252; --line: rgba(0, 0, 0, 14%);
       --accent: #15803d; --accent-dim: #166534; --accent-wash: rgba(22, 163, 74, 10%);
       --brass: #15803d; --brass-strong: #16a34a; --on-brand: #ffffff;
     }
     html[data-theme="noir"] body, html[data-theme="brutal"] body { background: var(--ledger-canvas); color: var(--ledger-ink); }
     #webgl { position: fixed; inset: 0; z-index: 3; width: 100%; height: 100%; outline: none; }
+    .scroll-cue { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 15; display: grid; justify-items: center; gap: 7px; color: var(--ledger-ink); opacity: .8; pointer-events: none; transition: opacity .45s ease; }
+    .scroll-cue span { font: 500 11px var(--sans); letter-spacing: .3px; }
+    .scroll-cue i { display: block; width: 1px; height: 32px; background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--ledger-ink) 55%, transparent)); position: relative; overflow: hidden; }
+    .scroll-cue i::after { content: ''; position: absolute; left: 0; top: -12px; width: 1px; height: 12px; background: var(--accent); animation: cue-drop 1.9s cubic-bezier(.45, 0, .2, 1) infinite; }
+    @keyframes cue-drop { 0% { top: -12px; opacity: 0; } 18% { opacity: 1; } 72%, 100% { top: 32px; opacity: 0; } }
+    body.cue-off .scroll-cue, body.dashboard-open .scroll-cue { opacity: 0; }
+    @media (prefers-reduced-motion: reduce) { .scroll-cue i::after { animation: none; top: 8px; } }
     .studio-vignette { position: fixed; inset: 0; z-index: 4; pointer-events: none; background: radial-gradient(120% 92% at 50% 6%, transparent 42%, rgba(0, 0, 0, .5) 100%); }
-    html[data-theme="brutal"] .studio-vignette { background: radial-gradient(120% 92% at 50% 6%, transparent 48%, rgba(19, 19, 19, .16) 100%); }
+    html[data-theme="brutal"] .studio-vignette { background: radial-gradient(118% 90% at 50% 4%, transparent 40%, rgba(24, 22, 18, .3) 100%); }
     body.dashboard-open .studio-vignette { visibility: hidden; }
     .cursor-inner, .cursor-outer { position: fixed; top: 0; left: 0; border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; }
     .cursor-inner { z-index: 9999; width: 5px; height: 5px; border: 0; background: var(--accent); box-shadow: 0 0 10px rgba(133, 133, 133, 70%); }
@@ -944,7 +951,7 @@
       --accent: #5a5a5a; --accent-dim: #3c3c3c; --accent-wash: rgba(90, 90, 90, 10%);
       --display: 'Space Grotesk', system-ui, sans-serif; --sans: 'Inter', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
     }
-    [data-theme="brutal"] body { background: #ffffff; color: #000000; font-family: var(--sans); }
+    [data-theme="brutal"] body { background: #fbfaf7; color: #000000; font-family: var(--sans); }
     [data-theme="brutal"] .cursor-inner { background: var(--accent); box-shadow: 0 0 0 2px #131313; }
     [data-theme="brutal"] .cursor-outer { border: 2px solid var(--accent); background: transparent; }
     [data-theme="brutal"] body.cursor-hover .cursor-outer { border-color: #131313; background: rgba(90, 90, 90, 10%); }
@@ -1485,6 +1492,22 @@
     @keyframes view-title-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
     html[data-theme] .dash-chart-card, html[data-theme] .dash-insight-card { transition: transform .3s var(--ease-product), border-color .3s var(--ease-product), box-shadow .3s var(--ease-product); cursor: pointer; }
     html[data-theme] .dash-chart-card:hover, html[data-theme] .dash-insight-card:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--accent) 30%, var(--line)); box-shadow: 0 18px 44px rgba(0, 0, 0, .28); }
+    .dash-view.view-exit { opacity: 0; transform: translateY(10px); transition: opacity .15s ease, transform .15s ease; pointer-events: none; }
+    .dash-view.view-enter { animation: view-fade .28s var(--ease-product) both; }
+    @keyframes view-fade { from { opacity: 0; } to { opacity: 1; } }
+    .od-roll { display: inline-block; position: relative; height: 1em; overflow: hidden; vertical-align: bottom; }
+    .od-roll i { display: block; height: 1em; line-height: 1; font-style: normal; }
+    .od-roll .od-to { transform: translateY(110%); }
+    .od-go .od-roll.od-rolling .od-from { transform: translateY(-110%); }
+    .od-go .od-roll.od-rolling .od-to { transform: translateY(0); }
+    .od-roll .od-from, .od-roll.od-rolling .od-to { transition: transform .72s cubic-bezier(.22, 1, .36, 1); }
+    html[data-theme] .dash-card { transition: transform .3s var(--ease-product), border-color .3s var(--ease-product), box-shadow .3s var(--ease-product); }
+    html[data-theme] .dash-card:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--accent) 26%, var(--line)); box-shadow: 0 18px 44px rgba(0, 0, 0, .25); }
+    html[data-theme="brutal"] .dash-card:hover { box-shadow: 0 14px 34px rgba(16, 24, 19, .1); }
+    html[data-theme] .dash-secondary, html[data-theme] .dash-ghost, html[data-theme] .pulse-jump { transition: transform .16s var(--ease-product), background .16s, border-color .16s, color .16s, box-shadow .16s; }
+    html[data-theme] .dash-secondary:hover, html[data-theme] .dash-ghost:hover, html[data-theme] .pulse-jump:hover { transform: translateY(-1px); }
+    html[data-theme] .row-del { transition: transform .16s var(--ease-product), border-color .16s, color .16s, background .16s; }
+    html[data-theme] .row-del:hover { transform: scale(1.08); }
     .card-enter { animation: card-enter .55s var(--ease-product) both; }
     @keyframes card-enter { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
     .card-enter .bar > i { animation: bar-grow .75s var(--ease-product) .2s both; }
@@ -2432,7 +2455,7 @@
         radial-gradient(ellipse 40% 30% at 84% 58%, rgba(255, 255, 255, 84%), transparent 72%),
         radial-gradient(ellipse 44% 36% at 74% 88%, rgba(19, 19, 19, 4%), transparent 72%),
         radial-gradient(ellipse 65% 55% at 48% -8%, rgba(255, 255, 255, 90%), transparent 72%),
-        #f4f4f4;
+        #fbfaf7;
       background-attachment: fixed;
     }
     html[data-theme] .dashboard-view::before { background: transparent; }
@@ -3253,6 +3276,7 @@
   </dialog>
   <canvas id="webgl" aria-hidden="true"></canvas>
   <div class="studio-vignette" aria-hidden="true"></div>
+  <div class="scroll-cue" aria-hidden="true"><span>Scroll</span><i></i></div>
 
   <script type="module">
     import { autoUpdate, computePosition, flip, offset, shift, size } from '@floating-ui/dom';
@@ -3457,7 +3481,7 @@
       const edgeCanvas = document.createElement('canvas');
       edgeCanvas.width = 1024; edgeCanvas.height = 64;
       const edgeCtx = edgeCanvas.getContext('2d');
-      edgeCtx.fillStyle = theme().coin.wash[1];
+      edgeCtx.fillStyle = theme().coin.rim; // gold reeded band
       edgeCtx.fillRect(0, 0, 1024, 64);
       for (let x = 0; x < 1024; x += 10) {
         edgeCtx.fillStyle = x % 20 === 0 ? 'rgba(255, 255, 255, .3)' : 'rgba(10, 10, 10, .4)';
@@ -3501,7 +3525,7 @@
         modelPivot.add(rim);
       });
       // A raised inner bezel on each face, catching the key light as it turns.
-      const bezelMaterial = new THREE.MeshStandardMaterial({ color: theme().coin.wash[0], metalness: .82, roughness: .26, emissive: theme().coin.glow, emissiveIntensity: .16 });
+      const bezelMaterial = new THREE.MeshStandardMaterial({ color: theme().coin.rim, metalness: .82, roughness: .26, emissive: theme().coin.glow, emissiveIntensity: .16 });
       [-.079, .079].forEach((z) => {
         const bezel = new THREE.Mesh(new THREE.TorusGeometry(.885, .009, 12, 220), bezelMaterial);
         bezel.position.z = z;
@@ -3531,8 +3555,26 @@
         dissolveSeed[i * 3] = Math.sin(ph) * Math.cos(th) * sp;
         dissolveSeed[i * 3 + 1] = Math.cos(ph) * sp * .85 + .4;
         dissolveSeed[i * 3 + 2] = Math.sin(ph) * Math.sin(th) * sp;
-        const v = currentTheme === 'noir' ? .72 + Math.random() * .28 : .16 + Math.random() * .2;
-        pColor[i * 3] = v; pColor[i * 3 + 1] = v; pColor[i * 3 + 2] = Math.min(1, v * 1.04);
+        if (currentTheme === 'noir') {
+          // Gold + dark-steel sparks, matching the onyx-and-gold coin.
+          if (Math.random() < .72) {
+            pColor[i * 3] = .75 + Math.random() * .2; pColor[i * 3 + 1] = .6 + Math.random() * .16; pColor[i * 3 + 2] = .3 + Math.random() * .12;
+          } else {
+            const v = .3 + Math.random() * .16;
+            pColor[i * 3] = v; pColor[i * 3 + 1] = v; pColor[i * 3 + 2] = v;
+          }
+        } else {
+          // Paper: charcoal base with emerald and amber sparks — currency
+          // dissolving into value, not confetti.
+          const roll = Math.random();
+          if (roll < .5) {
+            const v = .14 + Math.random() * .16;
+            pColor[i * 3] = v; pColor[i * 3 + 1] = v; pColor[i * 3 + 2] = v * 1.04;
+          } else {
+            // gold dust, matching the coin's metal
+            pColor[i * 3] = .72 + Math.random() * .18; pColor[i * 3 + 1] = .56 + Math.random() * .14; pColor[i * 3 + 2] = .26 + Math.random() * .12;
+          }
+        }
       }
       dissolveGeo = new THREE.BufferGeometry();
       dissolveGeo.setAttribute('position', new THREE.BufferAttribute(dissolveHome.slice(), 3));
@@ -3583,8 +3625,8 @@
         size: .055,
         map: new THREE.CanvasTexture(spriteCanvas),
         transparent: true,
-        opacity: currentTheme === 'noir' ? .38 : .26,
-        color: new THREE.Color(currentTheme === 'noir' ? '#ffffff' : '#3d3d3d'),
+        opacity: currentTheme === 'noir' ? .38 : .36,
+        color: new THREE.Color(currentTheme === 'noir' ? '#ffffff' : '#2f2f2f'),
         depthWrite: false,
         blending: currentTheme === 'noir' ? THREE.AdditiveBlending : THREE.NormalBlending,
         sizeAttenuation: true,
@@ -3641,7 +3683,7 @@
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.14;
+        renderer.toneMappingExposure = currentTheme === 'noir' ? 1.14 : .88;
         renderer.toneMappingExposure = 1.3;
         canvas.__rovielRenderer = renderer;
       } catch (error) {
@@ -3649,7 +3691,7 @@
         throw error;
       }
       scene.add(new THREE.AmbientLight('#ffffff', .22));
-      const keyLight = new THREE.SpotLight('#ffffff', 3.4);
+      const keyLight = new THREE.SpotLight('#ffffff', currentTheme === 'noir' ? 3.4 : 2.9);
       keyLight.position.set(.7, 3.4, 1.7);
       keyLight.angle = Math.PI / 4;
       keyLight.penumbra = .9;
@@ -3660,7 +3702,7 @@
       keyLight.shadow.camera.far = 15;
       keyLight.shadow.bias = -.001;
       scene.add(keyLight);
-      const rimLight = new THREE.DirectionalLight(theme().light.rim, 2.4);
+      const rimLight = new THREE.DirectionalLight(theme().light.rim, currentTheme === 'noir' ? 2.4 : 2.1);
       rimLight.position.set(-2.6, 1.5, -2.4);
       scene.add(rimLight);
       const fillLight = new THREE.DirectionalLight(theme().light.fill, 1.1);
@@ -4152,7 +4194,7 @@
       refreshSummary().catch(() => {});
       renderDashboard();
       try { window.__motion?.dashboardOpen(); } catch {}
-      showView(target, { updateHash: false, pair: route?.pair || undefined });
+      showView(target, { updateHash: false, noWipe: true, pair: route?.pair || undefined });
       if (route?.view === 'pulse' && route.pair) window.RovielSelectPulsePair?.(route.pair);
       if (addHistory && !route) {
         const next = dashboardViewHash(target);
@@ -4274,7 +4316,42 @@
         }
       });
     }
+    // Soft rise between views (reference V22, softened): the old view fades
+    // and drifts down while the new one fades in — its cards carry the stagger.
+    let viewTransitionSeq = 0;
+    const waitMs = ms => new Promise(r => setTimeout(r, ms));
+    async function viewTransition(seq, oldView, swap) {
+      const superseded = () => seq !== viewTransitionSeq;
+      if (oldView) {
+        oldView.classList.add('view-exit');
+        await waitMs(150);
+        if (superseded()) return;
+      }
+      swap();
+      const now = document.querySelector('.dash-view.active');
+      if (now) {
+        now.classList.remove('view-exit');
+        now.classList.add('view-enter');
+        setTimeout(() => now.classList.remove('view-enter'), 480);
+        await waitMs(200);
+      }
+    }
+
     function showView(name, options = {}) {
+      if (!VIEW_TITLES[name]) name = 'overview';
+      const seq = ++viewTransitionSeq;
+      const transitionable = !options.noWipe
+        && document.body.classList.contains('dashboard-open')
+        && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (transitionable) {
+        const old = document.querySelector('.dash-view.active');
+        viewTransition(seq, old, () => { if (seq === viewTransitionSeq) applyView(name, options); });
+        return;
+      }
+      applyView(name, options);
+    }
+
+    function applyView(name, options = {}) {
       if (!VIEW_TITLES[name]) name = 'overview';
       activeView = name;
       const primary = primaryForView(name);
@@ -5317,6 +5394,16 @@
     }
 
     // The dashboard bar gains a soft shadow once the view is scrolled.
+    // Story cue: visible on the first screen, fades as the story begins.
+    function setupScrollCue() {
+      const toggle = () => {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        document.body.classList.toggle('cue-off', max > 0 && window.scrollY > max * .015);
+      };
+      window.addEventListener('scroll', toggle, { passive: true });
+      toggle();
+    }
+
     function setupDashboardBarShadow() {
       const scroller = document.getElementById('dashboard-view');
       if (!scroller) return;
@@ -5547,14 +5634,14 @@
         label: 'NOIR',
         bg: '#050505', accent: '#16a34a',
         shader: { c0shadow: [0.0018, 0.0018, 0.0018], c0w1: [0.025, 0.025, 0.025], c0w2: [0.016, 0.016, 0.016], c0crest: [0.19, 0.19, 0.19], c1shadow: [0.0012, 0.0012, 0.0012], c1w1: [0.021, 0.021, 0.021], c1w2: [0.011, 0.011, 0.011], c1crest: [0.27, 0.27, 0.27] },
-        coin: { wash: ['#f4f4f4', '#b8b8b8', '#666666', '#2a2a2a'], rim: '#c2c2c2', glow: '#d6d6d6', glyph: '#ffffff', orbit: '#4ade80', orbit2: '#16a34a', particle: [[0.09, 0.64, 0.29], [1, 1, 1]] },
+        coin: { wash: ['#3d3d3d', '#1d1d1d', '#0a0a0a', '#030303'], rim: '#e8c97a', glow: '#d9a94e', glyph: '#e8c97a', orbit: '#4ade80', orbit2: '#16a34a', particle: [[0.09, 0.64, 0.29], [1, 1, 1]] },
         light: { rim: '#ffffff', fill: '#e8e8e8' },
       },
       brutal: {
         label: 'Paper',
         bg: '#ffffff', accent: '#15803d',
         shader: { c0shadow: [0.69, 0.69, 0.69], c0w1: [0.84, 0.84, 0.84], c0w2: [0.77, 0.77, 0.77], c0crest: [0.95, 0.95, 0.95], c1shadow: [0.63, 0.63, 0.63], c1w1: [0.80, 0.80, 0.80], c1w2: [0.73, 0.73, 0.73], c1crest: [0.93, 0.93, 0.93] },
-        coin: { wash: ['#f5f5f5', '#b3b3b3', '#5c5c5c', '#2b2b2b'], rim: '#6f6f6f', glow: '#a8a8a8', glyph: '#ffffff', orbit: '#15803d', orbit2: '#4ade80', particle: [[0.09, 0.64, 0.29], [0.55, 0.55, 0.55]] },
+        coin: { wash: ['#454545', '#242424', '#0e0e0e', '#050505'], rim: '#c9a44a', glow: '#c49a45', glyph: '#c9a44a', orbit: '#15803d', orbit2: '#4ade80', particle: [[0.09, 0.64, 0.29], [0.55, 0.55, 0.55]] },
         light: { rim: '#ffffff', fill: '#ececec' },
       },
     };
@@ -7161,32 +7248,36 @@
       }
     }
 
-    // Number ticker: eases a displayed money value from its previous frame to
-    // the new one. Display-only — the underlying figures stay exact.
+    // Digit-roll odometer (reference V22): changed digits roll slot-machine
+    // style while currency symbols and separators stay put. Falls back to a
+    // plain swap when the text shape changes. Display-only — final frame is
+    // byte-exact with the server value.
     function tickValue(el, text) {
       if (!el) return;
       const prev = el.dataset.tickValue;
       el.dataset.tickValue = text;
       const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-      if (prev === undefined || prev === text || reduced) { el.textContent = text; return; }
-      const numRe = /-?\d[\d,]*(?:\.\d+)?/;
-      const fromRaw = (prev.match(numRe) || [''])[0].replace(/,/g, '');
-      const toRaw = (text.match(numRe) || [''])[0].replace(/,/g, '');
-      const from = parseFloat(fromRaw);
-      const to = parseFloat(toRaw);
-      if (!Number.isFinite(from) || !Number.isFinite(to) || fromRaw === '' || toRaw === '') { el.textContent = text; return; }
-      const decimals = (toRaw.split('.')[1] || '').length;
-      const startT = performance.now();
-      const DUR = 720;
-      const step = now => {
-        const prog = Math.min(1, (now - startT) / DUR);
-        const eased = 1 - Math.pow(1 - prog, 3);
-        const value = from + (to - from) * eased;
-        if (prog >= 1) { el.textContent = text; return; }
-        el.textContent = text.replace(numRe, value.toLocaleString('en-IN', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }));
-        requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
+      if (prev === undefined || prev === text || reduced) { el.textContent = text; el.dataset.odometerized = ''; return; }
+      const isDigit = ch => ch >= '0' && ch <= '9';
+      if (prev.length !== text.length || !/\d/.test(text) || !el.dataset.odometerized) {
+        el.innerHTML = [...text].map(ch => isDigit(ch) ? `<span class="od-roll"><i>${ch}</i></span>` : `<span class="od-fixed">${ch}</span>`).join('');
+        el.dataset.odometerized = '1';
+        return;
+      }
+      el.innerHTML = [...text].map((ch, i) => {
+        if (!isDigit(ch)) return `<span class="od-fixed">${ch}</span>`;
+        const from = isDigit(prev[i]) ? prev[i] : ch;
+        if (from === ch) return `<span class="od-roll"><i>${ch}</i></span>`;
+        return `<span class="od-roll od-rolling"><i class="od-from">${from}</i><i class="od-to">${ch}</i></span>`;
+      }).join('');
+      const rolling = el.querySelectorAll('.od-rolling');
+      if (rolling.length) {
+        el.classList.add('od-go');
+        setTimeout(() => {
+          rolling.forEach(span => { span.innerHTML = `<i>${span.querySelector('.od-to').textContent}</i>`; span.classList.remove('od-rolling'); });
+          el.classList.remove('od-go');
+        }, 780);
+      }
     }
 
     function renderMetricCards(summary) {
@@ -7639,6 +7730,7 @@
       setupSound();
       setupCursor();
       setupScrollSnap();
+      setupScrollCue();
       setupDashboardBarShadow();
       visualsReady.then(available => {
         if (!available) {

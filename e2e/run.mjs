@@ -67,6 +67,11 @@ async function api(page, path, options = {}) {
     return { status: res.status, body };
   }, { path, options, API });
 }
+// The odometer keeps both digits stacked mid-roll; read after it settles.
+async function settleMetrics(pg) {
+  await pg.waitForFunction(() => !document.querySelector('.od-rolling'), undefined, { timeout: 2500 }).catch(() => {});
+  await pg.waitForTimeout(60);
+}
 const money = text => Number(String(text).replace(/[^0-9.-]/g, '')) || 0;
 
 try {
@@ -206,7 +211,7 @@ try {
 
   // add transaction -> exact delta
   await goView(page, 'overview');
-  const beforeSpend = money(await page.locator('#total-expenses').innerText());
+  const beforeSpend = money(await page.locator('#total-expenses').evaluate(el => el.dataset.tickValue || el.textContent));
   await page.click('#open-transaction');
   const todayEntryDate = await page.evaluate(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; });
   check('transaction date defaults to today', (await page.locator('#transaction-date').inputValue()) === todayEntryDate, await page.locator('#transaction-date').inputValue());
@@ -221,7 +226,7 @@ try {
   await page.fill('#transaction-date', entryDate);
   await page.click('.tx-submit');
   await page.waitForTimeout(900);
-  const afterSpend = money(await page.locator('#total-expenses').innerText());
+  const afterSpend = money(await page.locator('#total-expenses').evaluate(el => el.dataset.tickValue || el.textContent));
   check('expense of 250 raises spending by exactly 250', near(afterSpend - beforeSpend, 250, 1), `${beforeSpend} -> ${afterSpend}`);
   check('latest activity previews the new entry', (await page.locator('#latest-activity-list').innerText()).includes('E2E Flat 250'));
 
@@ -503,7 +508,7 @@ try {
   await page.selectOption('#transfer-from', transferSource.id);
   await page.selectOption('#transfer-to', transferTarget.id);
   await page.fill('#transfer-amount', '100');
-  await page.waitForTimeout(3200);
+  await page.waitForFunction(() => /1 INR = [\d.]+ USD/.test(document.getElementById('transfer-preview')?.innerText || ''), { timeout: 12000 }).catch(() => {});
   const preview = await page.locator('#transfer-preview').innerText();
   check('transfer preview shows the live pair', /1 INR = [\d.]+ USD/.test(preview), preview.slice(0, 90));
   const accountsBefore = (await api(page, '/api/summary')).body.accounts;
