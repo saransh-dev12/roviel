@@ -5750,23 +5750,8 @@
         setTimeout(() => { expiring = false; }, 1500);
       }
       // One authenticated-fetch funnel: pre-flight renewal, transparent
-      // refresh-on-401, and stale-token retry after a session swap.
-      async function authedFetch(path, opts = {}) {
-        const R = window.RovielAPI || {};
-        const tokenAtStart = localStorage.getItem('roviel.api.token');
-        if (!tokenAtStart || (R.accessExpired && R.accessExpired())) await R.refreshSession?.();
-        const doFetch = () => fetch(path, {
-          ...opts,
-          headers: { ...(opts.body ? { 'Content-Type': 'application/json' } : {}), Authorization: 'Bearer ' + localStorage.getItem('roviel.api.token'), ...(opts.headers || {}) },
-        });
-        let res = await doFetch();
-        if (res.status === 401) {
-          const current = localStorage.getItem('roviel.api.token');
-          if (current !== tokenAtStart) res = await doFetch();          // newer session exists — retry with it
-          else if (await R.refreshSession?.()) res = await doFetch();   // rotate and retry once
-        }
-        return res;
-      }
+      // refresh-on-401, and stale-token retry after a session swap. Shared
+      // with the module-level summary loader — see authedFetch below.
       async function cloudFetch(path, opts = {}) {
         const token = localStorage.getItem('roviel.api.token');
         const res = await authedFetch(api().base + path, { ...opts, headers: {} });
@@ -7148,6 +7133,26 @@
         months: buckets, budgets: [], goals: [],
         disclaimer: 'Reference rates — no account needed.',
       };
+    }
+
+    // One authenticated-fetch funnel: pre-flight renewal, transparent
+    // refresh-on-401, and stale-token retry after a session swap. Lives at
+    // module scope so both the dashboard loaders and fetchSummary share it.
+    async function authedFetch(path, opts = {}) {
+      const R = window.RovielAPI || {};
+      const tokenAtStart = localStorage.getItem('roviel.api.token');
+      if (!tokenAtStart || (R.accessExpired && R.accessExpired())) await R.refreshSession?.();
+      const doFetch = () => fetch(path, {
+        ...opts,
+        headers: { ...(opts.body ? { 'Content-Type': 'application/json' } : {}), Authorization: 'Bearer ' + localStorage.getItem('roviel.api.token'), ...(opts.headers || {}) },
+      });
+      let res = await doFetch();
+      if (res.status === 401) {
+        const current = localStorage.getItem('roviel.api.token');
+        if (current !== tokenAtStart) res = await doFetch();          // newer session exists — retry with it
+        else if (await R.refreshSession?.()) res = await doFetch();   // rotate and retry once
+      }
+      return res;
     }
 
     async function fetchSummary(months = dashState.range) {
