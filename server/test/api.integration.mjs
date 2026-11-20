@@ -50,6 +50,34 @@ async function signup(label) {
 
 const resetHash = token => crypto.createHash('sha256').update(token).digest('hex');
 
+// Independent RFC 6238 implementation for the TOTP tests — written against the
+// spec rather than imported from the server, so a server bug cannot hide.
+const B32 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+function totpAt(secret, atMs = Date.now()) {
+  let bits = 0, value = 0; const bytes = [];
+  for (const ch of String(secret).toUpperCase().replace(/[^A-Z2-7]/g, '')) {
+    const idx = B32.indexOf(ch);
+    if (idx === -1) continue;
+    value = (value << 5) | idx; bits += 5;
+    if (bits >= 8) { bytes.push((value >>> (bits - 8)) & 255); bits -= 8; }
+  }
+  const counter = Math.floor(atMs / 1000 / 30);
+  const buf = Buffer.alloc(8);
+  buf.writeUInt32BE(Math.floor(counter / 2 ** 32), 0);
+  buf.writeUInt32BE(counter >>> 0, 4);
+  const h = crypto.createHmac('sha1', Buffer.from(bytes)).update(buf).digest();
+  const off = h[h.length - 1] & 0xf;
+  const bin = ((h[off] & 0x7f) << 24) | ((h[off + 1] & 0xff) << 16) | ((h[off + 2] & 0xff) << 8) | (h[off + 3] & 0xff);
+  return String(bin % 1000000).padStart(6, '0');
+}
+// A definitely-wrong code: differs from every code the ±1-step window accepts.
+function wrongTotp(secret) {
+  const windowCodes = new Set([totpAt(secret), totpAt(secret, Date.now() - 30000), totpAt(secret, Date.now() + 30000)]);
+  let code = '000000';
+  while (windowCodes.has(code)) code = String((Number(code) + 1) % 1000000).padStart(6, '0');
+  return code;
+}
+
 async function createAccount(token, { name = 'Test', currency = 'INR', openingMajor = 0 } = {}) {
   const res = await call('/api/accounts', { method: 'POST', token, body: { name, currency, openingMajor } });
   assert.equal(res.status, 201, JSON.stringify(res.body));
@@ -357,6 +385,35 @@ async function run() {
   assert.equal(await db.recoveryCode.count({ where: { userId: fUser.id, usedAt: null } }), 0);
   f.password = 'final-recovery-456';
   f.token = changedByRecovery.body.token;
+
+  // Optional TOTP: enrolment proves the authenticator app, then sign-in
+  // requires a valid code until two-factor is turned off with the password.
+  const g = await signup('g');
+  assert.equal((await call('/api/auth/me', { token: g.token })).body.totpEnabled, false);
+  const totpSetup = await call('/api/auth/totp/setup', { method: 'POST', token: g.token });
+  assert.equal(totpSetup.status, 200, JSON.stringify(totpSetup.body));
+  assert.match(totpSetup.body.secret, /^[A-Z2-7]{32}$/, 'secret is base32 (160 bits)');
+  assert.ok(totpSetup.body.otpauth.startsWith('otpauth://totp/Roviel%3A'), 'issuer URI for authenticator apps');
+  assert.ok(totpSetup.body.otpauth.includes('issuer=Roviel'));
+  const totpWrong = await call('/api/auth/totp/verify', { method: 'POST', token: g.token, body: { code: wrongTotp(totpSetup.body.secret) } });
+  assert.equal(totpWrong.status, 400, 'a wrong code must not enable two-factor');
+  assert.equal((await call('/api/auth/me', { token: g.token })).body.totpEnabled, false);
+  const totpEnable = await call('/api/auth/totp/verify', { method: 'POST', token: g.token, body: { code: totpAt(totpSetup.body.secret) } });
+  assert.equal(totpEnable.status, 200, 'the live code enables two-factor');
+  assert.equal(totpEnable.body.totpEnabled, true);
+  assert.equal((await call('/api/auth/totp/setup', { method: 'POST', token: g.token })).status, 409, 're-enrolment is refused while enabled');
+  const loginNoCode = await call('/api/auth/login', { method: 'POST', body: { email: g.user.email, password } });
+  assert.equal(loginNoCode.status, 401, 'password alone no longer signs in');
+  assert.equal(loginNoCode.body.code, 'totp_required');
+  const loginBadCode = await call('/api/auth/login', { method: 'POST', body: { email: g.user.email, password, totpCode: wrongTotp(totpSetup.body.secret) } });
+  assert.equal(loginBadCode.status, 401);
+  assert.equal(loginBadCode.body.code, 'totp_required');
+  const loginGoodCode = await call('/api/auth/login', { method: 'POST', body: { email: g.user.email, password, totpCode: totpAt(totpSetup.body.secret) } });
+  assert.equal(loginGoodCode.status, 200, 'password + live code signs in');
+  assert.ok(loginGoodCode.body.token && loginGoodCode.body.refreshToken, 'TOTP sign-in issues both tokens');
+  assert.equal((await call('/api/auth/totp', { method: 'DELETE', token: g.token, body: { password: 'wrong' } })).status, 401, 'a wrong password cannot disable two-factor');
+  assert.equal((await call('/api/auth/totp', { method: 'DELETE', token: g.token, body: { password } })).status, 200);
+  assert.equal((await call('/api/auth/login', { method: 'POST', body: { email: g.user.email, password } })).status, 200, 'password-only sign-in works again after disabling');
 
   // Account deletion requires password + explicit confirmation.
   const wrongDelete = await call('/api/auth/account', { method: 'DELETE', token: a.token, body: { password: 'wrong', confirm: 'DELETE' } });

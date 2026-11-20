@@ -19,6 +19,10 @@ model User {
   homeCurrency String   @default("INR") @db.Char(3)
   locale       String   @default("en-IN")
   tokenVersion Int      @default(0)
+  // Optional TOTP two-factor: secret encrypted at rest, enabled only after a
+  // first successful code verification during enrolment.
+  totpSecret   String?
+  totpEnabledAt DateTime?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

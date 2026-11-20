@@ -3267,6 +3267,8 @@
         <input id="auth-password-confirm" type="password" placeholder="Confirm new password" autocomplete="new-password" hidden>
         <label class="auth-label" for="auth-recovery-code">Recovery code</label>
         <input id="auth-recovery-code" type="text" placeholder="Recovery code (ROV-…)" autocomplete="off" spellcheck="false" hidden>
+        <label class="auth-label" for="auth-totp-code">Authenticator code</label>
+        <input id="auth-totp-code" type="text" inputmode="numeric" pattern="\d*" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code" spellcheck="false" hidden>
       <div class="auth-error" id="auth-error" role="status" aria-live="polite"></div>
       <div class="auth-row"><button type="submit" class="auth-primary" id="auth-submit">Sign in</button><button type="button" class="auth-ghost" id="auth-signup">Create account</button></div>
       <div class="auth-row"><button type="button" class="auth-ghost" id="auth-forgot">Forgot password?</button><button type="button" class="auth-ghost" id="auth-import">Import demo → cloud</button></div>
@@ -5726,6 +5728,7 @@
       const authPassword = document.getElementById('auth-password');
       const authPasswordConfirm = document.getElementById('auth-password-confirm');
       const authRecoveryCode = document.getElementById('auth-recovery-code');
+      const authTotpCode = document.getElementById('auth-totp-code');
       const authRecoveryRow = document.getElementById('auth-recovery-row');
       const authUseRecoveryBtn = document.getElementById('auth-use-recovery');
       const authSubmit = document.getElementById('auth-submit');
@@ -5734,6 +5737,7 @@
       const authImportBtn = document.getElementById('auth-import');
       let authMode = 'signin';
       let resetTokenValue = '';
+      let totpPending = null;
       let cloudAccounts = [];
       let cloudMode = false;
       let expiring = false;
@@ -5810,31 +5814,35 @@
         const reset = mode === 'reset';
         const forgot = mode === 'forgot';
         const recover = mode === 'recover';
+        const totpStep = mode === 'totp';
         const newPassword = reset || recover;
-        if (authTitle) authTitle.textContent = reset ? 'Choose a new password' : recover ? 'Use a recovery code' : mode === 'signup' ? 'Create your Roviel account' : forgot ? 'Reset your password' : 'Sign in to Roviel';
+        if (authTitle) authTitle.textContent = reset ? 'Choose a new password' : recover ? 'Use a recovery code' : totpStep ? 'Enter authenticator code' : mode === 'signup' ? 'Create your Roviel account' : forgot ? 'Reset your password' : 'Sign in to Roviel';
         if (authSubtitle) authSubtitle.textContent = reset
           ? 'Use at least 8 characters. This link works once and expires after 30 minutes.'
           : recover ? 'Enter your email, one saved recovery code and a new password. This does not need email delivery.'
+          : totpStep ? 'This account has two-factor authentication on. Codes refresh every 30 seconds.'
           : forgot ? 'Enter your account email. If it is registered, we will send a single-use reset link.'
           : mode === 'signup' ? 'Cloud sync via Postgres. Demo still works offline.' : 'Cloud sync via Postgres. Demo still works offline.';
-        if (authEmail) { authEmail.hidden = reset; authEmail.disabled = reset; authEmail.required = !reset; authEmail.previousElementSibling.hidden = reset; }
-        if (authPassword) { authPassword.hidden = forgot; authPassword.value = ''; authPassword.autocomplete = mode === 'signin' ? 'current-password' : 'new-password'; }
+        if (authEmail) { authEmail.hidden = reset || totpStep; authEmail.disabled = reset || totpStep; authEmail.required = !(reset || totpStep); authEmail.previousElementSibling.hidden = reset || totpStep; }
+        if (authPassword) { authPassword.hidden = forgot || totpStep; authPassword.value = ''; authPassword.autocomplete = mode === 'signin' ? 'current-password' : 'new-password'; }
         if (authPasswordConfirm) { authPasswordConfirm.hidden = !newPassword; authPasswordConfirm.value = ''; authPasswordConfirm.previousElementSibling.hidden = !newPassword; }
         if (authRecoveryCode) { authRecoveryCode.hidden = !recover; authRecoveryCode.value = ''; authRecoveryCode.previousElementSibling.hidden = !recover; }
+        if (authTotpCode) { authTotpCode.hidden = !totpStep; authTotpCode.value = ''; authTotpCode.previousElementSibling.hidden = !totpStep; }
         if (authRecoveryRow) authRecoveryRow.hidden = !forgot;
-        if (authSubmit) { authSubmit.textContent = reset ? 'Update password' : recover ? 'Reset with code' : forgot ? 'Send reset link' : mode === 'signup' ? 'Create account' : 'Sign in'; authSubmit.disabled = false; }
+        if (authSubmit) { authSubmit.textContent = reset ? 'Update password' : recover ? 'Reset with code' : totpStep ? 'Verify & sign in' : forgot ? 'Send reset link' : mode === 'signup' ? 'Create account' : 'Sign in'; authSubmit.disabled = false; }
         if (authSignupBtn) authSignupBtn.textContent = mode === 'signin' ? 'Create account' : 'Back to sign in';
         if (authForgotBtn) authForgotBtn.hidden = mode !== 'signin';
         if (authImportBtn) authImportBtn.hidden = mode !== 'signin';
         setAuthMessage('');
         if (!reset) resetTokenValue = '';
+        if (!totpStep) totpPending = null;
       }
       function openAuth(mode = 'signin') {
         setAuthMode(mode);
         if (!authModal.open && typeof authModal.showModal === 'function') authModal.showModal();
         authModal.classList.add('open');
         authModal.setAttribute('aria-hidden', 'false');
-        const focusTarget = mode === 'recover' ? authRecoveryCode : mode === 'reset' ? authPassword : authEmail;
+        const focusTarget = mode === 'totp' ? authTotpCode : mode === 'recover' ? authRecoveryCode : mode === 'reset' ? authPassword : authEmail;
         setTimeout(() => focusTarget?.focus({ preventScroll: true }), 40);
       }
       function closeAuth() {
@@ -5914,14 +5922,32 @@
           finally { authSubmit.disabled = false; }
           return;
         }
-        if (pw.length < 8) { setAuthMessage('Password must be at least 8 characters.'); return; }
+        if (authMode !== 'totp' && pw.length < 8) { setAuthMessage('Password must be at least 8 characters.'); return; }
+        if (authMode === 'totp') {
+          if (!totpPending) { setAuthMode('signin'); setAuthMessage('Sign in again to continue.'); return; }
+          if (!/^\d{6}$/.test((authTotpCode?.value || '').trim())) { setAuthMessage('Enter the 6-digit code from your authenticator app.'); return; }
+          authSubmit.disabled = true;
+          try {
+            await api().login(totpPending.email, totpPending.password, authTotpCode.value.trim());
+            await afterAuth();
+          } catch (err) {
+            if (err && err.code === 'totp_required') setAuthMessage('Invalid code. Try the next one.');
+            else setAuthMessage(friendlyAuthError(err));
+          } finally { authSubmit.disabled = false; }
+          return;
+        }
         authSubmit.disabled = true;
         try {
           if (authMode === 'signup') await api().signup(email, pw);
           else await api().login(email, pw);
           await afterAuth();
-        } catch (err) { setAuthMessage(friendlyAuthError(err)); }
-        finally { authSubmit.disabled = false; }
+        } catch (err) {
+          if (err && err.code === 'totp_required') {
+            totpPending = { email, password: pw };
+            setAuthMode('totp');
+            setAuthMessage('Enter the 6-digit code from your authenticator app.');
+          } else setAuthMessage(friendlyAuthError(err));
+        } finally { authSubmit.disabled = false; }
       });
       authSignupBtn?.addEventListener('click', () => {
         if (authMode === 'signin') openAuth('signup');

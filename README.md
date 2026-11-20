@@ -67,6 +67,7 @@ The E2E suite asserts exact values, not labels: a ₹250 expense raises spending
 | --- | --- |
 | `POST /api/auth/signup` · `/login` · `/me` (`GET`/`PATCH`) | Account lifecycle (bcrypt + JWT, 12h sessions) |
 | `POST /api/auth/forgot-password` · `/reset-password` · `/recover-with-code` | Single-use, expiring resets; ten one-time recovery codes |
+| `POST /api/auth/totp/setup` · `/totp/verify` · `DELETE /api/auth/totp` | Optional TOTP two-factor: enrol with any authenticator app; disable needs the password. Once enabled, sign-in requires a 6-digit code |
 | `POST /api/auth/change-password` · `DELETE /api/auth/account` | Revoke sessions / delete everything |
 | `GET/POST/PATCH/DELETE /api/accounts` · `/api/transactions[/:id]` | Multi-currency accounts and ledger entries |
 | `POST /api/transactions/transfer` | Atomic cross-currency transfer with FX capture |

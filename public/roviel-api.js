@@ -52,7 +52,10 @@
     if (res.status === 401 && localStorage.getItem(refreshKey)) {
       if (await refreshSession()) res = await doFetch();
     }
-    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || res.statusText);
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw Object.assign(new Error(body.error || res.statusText), { code: body.code || undefined });
+    }
     return res.json();
   }
   window.RovielAPI = {
@@ -62,7 +65,10 @@
     accessExpired,
     async restoreSession() { const t = localStorage.getItem(tokenKey); if (!t || accessExpired()) await refreshSession(); return !!localStorage.getItem(tokenKey); },
     async signup(email, password) { const r = await req('/api/auth/signup', { method: 'POST', body: JSON.stringify({ email, password }) }); localStorage.setItem(tokenKey, r.token); localStorage.setItem(refreshKey, r.refreshToken); return r; },
-    async login(email, password) { const r = await req('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }); localStorage.setItem(tokenKey, r.token); localStorage.setItem(refreshKey, r.refreshToken); return r; },
+    async login(email, password, totpCode) { const r = await req('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password, ...(totpCode ? { totpCode } : {}) }) }); localStorage.setItem(tokenKey, r.token); localStorage.setItem(refreshKey, r.refreshToken); return r; },
+    totpSetup: () => req('/api/auth/totp/setup', { method: 'POST' }),
+    totpVerify: (code) => req('/api/auth/totp/verify', { method: 'POST', body: JSON.stringify({ code }) }),
+    totpDisable: (password) => req('/api/auth/totp', { method: 'DELETE', body: JSON.stringify({ password }) }),
     forgotPassword: (email) => req('/api/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
     resetPassword: (token, password) => req('/api/auth/reset-password', { method: 'POST', body: JSON.stringify({ token, password }) }),
     recoverWithCode: (email, code, password) => req('/api/auth/recover-with-code', { method: 'POST', body: JSON.stringify({ email, code, password }) }),

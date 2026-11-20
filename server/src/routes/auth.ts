@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/db.js';
 import { hashRefreshToken, issueRefreshToken, revokeAllRefreshTokens, createResetToken, createRecoveryCodes, hashPassword, hashRecoveryCode, hashResetToken, normalizeRecoveryCode, verifyPassword, signToken } from '../lib/auth.js';
+import { createTotpSecret, otpauthUrl, verifyTotp, encryptTotpSecret, decryptTotpSecret } from '../lib/totp.js';
 import { sendPasswordResetEmail } from '../lib/email.js';
 import { appBaseUrl, isProduction } from '../config.js';
 import { requireAuth, type AuthedRequest } from '../middleware/requireAuth.js';
@@ -10,7 +11,7 @@ import { normalizeCurrency } from '../lib/money.js';
 
 const router = Router();
 const signupSchema = z.object({ email: z.string().trim().email().max(254), password: z.string().min(8).max(128), displayName: z.string().trim().max(60).optional(), homeCurrency: z.string().optional() });
-const loginSchema = z.object({ email: z.string().trim().email().max(254), password: z.string().min(1).max(128) });
+const loginSchema = z.object({ email: z.string().trim().email().max(254), password: z.string().min(1).max(128), totpCode: z.string().trim().regex(/^\d{6}$/).optional() });
 const passwordSchema = z.string().min(8).max(128);
 const RESET_TOKEN_TTL_MS = 30 * 60 * 1000;
 const RESET_ACK = 'If that email is registered, a reset link is on its way.';
@@ -54,6 +55,16 @@ const recoveryUseLimiter = rateLimit({
   keyGenerator: (req) => `recovery-use:${req.ip}:${String((req.body as any)?.email || '').toLowerCase()}`,
   message: { error: 'Too many recovery attempts. Try again in 15 minutes.' },
 });
+const totpLimiter = rateLimit({
+  windowMs: 60_000, max: 15, standardHeaders: true, legacyHeaders: false,
+  keyGenerator: (req) => `totp:${(req as AuthedRequest).userId || req.ip}`,
+  message: { error: 'Too many authenticator attempts. Try again in a minute.' },
+});
+const totpDisableLimiter = rateLimit({
+  windowMs: 60 * 60_000, max: 10, standardHeaders: true, legacyHeaders: false,
+  keyGenerator: (req) => `totp-disable:${(req as AuthedRequest).userId || req.ip}`,
+  message: { error: 'Too many two-factor changes. Try again later.' },
+});
 const INVALID_RECOVERY = 'Recovery code is invalid or has already been used.';
 
 router.post('/signup', signupLimiter, async (req, res) => {
@@ -93,6 +104,16 @@ router.post('/login', loginLimiter, async (req, res) => {
   const user = await prisma.user.findUnique({ where: { email: parsed.data.email.toLowerCase() } });
   if (!user || !(await verifyPassword(parsed.data.password, user.passwordHash))) {
     res.status(401).json({ error: 'Invalid email or password' }); return;
+  }
+  // Optional TOTP: once enabled, a valid authenticator code is required to
+  // mint session tokens. Wrong codes count as failed sign-in attempts.
+  if (user.totpEnabledAt && user.totpSecret) {
+    const secret = decryptTotpSecret(user.totpSecret);
+    const code = parsed.data.totpCode;
+    if (!code || !secret || !verifyTotp(secret, code)) {
+      res.status(401).json({ error: code ? 'Invalid authenticator code.' : 'Authenticator code required.', code: 'totp_required' });
+      return;
+    }
   }
   const token = signToken(user.id, user.tokenVersion);
   const refreshToken = await issueRefreshToken(user.id);
@@ -224,10 +245,54 @@ router.post('/recover-with-code', recoveryUseLimiter, async (req, res) => {
   res.json({ ok: true });
 });
 
+// ---- Optional TOTP two-factor for cloud accounts ----
+// Enrolment is two-phase: setup stores an encrypted pending secret and returns
+// it (with the otpauth:// URI) exactly once; verify enables two-factor only
+// after a valid code proves the app is configured. Disabling requires the
+// password so a stolen session alone cannot switch two-factor off.
+router.post('/totp/setup', requireAuth, totpLimiter, async (req: AuthedRequest, res) => {
+  const user = await prisma.user.findUnique({ where: { id: req.userId! }, select: { totpEnabledAt: true } });
+  if (!user) { res.status(404).json({ error: 'Not found' }); return; }
+  if (user.totpEnabledAt) { res.status(409).json({ error: 'Two-factor is already enabled. Disable it first to re-enrol.' }); return; }
+  const secret = createTotpSecret();
+  const me = await prisma.user.findUnique({ where: { id: req.userId! }, select: { email: true } });
+  await prisma.user.update({ where: { id: req.userId! }, data: { totpSecret: encryptTotpSecret(secret) } });
+  res.set('Cache-Control', 'no-store');
+  res.json({ secret, otpauth: otpauthUrl(secret, me?.email || 'roviel') });
+});
+
+router.post('/totp/verify', requireAuth, totpLimiter, async (req: AuthedRequest, res) => {
+  const parsed = z.object({ code: z.string().trim().regex(/^\d{6}$/) }).safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: 'Enter the 6-digit code from your authenticator app.' }); return; }
+  const user = await prisma.user.findUnique({ where: { id: req.userId! }, select: { totpSecret: true, totpEnabledAt: true } });
+  if (!user) { res.status(404).json({ error: 'Not found' }); return; }
+  if (user.totpEnabledAt) { res.status(409).json({ error: 'Two-factor is already enabled.' }); return; }
+  const secret = decryptTotpSecret(user.totpSecret);
+  if (!secret) { res.status(400).json({ error: 'No pending enrolment. Start setup again.' }); return; }
+  if (!verifyTotp(secret, parsed.data.code)) {
+    res.status(400).json({ error: 'Invalid code. Try the next one.' });
+    return;
+  }
+  await prisma.user.update({ where: { id: req.userId! }, data: { totpEnabledAt: new Date() } });
+  res.json({ ok: true, totpEnabled: true });
+});
+
+router.delete('/totp', requireAuth, totpDisableLimiter, async (req: AuthedRequest, res) => {
+  const parsed = z.object({ password: z.string().min(1).max(128) }).safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: 'Enter your password to turn off two-factor.' }); return; }
+  const user = await prisma.user.findUnique({ where: { id: req.userId! } });
+  if (!user || !(await verifyPassword(parsed.data.password, user.passwordHash))) {
+    res.status(401).json({ error: 'Password is incorrect.' });
+    return;
+  }
+  await prisma.user.update({ where: { id: req.userId! }, data: { totpSecret: null, totpEnabledAt: null } });
+  res.json({ ok: true, totpEnabled: false });
+});
+
 router.get('/me', requireAuth, async (req: AuthedRequest, res) => {
   const user = await prisma.user.findUnique({ where: { id: req.userId! } });
   if (!user) { res.status(404).json({ error: 'Not found' }); return; }
-  res.json({ id: user.id, email: user.email, displayName: user.displayName, homeCurrency: user.homeCurrency, locale: user.locale });
+  res.json({ id: user.id, email: user.email, displayName: user.displayName, homeCurrency: user.homeCurrency, locale: user.locale, totpEnabled: !!user.totpEnabledAt });
 });
 
 router.patch('/me', requireAuth, async (req: AuthedRequest, res) => {
@@ -250,7 +315,7 @@ router.patch('/me', requireAuth, async (req: AuthedRequest, res) => {
     }
     return [updated];
   });
-  res.json({ id: user.id, email: user.email, displayName: user.displayName, homeCurrency: user.homeCurrency, locale: user.locale });
+  res.json({ id: user.id, email: user.email, displayName: user.displayName, homeCurrency: user.homeCurrency, locale: user.locale, totpEnabled: !!user.totpEnabledAt });
 });
 
 router.post('/change-password', requireAuth, changePasswordLimiter, async (req: AuthedRequest, res) => {
