@@ -80,8 +80,9 @@
     .header-actions { display: flex; align-items: center; gap: 10px; }
     .privacy-note { display: inline-flex; align-items: center; gap: 8px; min-height: 34px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--radius-pill); color: var(--muted); font: 500 11.5px var(--sans); white-space: nowrap; }
     .privacy-note i { width: 6px; height: 6px; border-radius: 50%; background: var(--brass); box-shadow: 0 0 10px rgba(169, 169, 169, 70%); }
-    .contact-btn { display: inline-flex; min-height: 40px; align-items: center; gap: 10px; padding: 0 18px; border: 1px solid transparent; border-radius: var(--radius-pill); color: var(--on-brand, #000000); background: var(--brand, #ffffff); font: 600 13px var(--sans); letter-spacing: 0; text-decoration: none; transition: transform var(--duration-quick) var(--ease-product), box-shadow var(--duration-quick), background var(--duration-quick); white-space: nowrap; box-shadow: 0 10px 28px rgba(97, 97, 97, 32%); }
-    .contact-btn:hover { transform: translateY(-1px); background: var(--brand-strong, #6c6c6c); box-shadow: none; }
+    .contact-btn { display: inline-flex; min-height: 40px; align-items: center; gap: 10px; padding: 0 8px; border: 0; border-radius: var(--radius-pill); color: var(--ledger-ink); background: transparent; font: 500 13px var(--sans); letter-spacing: 0; text-decoration: none; transition: color var(--duration-quick) var(--ease-product); white-space: nowrap; }
+    .contact-btn:hover { color: var(--accent); }
+    .contact-btn .btn-circle { background: var(--accent); opacity: .9; }
     .currency-open-shortcut { display: none; min-height: 38px; align-items: center; padding: 0 13px; border: 1px solid var(--line); border-radius: var(--radius-pill); color: var(--ledger-ink); background: transparent; font: 500 12px var(--sans); letter-spacing: 0; transition: border-color var(--duration-quick), background var(--duration-quick), color var(--duration-quick); }
     #open-auth-modal, [data-theme-toggle] { display: inline-flex; align-items: center; justify-content: center; }
     .currency-open-shortcut:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-wash); }
@@ -103,9 +104,9 @@
     .slide-cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; opacity: 0; transform: translateY(20px); transition: opacity .7s var(--ease-product), transform .7s var(--ease-product); transition-delay: .26s; pointer-events: none; }
     .slide.active .slide-cta-row { opacity: 1; transform: none; pointer-events: auto; }
     .slide-cta-row .slide-cta { margin-top: 0; }
-    .slide-cta-ghost { border-color: var(--line-strong); color: var(--ledger-ink); background: transparent; box-shadow: none; }
     .slide-cta { display: inline-flex; align-items: center; gap: 12px; margin-top: 26px; padding: 12px 18px; border: 1px solid transparent; border-radius: var(--radius-pill); color: var(--on-brand, #000000); background: var(--brand, #ffffff); font: 600 12.5px var(--sans); letter-spacing: .2px; text-decoration: none; transition: gap .24s var(--ease-product), box-shadow .24s, transform .24s var(--ease-product); pointer-events: auto; box-shadow: 0 12px 30px rgba(97, 97, 97, 28%); }
     .slide-cta:hover { gap: 18px; transform: translateY(-1px); }
+    .slide-cta-ghost { border-color: var(--line-strong); color: var(--ledger-ink); background: transparent; box-shadow: none; }
     .slide-cta span { font-size: 16px; }
     .hero-proof { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; max-width: 620px; margin-top: 30px; pointer-events: none; opacity: 0; transform: translateY(20px); transition: opacity .7s var(--ease-product), transform .7s var(--ease-product); transition-delay: .34s; }
     .slide.active .hero-proof { opacity: 1; transform: none; }
@@ -831,8 +832,8 @@
     .currency-tools-label, .preview-mark, .dash-eyebrow, .view-label { font-family: var(--mono); font-weight: 500; letter-spacing: 2px; }
     .slide-desc { font-family: var(--sans); font-weight: 300; }
     .privacy-note { font-family: var(--mono); }
-    .contact-btn { border: 2px solid var(--accent); border-radius: 3px; color: var(--on-brand); background: var(--accent); font-family: var(--mono); font-weight: 600; letter-spacing: 1px; box-shadow: 4px 4px 0 rgba(0, 0, 0, 55%); transition: transform .16s, box-shadow .16s, background .16s; }
-    .contact-btn:hover { transform: translate(-2px, -2px); background: #efefef; box-shadow: 6px 6px 0 rgba(0, 0, 0, 55%); }
+    .contact-btn { color: #efefef; font-family: var(--mono); font-weight: 500; letter-spacing: 1px; }
+    .contact-btn:hover { color: var(--accent); background: transparent; box-shadow: none; transform: none; }
     .btn-circle { border: 1.5px solid #0c0c0c; background: #0c0c0c; }
     .currency-open-shortcut { border: 1.5px solid rgba(227, 227, 227, 45%); border-radius: 3px; color: #efefef; background: rgba(227, 227, 227, 8%); font-family: var(--mono); font-weight: 500; }
     .currency-open-shortcut:hover { border-color: var(--accent); background: rgba(227, 227, 227, 16%); }
@@ -963,8 +964,8 @@
     [data-theme="brutal"] .main-header { border-bottom: 2px solid #131313; }
     [data-theme="brutal"] .privacy-note { color: #464646; }
     [data-theme="brutal"] .privacy-note i { background: var(--accent); box-shadow: none; }
-    [data-theme="brutal"] .contact-btn { border: 2px solid #131313; border-radius: 0; color: #f4f4f4; background: var(--accent); box-shadow: 5px 5px 0 #131313; }
-    [data-theme="brutal"] .contact-btn:hover { background: #3c3c3c; box-shadow: 7px 7px 0 #131313; }
+    [data-theme="brutal"] .contact-btn { color: #f4f4f4; background: transparent; box-shadow: none; }
+    [data-theme="brutal"] .contact-btn:hover { background: transparent; color: var(--accent); box-shadow: none; }
     [data-theme="brutal"] .btn-circle { border: 2px solid #f4f4f4; background: #f4f4f4; }
     [data-theme="brutal"] .currency-open-shortcut { border: 2px solid #131313; border-radius: 0; color: #131313; background: transparent; }
     [data-theme="brutal"] .currency-open-shortcut:hover { background: var(--accent); color: #f4f4f4; }
@@ -1625,7 +1626,7 @@
     html[data-theme] .currency-search-field input, html[data-theme] .currency-amount-field input, html[data-theme] .currency-field input, html[data-theme] .currency-field select { min-height: 42px; border: 1px solid var(--line-strong); border-radius: 8px; color: var(--text); background: var(--surface); font-size: 12.5px; }
     html[data-theme] .currency-actions button { min-height: 38px; border: 1px solid var(--line-strong); border-radius: 8px; color: var(--text); background: transparent; font-size: 10px; }
     html[data-theme] .currency-actions button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: var(--accent-wash); }
-    html[data-theme] .currency-conversion-result { border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent); border-radius: 10px; color: var(--muted); background: var(--accent-wash); }
+    html[data-theme] .currency-conversion-result { border: 1px solid var(--line); border-radius: 10px; color: var(--muted); background: color-mix(in srgb, var(--accent) 7%, transparent); }
     html[data-theme] .currency-conversion-result strong { color: var(--text); }
     html[data-theme] .currency-rate-facts p, html[data-theme] .currency-quote-results > div { color: var(--muted); font-size: 10.5px; }
     html[data-theme] .currency-rate-facts strong, html[data-theme] .currency-quote-results > div strong { color: var(--text); }
@@ -2044,7 +2045,7 @@
     html[data-theme] .currency-search-field input, html[data-theme] .currency-amount-field input, html[data-theme] .currency-field input, html[data-theme] .currency-field select { min-height: 40px; font-size: 13px; }
     html[data-theme] .currency-field small { font-size: 11px; }
     html[data-theme] .currency-actions button { font-size: 13px; }
-    html[data-theme] .currency-conversion-result { border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent); border-radius: 16px; background: var(--accent-wash); }
+    html[data-theme] .currency-conversion-result { border: 1px solid var(--line); border-radius: 16px; background: color-mix(in srgb, var(--accent) 7%, transparent); }
     html[data-theme] .currency-conversion-result strong { font-size: 24px; }
     html[data-theme] .currency-conversion-result span { font-size: 12px; }
     html[data-theme] .currency-rate-facts p, html[data-theme] .currency-quote-results > div { font-size: 12px; }
@@ -2143,6 +2144,13 @@
     html[data-theme] .auth-primary:hover,
     html[data-theme] .contact-btn:hover,
     html[data-theme] .slide-cta:hover { background: var(--brand-strong); border-color: var(--brand-strong); }
+    /* The header dashboard link stays a quiet text link; the green lives in
+       the hero's one primary action and in the live dot. */
+    html[data-theme] .contact-btn { border: 0; color: var(--text); background: transparent; box-shadow: none; }
+    html[data-theme] .contact-btn:hover { color: var(--accent); background: transparent; border: 0; box-shadow: none; transform: none; }
+    html[data-theme] .contact-btn .btn-circle { border-color: var(--accent); background: var(--accent); }
+    html[data-theme] .slide-cta-ghost { color: var(--text); background: transparent; border-color: var(--line-strong); box-shadow: none; }
+    html[data-theme] .slide-cta-ghost:hover { color: var(--text); background: var(--accent-wash); border-color: var(--accent); box-shadow: none; }
     html[data-theme] .dash-secondary,
     html[data-theme] .dash-back,
     html[data-theme] .cloud-grid button,
@@ -2222,8 +2230,9 @@
     html[data-theme] .preview-row-amount.is-out,
     html[data-theme] .drawer-value.negative,
     html[data-theme] .currency-quote-results .quote-difference .negative { color: var(--negative); }
-    html[data-theme] .dash-stat.income strong, html[data-theme] .dash-stat.income .dash-card-label { color: var(--positive); }
-    html[data-theme] .dash-stat.expenses strong, html[data-theme] .dash-stat.expenses .dash-card-label { color: var(--negative); }
+    html[data-theme] .dash-stat.income strong, html[data-theme] .dash-stat.expenses strong { color: var(--text); }
+    html[data-theme] .dash-stat.income .dash-card-label { color: var(--positive); }
+    html[data-theme] .dash-stat.expenses .dash-card-label { color: var(--negative); }
     html[data-theme] .dash-stat.income .dash-stat-icon { border-color: color-mix(in srgb, var(--positive) 35%, transparent); color: var(--positive); background: var(--accent-wash); }
     html[data-theme] .dash-stat.expenses .dash-stat-icon { border-color: color-mix(in srgb, var(--negative) 35%, transparent); color: var(--negative); background: var(--negative-wash); }
     html[data-theme] .dash-transaction-icon.is-income { border-color: color-mix(in srgb, var(--positive) 32%, transparent); color: var(--positive); background: var(--accent-wash); }
@@ -2234,7 +2243,7 @@
     html[data-theme] .rate-badge.warning::before { background: var(--muted); }
     html[data-theme] .rate-badge, html[data-theme] .estimate-badge { border-color: color-mix(in srgb, var(--accent) 40%, transparent); color: var(--positive); background: var(--accent-wash); }
     html[data-theme] .rate-badge::before { background: var(--accent); }
-    html[data-theme] .currency-conversion-result { border-color: color-mix(in srgb, var(--accent) 30%, transparent); background: var(--accent-wash); }
+    html[data-theme] .currency-conversion-result { border-color: var(--line); background: color-mix(in srgb, var(--accent) 7%, transparent); }
     html[data-theme] .currency-provider-attribution a { color: var(--positive); }
     html[data-theme] .account-name:hover, html[data-theme] .account-name:focus-visible { color: var(--positive); }
 
@@ -2829,7 +2838,7 @@
     </header>
 
     <section class="slide active" id="slide-1" aria-labelledby="title-1">
-      <h1 class="slide-title" id="title-1">Give every<br>currency a<br>direction.</h1>
+      <h1 class="slide-title" id="title-1">Give every<br>currency a<br>direction</h1>
       <p class="slide-desc">Understand your money across currencies — dated reference rates, provider quotes and fees, side by side. Start with the public converter; no account is needed.</p>
       <div class="slide-cta-row">
         <button type="button" class="slide-cta" id="hero-converter-cta">Open the converter <span aria-hidden="true">↗</span></button>
@@ -2916,17 +2925,17 @@
     </div>
 
     <section class="slide" id="slide-2" aria-labelledby="title-2">
-      <h2 class="slide-title" id="title-2">One view of<br>your money.</h2>
+      <h2 class="slide-title" id="title-2">One view of<br>your money</h2>
       <p class="slide-desc">Income, spending, and what remains sit together, so the picture is easy to understand.</p>
     </section>
 
     <section class="slide" id="slide-3" aria-labelledby="title-3">
-      <h2 class="slide-title" id="title-3">Know where<br>it goes.</h2>
+      <h2 class="slide-title" id="title-3">Know where<br>it goes</h2>
       <p class="slide-desc">Find your recent activity, follow useful trends, and spot the patterns that matter.</p>
     </section>
 
     <section class="slide" id="slide-4" aria-labelledby="title-4">
-      <h2 class="slide-title" id="title-4">Make the next<br>step yours.</h2>
+      <h2 class="slide-title" id="title-4">Make the next<br>step yours</h2>
       <p class="slide-desc">Set a goal, keep a buffer, or simply check in. Roviel gives you room to decide.</p>
       <a class="slide-cta" href="#dashboard" aria-controls="dashboard-view">Open your dashboard <span aria-hidden="true">↗</span></a>
     </section>
@@ -2979,7 +2988,7 @@
           <header class="view-head">
             <div class="view-head-copy">
               <span class="view-label">Overview</span>
-              <h1>Every currency you hold, on one page.</h1>
+              <h1>Every currency you hold, on one page</h1>
               <p>Balances, spending and savings in original currencies, valued in your home currency.</p>
             </div>
             <div class="view-head-actions">
@@ -3019,7 +3028,7 @@
               <article class="dash-card dash-insight-card" id="dashboard-insights">
                 <div class="dash-panel-heading"><div><h2>Financial pulse</h2><p>A quiet check-in on your month</p></div><button type="button" class="dash-secondary pulse-jump" data-jump="insights" aria-label="Open insights">↗</button></div>
                 <span class="dash-insight-tag">Room to breathe</span>
-                <h3 id="insight-heading">You’re keeping more than you spend.</h3>
+                <h3 id="insight-heading">You’re keeping more than you spend</h3>
                 <p id="insight-copy">Your recorded income is ahead of spending this month. Keep going at a pace that feels right.</p>
                 <div class="dash-insight-stats">
                   <div><span>Net position</span><strong id="insight-net">—</strong></div>
@@ -3039,7 +3048,7 @@
           <header class="view-head">
             <div class="view-head-copy">
               <span class="view-label">Transactions</span>
-              <h1>Every entry, searchable and exportable.</h1>
+              <h1>Every entry, searchable and exportable</h1>
               <p>Search, filter, sort and correct every entry; export the full ledger as CSV.</p>
             </div>
             <div class="view-head-actions"><button class="dash-primary" type="button" id="open-transaction-2"><span>+</span> Add transaction</button></div>
@@ -3066,7 +3075,7 @@
           <header class="view-head">
             <div class="view-head-copy">
               <span class="view-label">Currency pulse</span>
-              <h1>Live reference rates for every currency.</h1>
+              <h1>Live reference rates for every currency</h1>
               <p>Dated reference rates with a 30-day history for every pair.</p>
             </div>
             <div class="view-head-actions"><button class="dash-secondary" type="button" id="open-converter-cta">Open converter</button></div>
@@ -3090,7 +3099,7 @@
             <header class="view-head">
               <div class="view-head-copy">
                 <span class="view-label">Accounts</span>
-                <h1>Hold money in more than one currency.</h1>
+                <h1>Hold money in more than one currency</h1>
                 <p>Each account keeps its own currency, and transfers capture the rate.</p>
               </div>
             </header>
@@ -3109,7 +3118,7 @@
             <header class="view-head">
               <div class="view-head-copy">
                 <span class="view-label">Budgets</span>
-                <h1>Cap a category before it caps you.</h1>
+                <h1>Cap a category before it caps you</h1>
                 <p>Monthly limits per category, tracked as you spend.</p>
               </div>
             </header>
@@ -3122,7 +3131,7 @@
             <header class="view-head">
               <div class="view-head-copy">
                 <span class="view-label">Goals</span>
-                <h1>Name what you are saving for.</h1>
+                <h1>Name what you are saving for</h1>
                 <p>Targets with contributions tracked against what you set.</p>
               </div>
             </header>
@@ -3135,7 +3144,7 @@
             <header class="view-head">
               <div class="view-head-copy">
                 <span class="view-label">Recurring</span>
-                <h1>Know what is coming before it lands.</h1>
+                <h1>Know what is coming before it lands</h1>
                 <p>Schedule bills once, then post them into the ledger with one tap.</p>
               </div>
             </header>
@@ -3148,7 +3157,7 @@
             <header class="view-head">
               <div class="view-head-copy">
                 <span class="view-label">Insights</span>
-                <h1>Numbers that explain themselves.</h1>
+                <h1>Numbers that explain themselves</h1>
                 <p>Deterministic summaries computed from your own entries.</p>
               </div>
               <div class="view-head-actions"><button class="dash-secondary" type="button" id="refresh-insights">Refresh insights</button></div>
@@ -3213,7 +3222,7 @@
   <dialog class="currency-tools-dialog" id="currency-tools-dialog" aria-labelledby="currency-tools-title" data-lenis-prevent>
     <div class="currency-tools-shell">
       <header class="currency-tools-dialog-header">
-        <div><span class="currency-tools-label">Public currency tools</span><h2 id="currency-tools-title">Know the rate.<br><span>Understand the cost.</span></h2><p>Compare a dated reference rate with a provider quote and the fees you enter.</p></div>
+        <div><span class="currency-tools-label">Public currency tools</span><h2 id="currency-tools-title">Know the rate<br><span>Understand the cost</span></h2><p>Compare a dated reference rate with a provider quote and the fees you enter.</p></div>
         <button class="currency-close" id="close-currency-tools" type="button" aria-label="Close currency tools">×</button>
       </header>
       <div class="currency-tools-grid">
@@ -3883,15 +3892,15 @@
       const rateEl = document.getElementById('insight-rate');
       const setHeading = text => { try { updateSplitHeading(heading, text); } catch { heading.textContent = text; } };
       if (summary.unavailable) {
-        setHeading('Cloud data is unavailable.');
+        setHeading('Cloud data is unavailable');
         copy.textContent = 'We could not load your ledger, so no totals are being estimated. Retry in a moment.';
         if (netEl) netEl.textContent = '—';
         if (rateEl) rateEl.textContent = '—';
       } else if (income >= expenses) {
-        setHeading('You’re keeping more than you spend.');
+        setHeading('You’re keeping more than you spend');
         copy.textContent = 'Your recorded income is ahead of spending this month. Keep going at a pace that feels right.';
       } else {
-        setHeading('A little clarity goes a long way.');
+        setHeading('A little clarity goes a long way');
         copy.textContent = 'Your recent spending is ahead of income. Take a closer look at the activity and choose your next step.';
       }
       if (!summary.unavailable) {
