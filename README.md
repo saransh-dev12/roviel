@@ -109,8 +109,8 @@ Neon needs the Postgres 18 Docker client (`backup-neon.sh`/`restore-neon.sh`); `
 
 - Render free tier sleeps (~30s cold start); the uptime workflow may show an occasional timeout right after a wake.
 - Recovery email needs `RESEND_API_KEY` + `EMAIL_FROM`; until then the 503 is honest and recovery codes cover sign-in.
-- Vercel auto-deploy needs the GitHub connection added in the Vercel dashboard; until then releases are the CLI command above. The old Render Postgres expired naturally and is no longer referenced.
-- Refresh-token rotation and TOTP are deliberately out of scope (issue #10).
+- Frontend deploys are automatic: `git push` to `main` triggers a Vercel build via the GitHub integration; `vercel deploy --prod` remains the manual escape hatch. The old Render Postgres expired naturally and is no longer referenced.
+- Optional TOTP is available via the API (enrol with any authenticator app); a settings-page UI for it is future work (issue #10 is closed).
 
 ## Privacy & data
 
