@@ -2615,6 +2615,33 @@
     html[data-theme] .auth-primary {
       box-shadow: 0 10px 26px color-mix(in srgb, var(--accent) 18%, transparent), inset 0 1px rgba(255, 255, 255, 16%);
     }
+
+    /* ============ PREMIUM MATERIAL PASS ============
+       A working screen, not a landing page: the header answers quietly,
+       depth comes from surface steps and hairlines, and the one premium
+       moment is the balance card. No glows, no resting shadows, no lifts. */
+    html[data-theme] .view-head { margin: 32px 0 22px; }
+    html[data-theme] .view-head .view-label { display: none; } /* the breadcrumb already names the page */
+    html[data-theme] .view-head h1 { font-size: clamp(22px, 2.2vw, 26px); font-weight: 600; letter-spacing: -.01em; line-height: 1.15; }
+    html[data-theme] .view-head p { margin-top: 5px; font-size: 13px; }
+    html[data-theme] .dash-primary,
+    html[data-theme] .auth-primary { border-radius: 8px; box-shadow: none; }
+    html[data-theme] .dash-primary:hover,
+    html[data-theme] .auth-primary:hover { transform: none; box-shadow: none; }
+    html[data-theme] .dash-card,
+    html[data-theme] .dash-chart-card,
+    html[data-theme] .dash-insight-card,
+    html[data-theme] .pulse-chart-card,
+    html[data-theme] .insight-card { box-shadow: none; }
+    html[data-theme] .dash-card:hover,
+    html[data-theme] .dash-chart-card:hover,
+    html[data-theme] .dash-insight-card:hover { transform: none; border-color: var(--line-strong); box-shadow: none; }
+    @media (max-width: 900px) {
+      html[data-theme] .dash-card, html[data-theme] .pulse-tile, html[data-theme] .pulse-chart-card, html[data-theme] .insight-card { backdrop-filter: none; }
+    }
+    html[data-theme] .dash-metrics .dash-balance-card { position: relative; overflow: hidden; border-color: var(--line-strong); background: var(--surface-2); }
+    html[data-theme] .dash-metrics .dash-balance-card::before { content: ''; position: absolute; top: 0; right: 16%; left: 16%; height: 1px; background: var(--accent); opacity: .75; }
+
     @media (max-width: 900px) {
       html[data-theme] .dash-globalbar, html[data-theme] .dash-contextbar { backdrop-filter: blur(18px) saturate(140%); }
       html[data-theme] .dash-card, html[data-theme] .pulse-tile, html[data-theme] .pulse-chart-card, html[data-theme] .insight-card { backdrop-filter: blur(16px) saturate(130%); }
