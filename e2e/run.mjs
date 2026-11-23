@@ -22,7 +22,7 @@ async function newPage(viewport = { width: 1440, height: 900 }) {
   return page;
 }
 async function ready(page) {
-  await page.waitForFunction(() => document.documentElement.dataset.appReady === 'true', { timeout: 20000 });
+  await page.waitForFunction(() => document.documentElement.dataset.appReady === 'true', null, { timeout: 20000 });
 }
 async function openDashboard(page) {
   try {
@@ -55,7 +55,7 @@ async function login(page) {
   await page.fill('#auth-email', 'demo@ledgerly.app');
   await page.fill('#auth-password', 'ledgerly123');
   await page.click('#auth-submit');
-  await page.waitForFunction(() => document.querySelector('#cloud-status')?.textContent.includes('Cloud sync'), { timeout: 15000 });
+  await page.waitForFunction(() => document.querySelector('#cloud-status')?.textContent.includes('Cloud sync'), null, { timeout: 15000 });
   await page.waitForTimeout(2500);
 }
 async function api(page, path, options = {}) {
@@ -74,7 +74,7 @@ try {
   const page = await newPage();
   await page.goto(WEB, { waitUntil: 'domcontentloaded' });
   await ready(page);
-  await page.waitForFunction(() => document.title.includes('Roviel') && document.querySelectorAll('.slide').length === 4, { timeout: 10000 }).catch(() => {});
+  await page.waitForFunction(() => document.title.includes('Roviel') && document.querySelectorAll('.slide').length === 4, null, { timeout: 10000 }).catch(() => {});
   check('landing loads', (await page.title()).includes('Roviel'));
   check('4 story slides', (await page.locator('.slide').count()) === 4);
   check('sign-in visible on desktop', await page.locator('#open-auth-modal').isVisible());
@@ -88,16 +88,16 @@ try {
   await page.waitForTimeout(1400);
   const snap = await page.evaluate(() => window.scrollY / (document.documentElement.scrollHeight - window.innerHeight));
   check('one flick lands on the next story slide', Math.abs(snap - 0.36) < 0.04, 'ratio ' + snap.toFixed(3));
-  await page.waitForFunction(() => document.querySelector('#slide-2-img')?.classList.contains('active'), { timeout: 5000 }).catch(() => {});
+  await page.waitForFunction(() => document.querySelector('#slide-2-img')?.classList.contains('active'), null, { timeout: 5000 }).catch(() => {});
   check('overview preview appears', await page.locator('#slide-2-img').evaluate(el => el.classList.contains('active')));
   await page.evaluate(() => window.scrollTo({ top: (document.documentElement.scrollHeight - window.innerHeight) * 0.62, behavior: 'instant' }));
   await page.waitForTimeout(1100);
-  await page.waitForFunction(() => document.querySelector('#slide-3-img')?.classList.contains('active'), { timeout: 5000 }).catch(() => {});
+  await page.waitForFunction(() => document.querySelector('#slide-3-img')?.classList.contains('active'), null, { timeout: 5000 }).catch(() => {});
   check('activity preview appears', await page.locator('#slide-3-img').evaluate(el => el.classList.contains('active')));
   check('activity preview lists four entries', (await page.locator('#slide-3-img .preview-row').count()) === 4);
   await page.evaluate(() => window.scrollTo({ top: (document.documentElement.scrollHeight - window.innerHeight) * 0.94, behavior: 'instant' }));
   await page.waitForTimeout(1100);
-  await page.waitForFunction(() => document.querySelector('#slide-4-img')?.classList.contains('active'), { timeout: 5000 }).catch(() => {});
+  await page.waitForFunction(() => document.querySelector('#slide-4-img')?.classList.contains('active'), null, { timeout: 5000 }).catch(() => {});
   check('plan preview appears', await page.locator('#slide-4-img').evaluate(el => el.classList.contains('active')));
   check('plan preview lists three goals', (await page.locator('#slide-4-img .preview-goal').count()) === 3);
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
@@ -124,11 +124,11 @@ try {
   // ================= CONVERTER =================
   await page.click('#open-currency-tools-nav');
   await page.waitForSelector('#currency-result');
-  await page.waitForFunction(() => !document.querySelector('#currency-result').textContent.includes('Loading'), { timeout: 20000 }).catch(() => {});
+  await page.waitForFunction(() => !document.querySelector('#currency-result').textContent.includes('Loading'), null, { timeout: 20000 }).catch(() => {});
   let conv = await page.locator('#currency-result').innerText();
   if (/unavailable/i.test(conv)) { await page.click('#refresh-currency-rate').catch(() => {}); await page.waitForTimeout(4000); conv = await page.locator('#currency-result').innerText(); }
   check('converter computes', /EUR/.test(conv) && !/10,000,/.test(conv), conv.replace(/\n/g, ' ').slice(0, 48));
-  await page.waitForFunction(() => document.querySelectorAll('#currency-from option').length >= 150, { timeout: 15000 }).catch(() => {});
+  await page.waitForFunction(() => document.querySelectorAll('#currency-from option').length >= 150, null, { timeout: 15000 }).catch(() => {});
   check('full currency directory', (await page.locator('#currency-from option').count()) >= 150, (await page.locator('#currency-from option').count()) + ' currencies');
   check('popular pairs rendered', (await page.locator('#currency-popular-list button').count()) === 12);
 
@@ -333,7 +333,7 @@ try {
   check('command palette filters commands', (await page.locator('#command-list .command-item').count()) >= 1 && (await page.locator('#command-list').innerText()).toLowerCase().includes('budget'));
   await page.keyboard.press('Enter');
   await page.waitForSelector('#view-budgets.active');
-  await page.waitForFunction(() => document.querySelector('#command-palette').hidden, { timeout: 2000 });
+  await page.waitForFunction(() => document.querySelector('#command-palette').hidden, null, { timeout: 2000 });
   check('command palette opens the selected view', (await page.locator('#view-budgets.active').count()) === 1);
   check('command palette hides after running', await page.locator('#command-palette').isHidden());
   await goView(page, 'overview');
@@ -512,7 +512,7 @@ try {
   await page.selectOption('#transfer-from', transferSource.id);
   await page.selectOption('#transfer-to', transferTarget.id);
   await page.fill('#transfer-amount', '100');
-  await page.waitForFunction(() => /1 INR = [\d.]+ USD/.test(document.getElementById('transfer-preview')?.innerText || ''), { timeout: 12000 }).catch(() => {});
+  await page.waitForFunction(() => /1 INR = [\d.]+ USD/.test(document.getElementById('transfer-preview')?.innerText || ''), null, { timeout: 12000 }).catch(() => {});
   const preview = await page.locator('#transfer-preview').innerText();
   check('transfer preview shows the live pair', /1 INR = [\d.]+ USD/.test(preview), preview.slice(0, 90));
   const accountsBefore = (await api(page, '/api/summary')).body.accounts;
@@ -654,7 +654,7 @@ try {
     .waitForFunction(() => {
       const el = document.getElementById('total-balance');
       return !!el && el.textContent?.length > 1 && !!el.innerText && el.innerText.length > 1;
-    }, { timeout: 12000 })
+    }, null, { timeout: 12000 })
     .then(() => off.locator('#total-balance').innerText())
     .catch(() => '');
   check('offline: dashboard still opens', offBal.trim().length > 1, `text="${offBal.slice(0, 24)}"`);
@@ -699,7 +699,7 @@ try {
   check('recovery: mismatched passwords rejected', (await recovery.locator('#auth-error').innerText()).includes('do not match'));
   await recovery.fill('#auth-password-confirm', 'new-password-456');
   await recovery.click('#auth-submit');
-  await recovery.waitForFunction(() => /invalid or has expired/i.test(document.querySelector('#auth-error')?.textContent || ''), { timeout: 10000 });
+  await recovery.waitForFunction(() => /invalid or has expired/i.test(document.querySelector('#auth-error')?.textContent || ''), null, { timeout: 10000 });
   check('recovery: invalid reset token rejected', (await recovery.locator('#auth-error').innerText()).includes('invalid or has expired'));
   await recovery.click('#auth-close');
   await recovery.click('#open-auth-modal');
@@ -707,7 +707,7 @@ try {
   check('recovery: forgot-password form opens', (await recovery.locator('#auth-title').innerText()) === 'Reset your password');
   await recovery.fill('#auth-email', `missing-e2e-${Date.now()}@example.com`);
   await recovery.click('#auth-submit');
-  await recovery.waitForFunction(() => /reset link/i.test(document.querySelector('#auth-error')?.textContent || ''), { timeout: 10000 });
+  await recovery.waitForFunction(() => /reset link/i.test(document.querySelector('#auth-error')?.textContent || ''), null, { timeout: 10000 });
   check('recovery: forgot response is non-enumerating', (await recovery.locator('#auth-error').innerText()).includes('If that email is registered'));
   await recovery.click('#auth-signup');
   check('recovery: back to sign in works', (await recovery.locator('#auth-title').innerText()) === 'Sign in to Roviel');
@@ -728,14 +728,14 @@ try {
   await recPage.fill('#auth-email', recEmail);
   await recPage.fill('#auth-password', recOldPassword);
   await recPage.click('#auth-submit');
-  await recPage.waitForFunction(() => document.querySelector('#cloud-status')?.textContent.includes('Cloud sync'), { timeout: 20000 });
+  await recPage.waitForFunction(() => document.querySelector('#cloud-status')?.textContent.includes('Cloud sync'), null, { timeout: 20000 });
   await recPage.waitForTimeout(1200);
   await goView(recPage, 'accounts');
   await recPage.waitForTimeout(700);
   await recPage.fill('#recovery-generate-password', recOldPassword);
   recPage.once('dialog', dialog => dialog.accept());
   await recPage.click('#generate-recovery-codes');
-  await recPage.waitForFunction(() => document.querySelectorAll('#recovery-code-list code').length === 10, { timeout: 10000 });
+  await recPage.waitForFunction(() => document.querySelectorAll('#recovery-code-list code').length === 10, null, { timeout: 10000 });
   const recoveryCodes = await recPage.locator('#recovery-code-list code').allInnerTexts();
   check('recovery: ten single-use codes generated', recoveryCodes.length === 10 && recoveryCodes.every(code => code.startsWith('ROV-')), recoveryCodes.length + ' codes');
   await recPage.click('#auth-button');
@@ -752,12 +752,12 @@ try {
   await recPage.fill('#auth-password', recNewPassword);
   await recPage.fill('#auth-password-confirm', recNewPassword);
   await recPage.click('#auth-submit');
-  await recPage.waitForFunction(() => /Password updated/.test(document.querySelector('#auth-error')?.textContent || ''), { timeout: 10000 });
+  await recPage.waitForFunction(() => /Password updated/.test(document.querySelector('#auth-error')?.textContent || ''), null, { timeout: 10000 });
   check('recovery: code resets the password', (await recPage.locator('#auth-error').innerText()).includes('Password updated'));
   await recPage.fill('#auth-email', recEmail);
   await recPage.fill('#auth-password', recNewPassword);
   await recPage.click('#auth-submit');
-  await recPage.waitForFunction(() => document.querySelector('#cloud-status')?.textContent.includes('Cloud sync'), { timeout: 20000 });
+  await recPage.waitForFunction(() => document.querySelector('#cloud-status')?.textContent.includes('Cloud sync'), null, { timeout: 20000 });
   check('recovery: new password signs in', (await recPage.locator('#cloud-status').innerText()).includes('Cloud sync'));
   const refreshRotate = await recPage.evaluate(async () => {
     const refresh = localStorage.getItem('roviel.api.refresh');

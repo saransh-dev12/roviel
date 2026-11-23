@@ -46,7 +46,7 @@ const browser = await chromium.launch();
 const pageErrors = [];
 
 async function ready(page) {
-  await page.waitForFunction(() => document.documentElement.dataset.appReady === 'true', { timeout: 20000 });
+  await page.waitForFunction(() => document.documentElement.dataset.appReady === 'true', null, { timeout: 20000 });
 }
 
 async function newPage(viewport, theme = 'noir') {
@@ -103,7 +103,7 @@ for (const theme of THEMES) {
         const max = document.documentElement.scrollHeight - window.innerHeight;
         window.scrollTo(0, max * .94);
       });
-      await page.waitForFunction(() => document.querySelector('#slide-4')?.classList.contains('active'), { timeout: 5000 }).catch(() => {});
+      await page.waitForFunction(() => document.querySelector('#slide-4')?.classList.contains('active'), null, { timeout: 5000 }).catch(() => {});
       await page.waitForTimeout(450);
       const cta = await rect(page, '#slide-4 .slide-cta');
       const ctaOpacity = await page.locator('#slide-4 .slide-cta').evaluate(element => parseFloat(getComputedStyle(element).opacity));
@@ -242,7 +242,7 @@ for (const theme of THEMES) {
         await page.fill('#auth-email', 'demo@ledgerly.app');
         await page.fill('#auth-password', 'ledgerly123');
         await page.click('#auth-submit');
-        await page.waitForFunction(() => document.querySelector('#cloud-status')?.textContent.includes('Cloud sync'), { timeout: 15000 });
+        await page.waitForFunction(() => document.querySelector('#cloud-status')?.textContent.includes('Cloud sync'), null, { timeout: 15000 });
         signedIn = true;
       } catch (error) {
         const message = String(error?.message || error).slice(0, 160);

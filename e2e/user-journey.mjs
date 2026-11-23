@@ -41,7 +41,7 @@ page.on('pageerror', e => console.log('PAGE ERROR ' + String(e).slice(0, 160)));
 try {
   // ---------- A. Sign in ----------
   await page.goto(WEB, { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => document.documentElement.dataset.appReady === 'true', { timeout: 20000 });
+  await page.waitForFunction(() => document.documentElement.dataset.appReady === 'true', null, { timeout: 20000 });
   await sleep(800);
   if ((await page.title()).includes('Roviel') && await page.locator('#open-auth-modal').isVisible()) pass('landing shows branding and sign-in');
   else fail('landing shows branding and sign-in');
@@ -52,7 +52,7 @@ try {
   await page.fill('#auth-password', 'ledgerly123');
   await sleep(400);
   await page.click('#auth-submit');
-  await page.waitForFunction(() => document.querySelector('#cloud-status')?.textContent.includes('Cloud sync'), { timeout: 25000 });
+  await page.waitForFunction(() => document.querySelector('#cloud-status')?.textContent.includes('Cloud sync'), null, { timeout: 25000 });
   pass('demo sign-in succeeds, cloud sync on');
   await page.click('.contact-btn');
   await page.waitForSelector('#dashboard-view.open');
@@ -243,7 +243,7 @@ try {
   await sleep(800);
   await page.click('#open-converter-cta');
   await page.waitForSelector('#currency-tools-dialog[open]');
-  await page.waitForFunction(() => !document.querySelector('#currency-result').textContent.includes('Loading'), { timeout: 20000 }).catch(() => {});
+  await page.waitForFunction(() => !document.querySelector('#currency-result').textContent.includes('Loading'), null, { timeout: 20000 }).catch(() => {});
   await page.fill('#currency-amount', '250');
   await page.selectOption('#currency-from', 'USD');
   await page.selectOption('#currency-to', 'EUR');
@@ -267,7 +267,7 @@ try {
   if (/does not execute exchanges/i.test(dlg)) pass('no real-exchange claim (disclaimer present)');
   else fail('no real-exchange claim (disclaimer present)');
   await page.click('#close-currency-tools');
-  await page.waitForFunction(() => !document.querySelector('#currency-tools-dialog').open, { timeout: 5000 });
+  await page.waitForFunction(() => !document.querySelector('#currency-tools-dialog').open, null, { timeout: 5000 });
   pass('currency dialog closes');
 
   // ---------- G. Recurring + Insights ----------
@@ -327,7 +327,7 @@ try {
 
   // ---------- I. Reload persistence + sign out ----------
   await page.reload({ waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => document.documentElement.dataset.appReady === 'true', { timeout: 20000 });
+  await page.waitForFunction(() => document.documentElement.dataset.appReady === 'true', null, { timeout: 20000 });
   await sleep(800);
   if (!(await page.locator('#dashboard-view.open').count())) {
     await page.click('.contact-btn');
