@@ -1,6 +1,6 @@
 # Roviel V1 — Release Notes (prepared 2026-11-06)
 
-**Status: ready for release review. Nothing in this working tree has been committed, pushed or deployed — every change below awaits owner approval.**
+**Status: historical.** These notes were prepared on 2026-11-06 ahead of a release review and are kept for reference. See [GitHub Releases](https://github.com/saransh-dev12/roviel/releases) for what shipped.
 
 Roviel is a multi-currency personal finance tracker: a cinematic public landing page, a live reference-rate converter, a provider quote comparator, and an authenticated ledger with accounts, budgets, goals, recurring rules and deterministic insights — plus an offline-first local demo that keeps working with no API.
 

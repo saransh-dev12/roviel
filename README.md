@@ -29,8 +29,10 @@ Express API (TypeScript)
   └── lib: money (BigInt minor units) · fx (Frankfurter + fallback, cached in Postgres)
         │  Prisma ORM
         ▼
-PostgreSQL (Neon) — 11 tables, user-scoped by userId on every query
+PostgreSQL (Neon) — 12 tables, user-scoped by userId on every query
 ```
+
+**Front-end note:** the live page is `index.html` (vanilla JS + ES modules). `src/bits/` holds a few React-based visual effects mounted into it via `src/bits/mount.jsx`; `src/main.jsx` and `src/App.jsx` are not loaded by `index.html`.
 
 **Rules that hold everywhere:** money is integer minor units + ISO currency (never floats); original amounts and the reporting rate are stored together; transfers are atomic and both legs linked; every query is filtered by `userId`; the API never trusts client-supplied amounts or account ids.
 
