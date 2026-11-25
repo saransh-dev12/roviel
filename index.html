@@ -1227,6 +1227,7 @@
     .budget-row-foot .row-del:hover, .budget-row-foot .row-del:focus-visible { opacity: 1; }
     [data-theme="brutal"] .budget-row-foot .row-del { border: 0; background: transparent; }
     [data-theme="brutal"] .budget-row-foot .row-del:hover { background: var(--red); }
+    .goal-deadline::before { content: ' · '; }
     .goal-row-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 4px; flex-wrap: wrap; }
     .goal-row-foot .mini-form { margin-top: 0; }
     .goal-row-tools { display: flex; align-items: center; gap: 8px; }
@@ -2826,6 +2827,87 @@
       html[data-theme] .currency-recent-item { min-height: 56px; padding: 10px 12px; }
     }
 
+    /* ---- Phones: list toolbars, row actions and account rows ---- */
+    .account-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .account-row-main { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
+    .account-row-balance { color: var(--muted); font-family: var(--mono); font-size: 12px; white-space: nowrap; }
+    .account-row-actions { display: flex; flex: 0 0 auto; gap: 6px; }
+    /* The account name is a link, not a chip: the generic button skin turned
+       it into a bordered pill that read as a control. */
+    html[data-theme] .cloud-grid button.account-name { min-height: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+    html[data-theme] .account-name strong { font-size: 13px; font-weight: 550; }
+
+    @media (max-width: 900px) {
+      /* The toolbar's 430px flex-basis becomes a *height* once the toolbar
+         stacks in a column, which opened a blank panel where the ledger
+         should start. Reset it and let search / filters share the row. */
+      html[data-theme] .dash-activity-tools { flex: 0 0 auto; justify-content: flex-start; gap: 8px; }
+      html[data-theme] .dash-activity-tools .dash-search { flex: 1 1 100%; width: 100%; }
+      html[data-theme] .dash-activity-tools .select { flex: 1 1 100px; width: auto; min-width: 0; }
+      html[data-theme] .dash-activity-tools .select-trigger { width: 100%; }
+      html[data-theme] .dash-activity-tools .dash-back { flex: 0 0 auto; }
+      /* Row actions are secondary: keep the tap target, drop the chrome, and
+         give the 44px control a column that actually fits it. */
+      html[data-theme] :is(.dash-row, .account-row-actions, .budget-row-foot, .goal-row-actions, .rec-row) .row-del {
+        border-color: transparent;
+        color: var(--muted);
+        background: transparent;
+        box-shadow: none;
+        align-self: center;
+      }
+      html[data-theme] :is(.dash-row, .account-row-actions, .budget-row-foot, .goal-row-actions, .rec-row) .row-del:hover,
+      html[data-theme] :is(.dash-row, .account-row-actions, .budget-row-foot, .goal-row-actions, .rec-row) .row-del:focus-visible {
+        border-color: var(--line-strong);
+        color: var(--text);
+        background: var(--surface-3);
+      }
+      /* A keyboard hint means nothing to a thumb. */
+      html[data-theme] .dash-command kbd,
+      html[data-theme] .command-keys { display: none; }
+    }
+
+    @media (max-width: 600px) {
+
+      /* Goal meta and its actions share a line; the contribution form owns
+         the next, so a row's controls never float between two goals. */
+      html[data-theme] .goal-row-foot { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; }
+      html[data-theme] .goal-row-tools { display: contents; }
+      html[data-theme] .goal-row-foot .budget-meta { grid-column: 1; }
+      html[data-theme] .goal-row-actions { grid-column: 2; justify-self: end; }
+      html[data-theme] .goal-row-foot .mini-form { grid-column: 1 / -1; }
+
+      html[data-theme] .account-row-main { flex-direction: column; align-items: flex-start; gap: 2px; }
+
+      html[data-theme] .budget-meta,
+      html[data-theme] .rec-meta { font-size: 11.5px; }
+
+      /* Insight cards were boxes inside a box with a dashed rule between, so
+         every seam was drawn twice. On a phone they read better as one list. */
+      html[data-theme] .insight-cards { gap: 0; }
+      html[data-theme] .insight-cards .insight-card {
+        padding: 16px 0;
+        border: 0;
+        border-bottom: 1px solid var(--line);
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        backdrop-filter: none;
+      }
+      html[data-theme] .insight-cards .insight-card:last-child { border-bottom: 0; }
+      html[data-theme] .insight-cards .insight-card:hover,
+      html[data-theme] .insight-cards .insight-card:focus-visible { transform: none; background: transparent; }
+
+      /* A pair strip that runs to the edge needs to look scrollable, not cut. */
+      html[data-theme] .pulse-tabs {
+        -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 26px), transparent 100%);
+        mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 26px), transparent 100%);
+      }
+      /* The deadline drops to its own line so the row never wraps mid-date. */
+      html[data-theme] .goal-deadline { display: block; }
+      html[data-theme] .goal-deadline::before { content: none; }
+      html[data-theme] .mobile-nav button { font-size: 11.5px; }
+    }
+
     @media (pointer: coarse) {
       html[data-theme] .dash-global-link,
       html[data-theme] .dash-context-link,
@@ -4169,7 +4251,8 @@
       const account = accountNameFor(item);
       if (transfer && item.transfer) {
         const tr = item.transfer;
-        subtitle.textContent = `${tr.fromAccount.name} → ${tr.toAccount.name} · 1 ${tr.fromAccount.currency} = ${formatRate(tr.rate)} ${tr.toAccount.currency}${account ? ' · ' + account : ''}`;
+        // The pair already names both accounts; repeating one read as a duplicate.
+        subtitle.textContent = `${tr.fromAccount.name} → ${tr.toAccount.name} · 1 ${tr.fromAccount.currency} = ${formatRate(tr.rate)} ${tr.toAccount.currency}`;
       } else {
         const context = [];
         if (account) context.push(account);
@@ -4179,7 +4262,7 @@
         nameWrap.append(name, subtitle);
         const mobileSub = document.createElement('div');
         mobileSub.className = 'dash-mobile-sub';
-        mobileSub.textContent = `${item.category} · ${transactionDateLabel(item)}`;
+        mobileSub.textContent = transfer ? transactionDateLabel(item) : `${item.category} · ${transactionDateLabel(item)}`;
         nameWrap.append(mobileSub);
         description.append(icon, nameWrap);
       const category = document.createElement('span');
@@ -6349,7 +6432,7 @@
           updateAmountLabel();
           syncTransferAccounts();
           const al = document.getElementById('account-list');
-          if (al) al.innerHTML = cloudAccounts.length ? cloudAccounts.map(a => `<li style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div><button class="account-name" type="button" data-account-detail="${escapeHtml(a.id)}" aria-label="Open ${escapeHtml(a.name)} account details"><strong>${escapeHtml(a.name)}</strong></button><span> — ${escapeHtml(formatMajor(a.openingMinor, a.currency))} <span class="muted-cur">${escapeHtml(a.currency)}</span></span></div><div style="display:flex;gap:5px"><button class="row-del" type="button" data-account-rename="${escapeHtml(a.id)}" data-name="${escapeHtml(a.name)}" title="Rename account" aria-label="Rename ${escapeHtml(a.name)}"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button><button class="row-del" type="button" data-account-del="${escapeHtml(a.id)}" data-name="${escapeHtml(a.name)}" title="Delete account" aria-label="Delete ${escapeHtml(a.name)}">×</button></div></li>`).join('') : '<li>No accounts yet.</li>';
+          if (al) al.innerHTML = cloudAccounts.length ? cloudAccounts.map(a => `<li class="account-row"><div class="account-row-main"><button class="account-name" type="button" data-account-detail="${escapeHtml(a.id)}" aria-label="Open ${escapeHtml(a.name)} account details"><strong>${escapeHtml(a.name)}</strong></button><span class="account-row-balance">${escapeHtml(formatMajor(a.openingMinor, a.currency))} <span class="muted-cur">${escapeHtml(a.currency)}</span></span></div><div class="account-row-actions"><button class="row-del" type="button" data-account-rename="${escapeHtml(a.id)}" data-name="${escapeHtml(a.name)}" title="Rename account" aria-label="Rename ${escapeHtml(a.name)}"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button><button class="row-del" type="button" data-account-del="${escapeHtml(a.id)}" data-name="${escapeHtml(a.name)}" title="Delete account" aria-label="Delete ${escapeHtml(a.name)}">×</button></div></li>`).join('') : '<li>No accounts yet.</li>';
           al?.querySelectorAll('[data-account-detail]').forEach(btn => btn.addEventListener('click', () => openAccountDetail(btn.dataset.accountDetail)));
           al?.querySelectorAll('[data-account-rename]').forEach(btn => btn.addEventListener('click', async () => {
             const name = prompt('Account name', btn.dataset.name);
@@ -6421,7 +6504,7 @@
           const gl = document.getElementById('goal-list');
           if (gl) gl.innerHTML = (summary.goals || []).length ? summary.goals.map(g => {
             const deadline = g.deadline ? new Date(g.deadline).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'No deadline';
-            return `<li class="goal-row"><div class="goal-row-top"><strong>${escapeHtml(g.title)}</strong><span>${escapeHtml(formatMoney(g.savedMajor, g.currency))} <span class="muted-cur">of ${escapeHtml(formatMoney(g.targetMajor, g.currency))}</span></span></div><span class="bar"><i style="width:${Math.min(100, g.pct)}%"></i></span><div class="goal-row-foot"><span class="budget-meta">${g.pct}% · ${escapeHtml(formatMoney(Math.max(0, g.remainingMajor), g.currency))} to go · ${escapeHtml(deadline)}</span><span class="goal-row-tools"><span class="goal-row-actions"><button class="row-del" type="button" data-goal-edit="${escapeHtml(g.id)}" data-title="${escapeHtml(g.title)}" data-target="${escapeHtml(g.targetMajor)}" title="Edit goal" aria-label="Edit ${escapeHtml(g.title)}"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button><button class="row-del" type="button" data-goal-del="${escapeHtml(g.id)}" data-title="${escapeHtml(g.title)}" title="Delete goal" aria-label="Delete ${escapeHtml(g.title)}">×</button></span><span class="mini-form"><input type="number" min="1" placeholder="Add" data-contrib="${escapeHtml(g.id)}" aria-label="Contribute to ${escapeHtml(g.title)}"><button type="button" data-goal="${escapeHtml(g.id)}">Contribute</button></span></span></div></li>`;
+            return `<li class="goal-row"><div class="goal-row-top"><strong>${escapeHtml(g.title)}</strong><span>${escapeHtml(formatMoney(g.savedMajor, g.currency))} <span class="muted-cur">of ${escapeHtml(formatMoney(g.targetMajor, g.currency))}</span></span></div><span class="bar"><i style="width:${Math.min(100, g.pct)}%"></i></span><div class="goal-row-foot"><span class="budget-meta">${g.pct}% · ${escapeHtml(formatMoney(Math.max(0, g.remainingMajor), g.currency))} to go<span class="goal-deadline">${escapeHtml(deadline)}</span></span><span class="goal-row-tools"><span class="goal-row-actions"><button class="row-del" type="button" data-goal-edit="${escapeHtml(g.id)}" data-title="${escapeHtml(g.title)}" data-target="${escapeHtml(g.targetMajor)}" title="Edit goal" aria-label="Edit ${escapeHtml(g.title)}"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button><button class="row-del" type="button" data-goal-del="${escapeHtml(g.id)}" data-title="${escapeHtml(g.title)}" title="Delete goal" aria-label="Delete ${escapeHtml(g.title)}">×</button></span><span class="mini-form"><input type="number" min="1" placeholder="Add" data-contrib="${escapeHtml(g.id)}" aria-label="Contribute to ${escapeHtml(g.title)}"><button type="button" data-goal="${escapeHtml(g.id)}">Contribute</button></span></span></div></li>`;
           }).join('') : '<li>No goals yet.</li>';
           gl?.querySelectorAll('[data-goal-edit]').forEach(btn => btn.addEventListener('click', async () => {
             const title = prompt('Goal title', btn.dataset.title);
