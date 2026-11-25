@@ -348,6 +348,10 @@ for (const theme of THEMES) {
     if (['320x568', '390x844', '844x390'].includes(viewport.name)) {
       await page.evaluate(() => window.RovielShowView('transactions'));
       await page.waitForTimeout(200);
+      const toolbar = await rect(page, '#view-transactions .dash-activity-tools');
+      const firstRowTop = async () => page.locator('#transaction-list .dash-row:not(.head)').first().evaluate(node => node.getBoundingClientRect().top);
+      const rowTop = await firstRowTop().catch(() => null);
+      check(`${tag} transaction toolbar reserves no blank panel`, toolbar.height <= 140 && (rowTop === null || rowTop - toolbar.bottom <= 40), JSON.stringify({ toolbar: Math.round(toolbar.height), gap: rowTop === null ? null : Math.round(rowTop - toolbar.bottom) }));
       const row = page.locator('#transaction-list .dash-row:not(.head)').first();
       if (await row.count()) {
         const sub = row.locator('.dash-mobile-sub');
