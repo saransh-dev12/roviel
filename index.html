@@ -2763,10 +2763,78 @@
       html[data-theme] .rec-row { grid-template-columns: minmax(0, 1fr) auto 40px; }
     }
 
+    /* ---- Currency tools on phones: read the code, tap the control ---- */
+    /* The dialog is the only surface where the app hands native <select>
+       controls to the OS picker, so the closed control has to carry the
+       currency name on a 320px screen. Three columns of ~65px could not,
+       and the 31px swap button next to them was below a comfortable tap. */
+    .currency-tools-dialog { --dialog-bg: #0e0e0e; --dialog-pad: clamp(12px, 3.4vw, 22px); }
+    html[data-theme] .currency-tools-dialog { --dialog-bg: var(--surface); }
+    .currency-swap { gap: 7px; }
+    .currency-swap-label { display: none; }
+
+    @media (max-width: 560px) {
+      html[data-theme] .currency-tools-dialog {
+        width: calc(100vw - 12px);
+        max-width: none;
+        max-height: calc(100dvh - 12px);
+        margin: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+      }
+      html[data-theme] .currency-tools-shell { padding: var(--dialog-pad); padding-bottom: max(var(--dialog-pad), env(safe-area-inset-bottom)); }
+      html[data-theme] .currency-tool-card { padding: 14px; }
+      /* The close control must stay reachable however far the card scrolls. */
+      html[data-theme] .currency-tools-dialog-header {
+        position: sticky;
+        top: calc(-1 * var(--dialog-pad));
+        z-index: 6;
+        margin: calc(-1 * var(--dialog-pad)) calc(-1 * var(--dialog-pad)) 16px;
+        padding: var(--dialog-pad) var(--dialog-pad) 12px;
+        border-bottom: 1px solid var(--line);
+        background: var(--dialog-bg);
+      }
+      html[data-theme] .currency-tools-dialog-header h2 { font-size: clamp(24px, 7.2vw, 30px); }
+      html[data-theme] .currency-close { width: 44px; height: 44px; min-width: 44px; min-height: 44px; flex-basis: 44px; font-size: 20px; }
+      html[data-theme] .currency-select-row { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+      html[data-theme] .currency-select-row .currency-field { align-content: start; }
+      html[data-theme] .currency-field select { height: 48px; min-height: 48px; padding: 0 10px; font-size: 16px; }
+      html[data-theme] .currency-swap {
+        display: inline-flex;
+        width: 100%;
+        height: 44px;
+        min-height: 44px;
+        margin: 0;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border-radius: 10px;
+      }
+      html[data-theme] .currency-swap:hover { transform: none; }
+      html[data-theme] .currency-swap-glyph { font-size: 18px; line-height: 1; }
+      html[data-theme] .currency-swap-label { display: inline; font-size: 13px; font-weight: 500; }
+      html[data-theme] .currency-search-field input,
+      html[data-theme] .currency-amount-field input,
+      html[data-theme] .currency-field input { height: 46px; min-height: 46px; }
+      html[data-theme] .currency-field span { flex-wrap: wrap; row-gap: 2px; }
+      html[data-theme] .currency-field small { margin-left: auto; }
+      html[data-theme] .currency-actions button,
+      html[data-theme] .currency-popular button,
+      html[data-theme] #currency-favorites-list button { min-height: 44px; }
+      html[data-theme] .currency-actions button { padding: 0 14px; font-size: 12px; }
+      html[data-theme] .currency-popular button { padding: 0 12px; font-size: 11px; }
+      html[data-theme] .currency-recent-item { min-height: 56px; padding: 10px 12px; }
+    }
+
     @media (pointer: coarse) {
       html[data-theme] .dash-global-link,
       html[data-theme] .dash-context-link,
       html[data-theme] .mobile-more-grid button { min-height: 44px; }
+      /* Inline account, budget and goal forms are used with a thumb too. */
+      html[data-theme] .mini-form input,
+      html[data-theme] .mini-form select,
+      html[data-theme] .mini-form .select-trigger,
+      html[data-theme] .mini-form button { min-height: 44px; }
       html[data-theme] .pulse-tabs button,
       html[data-theme] .seg button { min-height: 44px; }
       html[data-theme] .mobile-more-head button { min-width: 44px; min-height: 44px; }
@@ -2781,9 +2849,10 @@
     }
 
     @media (pointer: coarse) {
-      html[data-theme] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
-      html[data-theme] select,
-      html[data-theme] textarea { font-size: 16px; }
+      /* 16px keeps iOS Safari from zooming a focused field. The generic
+         selector is out-specified by the 12-13px theme rules, so scope it to
+         the body element to guarantee it wins instead of silently losing. */
+      html[data-theme] body :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea) { font-size: 16px; }
     }
 
     @media (pointer: coarse) and (max-width: 900px) {
@@ -2811,6 +2880,7 @@
       html[data-theme] .hero-proof-item { padding: 6px 8px; }
       html[data-theme] .hero-proof-item strong { margin-top: 3px; font-size: 10px; }
       html[data-theme] .story-dashes { display: none; }
+      html[data-theme] .scroll-cue { display: none; } /* the cue sat on the secondary CTA */
       html[data-theme] .dash-content { padding-bottom: calc(120px + env(safe-area-inset-bottom)); }
     }
 
@@ -3259,7 +3329,7 @@
           <label class="currency-amount-field"><span>Amount</span><input id="currency-amount" type="number" min="0" step="any" inputmode="decimal" value="100"></label>
           <div class="currency-select-row">
             <label class="currency-field"><span>From</span><select id="currency-from" aria-label="Source currency"></select></label>
-            <button id="currency-swap" class="currency-swap" type="button" aria-label="Swap source and destination currencies" title="Swap currencies">⇄</button>
+            <button id="currency-swap" class="currency-swap" type="button" aria-label="Swap source and destination currencies" title="Swap currencies"><span class="currency-swap-glyph" aria-hidden="true">⇄</span><span class="currency-swap-label" aria-hidden="true">Swap currencies</span></button>
             <label class="currency-field"><span>To</span><select id="currency-to" aria-label="Destination currency"></select></label>
           </div>
           <div class="currency-conversion-result" id="currency-result" aria-live="polite" aria-atomic="true"><span>Loading reference rate…</span></div>
@@ -3747,6 +3817,10 @@
       scene.add(fillLight);
       createSparks();
       createCoinScene();
+      // Measure once the hero copy has settled (the title animates in on load)
+      // and again on resize, so the crest always lands in the gap above it.
+      try { measurePortraitCrest(); } catch {}
+      window.setTimeout(() => { try { measurePortraitCrest(); } catch {} }, 1600);
     }
 
     function splitTitlesIntoChars() {
@@ -3774,6 +3848,27 @@
       });
     }
 
+    // Portrait phones: the crest has to sit between the header and the
+    // headline, and both move with the viewport, so measure the gap instead of
+    // guessing a world-space offset per device. Returns null when the copy
+    // leaves no room — the coin then rides beside the call to action.
+    let portraitCrestY = null;
+    function measurePortraitCrest() {
+      portraitCrestY = null;
+      if (!sizes || sizes.width >= sizes.height) return null;
+      const title = document.querySelector('#slide-1 .slide-title');
+      const header = document.querySelector('.main-header');
+      if (!title || !header) return null;
+      const headerBottom = header.getBoundingClientRect().bottom;
+      const titleTop = title.getBoundingClientRect().top;
+      const pxPerWorld = sizes.height * .295;
+      const radius = 1.03 * .26 * pxPerWorld;
+      if (!Number.isFinite(titleTop) || titleTop - headerBottom < radius * 2.2) return null;
+      const targetCenter = Math.max(headerBottom + radius + 8, (headerBottom + titleTop) / 2);
+      portraitCrestY = THREE.MathUtils.clamp((sizes.height / 2 - targetCenter) / pxPerWorld, .2, 1.6);
+      return portraitCrestY;
+    }
+
     function onWindowResize() {
       if (!renderer || !camera) return;
       sizes.width = window.innerWidth;
@@ -3783,6 +3878,7 @@
       renderer.setSize(sizes.width, sizes.height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
       shaderUniforms.uResolution.value.set(sizes.width, sizes.height);
+      try { measurePortraitCrest(); } catch {}
       frameCoin();
     }
 
@@ -4652,6 +4748,31 @@
       return !Number.isFinite(observed.getTime()) || (Date.now() - observed.getTime()) / 86400000 > 4;
     }
 
+    // The directory provider also lists crypto and metals (AAVE, XAU…). The
+    // converter works in ISO-4217 minor units, so only fiat currency records
+    // are selectable; anything malformed or duplicated is dropped.
+    function sanitiseCurrencyDirectory(records) {
+      if (!Array.isArray(records)) return [];
+      const seen = new Set();
+      return records
+        .filter(item => {
+          if (!item || typeof item !== 'object') return false;
+          const code = item.iso_code;
+          if (typeof code !== 'string' || !/^[A-Z]{3}$/.test(code)) return false;
+          if (typeof item.name !== 'string' || item.name.trim().length < 2) return false;
+          if (item.type !== undefined && item.type !== 'currency') return false;
+          if (seen.has(code)) return false;
+          seen.add(code);
+          return true;
+        })
+        .map(item => ({
+          iso_code: item.iso_code,
+          name: item.name.trim(),
+          symbol: typeof item.symbol === 'string' && item.symbol ? item.symbol : item.iso_code,
+        }))
+        .sort((a, b) => a.iso_code.localeCompare(b.iso_code));
+    }
+
     function setupCurrencyTools() {
       const dialog = document.getElementById('currency-tools-dialog');
       const openButtons = [document.getElementById('open-currency-tools-nav'), document.getElementById('open-currency-tools-mobile')];
@@ -4683,12 +4804,15 @@
       const copyButton = document.getElementById('copy-conversion');
       const shareButton = document.getElementById('share-conversion');
       const savePairButton = document.getElementById('save-pair');
-      const currenciesCacheKey = 'roviel.currency.directory.v1';
+      const currenciesCacheKey = 'roviel.currency.directory.v2';
       const ratesCacheKey = 'roviel.currency.rates.v1';
       const favouritesKey = 'roviel.currency.favourites.v1';
       const recentsKey = 'roviel.currency.recents.v1';
-      let currencies = readCurrencyStorage(currenciesCacheKey, CURRENCY_FALLBACKS);
-      let directoryLoaded = Array.isArray(currencies) && currencies.length > CURRENCY_FALLBACKS.length;
+      const cachedDirectory = sanitiseCurrencyDirectory(readCurrencyStorage(currenciesCacheKey, []));
+      let currencies = cachedDirectory.length > CURRENCY_FALLBACKS.length ? cachedDirectory : CURRENCY_FALLBACKS;
+      let directoryLoaded = cachedDirectory.length > CURRENCY_FALLBACKS.length;
+      let directoryVersion = 0;
+      let pairSignature = '';
       let rateRecord = null;
       let rateState = 'loading';
       let rateError = '';
@@ -4729,11 +4853,7 @@
           button.textContent = from + ' / ' + to;
           button.title = from + ' to ' + to;
           button.addEventListener('click', () => {
-            searchInput.value = '';
-            refreshPairControls();
-            fromSelect.value = from;
-            toSelect.value = to;
-            loadRate();
+            applyPair(from, to);
           });
           popularList.appendChild(button);
         });
@@ -4785,27 +4905,72 @@
         updateHeroRate(null, 'error');
       }
 
-      function refreshPairControls() {
-        updateHeroDirectory();
-        const needle = searchInput.value.trim().toLowerCase();
-        const options = currencies.filter(item => (item.iso_code + ' ' + item.name + ' ' + (item.symbol || '')).toLowerCase().includes(needle));
-        searchMessage.hidden = !needle || options.length > 0;
-        searchMessage.textContent = needle && options.length === 0 ? 'No supported currencies match that search.' : '';
-        [[fromSelect, activeCode(fromSelect, 'USD')], [toSelect, activeCode(toSelect, 'EUR')]].forEach(([select, selected]) => {
-          const available = options.some(item => item.iso_code === selected) ? options : [currencies.find(item => item.iso_code === selected), ...options].filter(Boolean);
-          select.replaceChildren(...available.map(item => {
-            const option = document.createElement('option');
-            option.value = item.iso_code;
-            option.textContent = item.iso_code + ' — ' + item.name;
-            return option;
-          }));
-          select.value = selected;
+      function optionLabel(item) {
+        // Code first, then the name: the code stays readable even when a
+        // 320px screen clips the tail of a long currency name.
+        return item.iso_code + ' · ' + item.name;
+      }
+
+      // Rebuild one selector, always keeping its current currency selected.
+      // A filter may hide the selected currency; it is prepended rather than
+      // dropped so a search can never silently change the pair.
+      function applyPairOptions(select, options, fallback) {
+        const current = select.value || fallback;
+        const selected = options.find(item => item.iso_code === current)
+          || currencies.find(item => item.iso_code === current)
+          || options.find(item => item.iso_code === fallback)
+          || options[0];
+        if (!selected) return;
+        const list = options.includes(selected) ? options : [selected, ...options];
+        const fragment = document.createDocumentFragment();
+        list.forEach(item => {
+          const option = document.createElement('option');
+          option.value = item.iso_code;
+          option.textContent = optionLabel(item);
+          fragment.append(option);
         });
-        document.getElementById('provider-pair-label').textContent = activeCode(fromSelect, 'USD') + ' → ' + activeCode(toSelect, 'EUR');
-        document.getElementById('fee-currency-label').textContent = activeCode(toSelect, 'EUR');
+        select.replaceChildren(fragment);
+        select.value = selected.iso_code;
+      }
+
+      function refreshPairControls({ force = false } = {}) {
+        updateHeroDirectory();
+        const query = searchInput.value.trim();
+        const needle = query.toLowerCase();
+        const matches = needle
+          ? currencies.filter(item => (item.iso_code + ' ' + item.name + ' ' + (item.symbol || '')).toLowerCase().includes(needle))
+          : currencies;
+        const noResults = Boolean(needle) && matches.length === 0;
+        searchMessage.hidden = !noResults;
+        searchMessage.textContent = noResults
+          ? 'No supported currency matches “' + query + '”. Both selectors keep the full list and your current pair.'
+          : '';
+        // A query that matches nothing must not empty the selectors: fall back
+        // to the whole directory and let the status line explain why.
+        const options = noResults ? currencies : matches;
+        const signature = needle + '|' + options.length + '|' + directoryVersion;
+        if (force || signature !== pairSignature) {
+          pairSignature = signature;
+          applyPairOptions(fromSelect, options, 'USD');
+          applyPairOptions(toSelect, options, 'EUR');
+        }
+        syncPairLabels();
         renderFavouriteState();
         renderConverter();
         renderQuoteEstimate();
+      }
+
+      function applyPair(from, to) {
+        if (!currencies.some(item => item.iso_code === from) || !currencies.some(item => item.iso_code === to)) {
+          showFeedback(from + ' / ' + to + ' is not in the current currency list.');
+          return false;
+        }
+        searchInput.value = '';
+        refreshPairControls({ force: true });
+        fromSelect.value = from;
+        toSelect.value = to;
+        loadRate();
+        return true;
       }
 
       function renderFavouriteState() {
@@ -4824,11 +4989,7 @@
           button.type = 'button';
           button.textContent = pair.from + ' / ' + pair.to;
           button.addEventListener('click', () => {
-            searchInput.value = '';
-            refreshPairControls();
-            fromSelect.value = pair.from;
-            toSelect.value = pair.to;
-            loadRate();
+            applyPair(pair.from, pair.to);
           });
           favouritesList.append(button);
         });
@@ -4849,10 +5010,7 @@
           observed.textContent = item.observed ? 'Rate observed ' + formatObservedDate(item.observed) : 'Same currency · no rate used';
           button.append(pair, value, observed);
           button.addEventListener('click', () => {
-            searchInput.value = '';
-            refreshPairControls();
-            fromSelect.value = item.from;
-            toSelect.value = item.to;
+            if (!applyPair(item.from, item.to)) return;
             amountInput.value = String(item.amount);
             providerRateInput.value = '';
             rateRecord = { base: item.from, quote: item.to, date: item.observed, rate: item.rate };
@@ -4887,8 +5045,11 @@
         const amountText = amountInput.value.trim();
         const amount = Number(amountText);
         const validAmount = amountText !== '' && Number.isFinite(amount) && amount >= 0;
-        const rateReady = rateRecord && Number.isFinite(rateRecord.rate) && rateRecord.rate > 0;
-        const stale = rateReady && rateState !== 'same' && isStaleObservation(rateRecord.date);
+        // Only ever quote the pair on screen: a record left over from a
+        // previous pair must not be presented as this pair's rate.
+        const pairRate = rateRecord && rateRecord.base === from && rateRecord.quote === to ? rateRecord : null;
+        const rateReady = Boolean(pairRate) && Number.isFinite(pairRate.rate) && pairRate.rate > 0;
+        const stale = rateReady && rateState !== 'same' && isStaleObservation(pairRate.date);
         const cached = rateState === 'cached';
         const outputAvailable = Boolean(rateReady && validAmount);
 
@@ -4910,16 +5071,16 @@
           const source = document.createElement('span');
           source.textContent = formatCurrencyValue(fromMinorUnits(sourceMinor, from), from) + ' ' + from;
           const converted = document.createElement('strong');
-          const convertedMinor = convertMinorUnits(sourceMinor, from, rateRecord.rate, to);
+          const convertedMinor = convertMinorUnits(sourceMinor, from, pairRate.rate, to);
           converted.textContent = formatCurrencyValue(fromMinorUnits(convertedMinor, to), to) + ' ' + to;
           result.append(source, converted);
         }
 
         facts.replaceChildren();
         if (rateReady) {
-          addFact('Reference rate', rateState === 'same' ? '1 ' + from + ' = 1 ' + to : '1 ' + from + ' = ' + new Intl.NumberFormat(undefined, { maximumSignificantDigits: 9 }).format(rateRecord.rate) + ' ' + to);
-          addFact('Inverse rate', rateState === 'same' ? '1 ' + to + ' = 1 ' + from : '1 ' + to + ' = ' + new Intl.NumberFormat(undefined, { maximumSignificantDigits: 9 }).format(1 / rateRecord.rate) + ' ' + from);
-          addFact('Observed', rateState === 'same' ? 'Not applicable' : formatObservedDate(rateRecord.date));
+          addFact('Reference rate', rateState === 'same' ? '1 ' + from + ' = 1 ' + to : '1 ' + from + ' = ' + new Intl.NumberFormat(undefined, { maximumSignificantDigits: 9 }).format(pairRate.rate) + ' ' + to);
+          addFact('Inverse rate', rateState === 'same' ? '1 ' + to + ' = 1 ' + from : '1 ' + to + ' = ' + new Intl.NumberFormat(undefined, { maximumSignificantDigits: 9 }).format(1 / pairRate.rate) + ' ' + from);
+          addFact('Observed', rateState === 'same' ? 'Not applicable' : formatObservedDate(pairRate.date));
         } else {
           addFact('Reference rate', 'Unavailable');
           addFact('Inverse rate', 'Unavailable');
@@ -4930,11 +5091,11 @@
         sourceText.textContent = rateState === 'same'
           ? 'No external rate is used for equal currencies.'
           : 'Frankfurter blended reference rates from central banks and official sources. These are informational rates, not guaranteed provider quotes.';
-        if (cached && rateRecord) rateMessage.textContent = 'The provider is unavailable. Showing the last saved observation from ' + formatObservedDate(rateRecord.date) + '.';
-        else if (rateState === 'saved' && rateRecord) rateMessage.textContent = 'Showing the original rate saved with this conversion, observed ' + formatObservedDate(rateRecord.date) + '. This is not the latest rate.';
+        if (cached && pairRate) rateMessage.textContent = 'The provider is unavailable. Showing the last saved observation from ' + formatObservedDate(pairRate.date) + '.';
+        else if (rateState === 'saved' && pairRate) rateMessage.textContent = 'Showing the original rate saved with this conversion, observed ' + formatObservedDate(pairRate.date) + '. This is not the latest rate.';
         else if (stale) rateMessage.textContent = 'This observation is more than four days old. Check the provider before relying on it.';
         else if (!directoryLoaded && rateState !== 'loading' && rateState !== 'error') rateMessage.textContent = 'Currency directory is offline; a starter list is shown.';
-        updateHeroRate(rateRecord, rateState);
+        updateHeroRate(pairRate, rateState);
 
         const disabled = !outputAvailable;
         saveConversionButton.disabled = disabled;
@@ -4971,7 +5132,8 @@
         const taxText = taxInput.value.trim();
         const feesValid = [fixedText, percentageText, taxText].every(value => value !== '' && Number.isFinite(Number(value)) && Number(value) >= 0) && Number(percentageText) <= 100 && Number(taxText) <= 100;
         const quoteValid = providerText !== '' && Number.isFinite(providerRate) && providerRate > 0;
-        const rateReady = rateRecord && Number.isFinite(rateRecord.rate) && rateRecord.rate > 0;
+        const pairRate = rateRecord && rateRecord.base === from && rateRecord.quote === to ? rateRecord : null;
+        const rateReady = Boolean(pairRate) && Number.isFinite(pairRate.rate) && pairRate.rate > 0;
         quoteResults.replaceChildren();
 
         if (!quoteValid || !feesValid || !rateReady || !Number.isFinite(amount) || amount < 0 || amountText === '') {
@@ -4983,7 +5145,7 @@
         }
 
         const sourceMinor = toMinorUnits(amountText, from);
-        const referenceMinor = convertMinorUnits(sourceMinor, from, rateRecord.rate, to);
+        const referenceMinor = convertMinorUnits(sourceMinor, from, pairRate.rate, to);
         const providerMinor = convertMinorUnits(sourceMinor, from, providerText, to);
         const fixedMinor = toMinorUnits(fixedText, to);
         const percentageMinor = percentageOfMinorUnits(providerMinor, percentageText);
@@ -4995,7 +5157,7 @@
         const totalFees = fromMinorUnits(totalFeesMinor, to);
         const netAmount = fromMinorUnits(netMinor, to);
         const difference = fromMinorUnits(netMinor - referenceMinor, to);
-        const markup = rateRecord.rate === 0 ? null : (rateRecord.rate - providerRate) / rateRecord.rate * 100;
+        const markup = pairRate.rate === 0 ? null : (pairRate.rate - providerRate) / pairRate.rate * 100;
         const totalCostMinor = referenceMinor - netMinor;
         const totalCost = referenceMinor === 0n ? null : Number(totalCostMinor) / Number(referenceMinor) * 100;
 
@@ -5017,14 +5179,14 @@
           if (!response.ok) throw new Error('Currency directory request failed.');
           const records = await response.json();
           if (!Array.isArray(records)) throw new Error('Unexpected currency directory response.');
-          const valid = records.filter(item => /^[A-Z]{3}$/.test(item.iso_code || '') && typeof item.name === 'string')
-            .map(item => ({ iso_code: item.iso_code, name: item.name, symbol: typeof item.symbol === 'string' ? item.symbol : item.iso_code }))
-            .sort((a, b) => a.iso_code.localeCompare(b.iso_code));
+          const valid = sanitiseCurrencyDirectory(records);
           if (!valid.length) throw new Error('No supported currencies were returned.');
           currencies = valid;
           directoryLoaded = true;
+          directoryVersion += 1;
           writeCurrencyStorage(currenciesCacheKey, currencies);
-          refreshPairControls();
+          // Rebuild from the fresh list while keeping both selections valid.
+          refreshPairControls({ force: true });
         } catch {
           directoryLoaded = false;
           rateMessage.textContent = 'Currency directory is unavailable. Showing a starter list.';
@@ -5040,6 +5202,8 @@
       async function loadRate() {
         syncPairLabels();
         const currentPair = activeCode(fromSelect, 'USD') + '/' + activeCode(toSelect, 'EUR');
+        // A provider quote belongs to the pair it was typed for. Keep it when
+        // the pair is unchanged (Refresh rate), drop it only when it is stale.
         if (lastQuotedPair && lastQuotedPair !== currentPair && providerRateInput.value.trim()) {
           providerRateInput.value = '';
           renderQuoteEstimate();
@@ -5056,7 +5220,6 @@
         const cache = storedRates && typeof storedRates === 'object' && !Array.isArray(storedRates) ? storedRates : {};
         rateRecord = null;
         rateError = '';
-        providerRateInput.value = '';
         if (from === to) {
           activeRateController = null;
           rateRecord = { base: from, quote: to, date: null, rate: 1 };
@@ -5093,6 +5256,9 @@
           if (window.RovielAPI && window.RovielAPI.base) {
             try {
               const relay = await window.RovielAPI.fxRate(from, to);
+              // The relay hops through our API and is slower than the direct
+              // call; a late answer for a previous pair must not win.
+              if (currentRequest !== requestNumber) return;
               if (relay && Number.isFinite(Number(relay.rate)) && Number(relay.rate) > 0 && /^\d{4}-\d{2}-\d{2}$/.test(relay.date || '')) {
                 rateRecord = { base: from, quote: to, rate: Number(relay.rate), date: relay.date, source: relay.source || 'roviel-api' };
                 rateState = 'reference';
@@ -5138,7 +5304,7 @@
         const from = activeCode(fromSelect, 'USD');
         const to = activeCode(toSelect, 'EUR');
         const amountText = amountInput.value.trim();
-        if (!rateRecord || !amountText || !Number.isFinite(Number(amountText)) || Number(amountText) < 0) return '';
+        if (!rateRecord || rateRecord.base !== from || rateRecord.quote !== to || !amountText || !Number.isFinite(Number(amountText)) || Number(amountText) < 0) return '';
         const sourceMinor = toMinorUnits(amountText, from);
         const sourceAmount = fromMinorUnits(sourceMinor, from);
         const converted = fromMinorUnits(convertMinorUnits(sourceMinor, from, rateRecord.rate, to), to);
@@ -5148,7 +5314,7 @@
 
       openButtons.forEach(button => button.addEventListener('click', () => {
         if (!dialog.open) dialog.showModal();
-        if (!fromSelect.options.length) refreshPairControls();
+        if (!fromSelect.options.length) refreshPairControls({ force: true });
         loadCurrencyDirectory();
         loadRate();
         window.setTimeout(() => amountInput.focus(), 0);
@@ -5156,14 +5322,29 @@
       closeButton.addEventListener('click', () => dialog.close());
       dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
       document.getElementById('refresh-currency-rate').addEventListener('click', loadRate);
-      searchInput.addEventListener('input', refreshPairControls);
-      fromSelect.addEventListener('change', loadRate);
-      toSelect.addEventListener('change', loadRate);
+      searchInput.addEventListener('input', () => refreshPairControls());
+      // Picking from a filtered list ends the search: the other selector gets
+      // its full list back instead of staying narrowed to the query.
+      const onPairChange = () => {
+        if (searchInput.value.trim()) {
+          searchInput.value = '';
+          refreshPairControls({ force: true });
+        }
+        loadRate();
+      };
+      fromSelect.addEventListener('change', onPairChange);
+      toSelect.addEventListener('change', onPairChange);
       amountInput.addEventListener('input', () => { renderConverter(); renderQuoteEstimate(); });
       [providerRateInput, providerLabelInput, providerDateInput, fixedFeeInput, percentageFeeInput, taxInput].forEach(input => input.addEventListener('input', renderQuoteEstimate));
       document.getElementById('currency-swap').addEventListener('click', () => {
         const previousFrom = fromSelect.value;
-        fromSelect.value = toSelect.value;
+        const previousTo = toSelect.value;
+        if (!previousFrom || !previousTo) return;
+        if (searchInput.value.trim()) {
+          searchInput.value = '';
+          refreshPairControls({ force: true });
+        }
+        fromSelect.value = previousTo;
         toSelect.value = previousFrom;
         loadRate();
       });
@@ -5571,14 +5752,39 @@
           { x: 0, y: .05, z: -3.1, s: .56, tilt: -.28 },
         ];
         // Portrait phones: the coin rides above the headline like a crest, clear of the copy.
-        const eff = aspect < .75
+        // Very short phones cannot spare that band — the hero copy climbs and the
+        // crest would sit on the paragraph — so it drops between the call to
+        // action and the proof line instead, at a smaller scale.
+        const portrait = aspect < .75;
+        const crestY = portrait && Number.isFinite(portraitCrestY) ? portraitCrestY : null;
+        // Landscape phones are too short for the hero's vertical rhythm: the
+        // coin moves into the open top-right corner instead of sitting on the
+        // paragraph, which spans the full width on those screens.
+        const shortLandscape = !portrait && (sizes?.height || window.innerHeight) < 430;
+        const eff = shortLandscape
           ? [
-              { x: 0, y: .56, z: -3.7, s: .28, tilt: .16 },
-              { x: 0, y: .52, z: -3.8, s: .3, tilt: .55 },
-              { x: 0, y: .5, z: -3.6, s: .3, tilt: 1.15 },
-              { x: 0, y: .54, z: -3.8, s: .28, tilt: -.3 },
+              { x: 2, y: .28, z: -3.7, s: .34, tilt: .16 },
+              { x: 2, y: .3, z: -3.8, s: .34, tilt: .55 },
+              { x: 1.9, y: .28, z: -3.6, s: .34, tilt: 1.15 },
+              { x: 2, y: .32, z: -3.8, s: .34, tilt: -.3 },
             ]
-          : anchors;
+          : !portrait
+          ? anchors
+          : (crestY !== null
+            ? [
+                { x: 0, y: crestY, z: -3.7, s: .26, tilt: .16 },
+                { x: 0, y: crestY - .04, z: -3.8, s: .28, tilt: .55 },
+                { x: 0, y: crestY - .06, z: -3.6, s: .28, tilt: 1.15 },
+                { x: 0, y: crestY - .02, z: -3.8, s: .26, tilt: -.3 },
+              ]
+            // No band above the copy: sit in the free column beside the two
+            // calls to action, clear of both buttons and of the paragraph.
+            : [
+                { x: 1.05, y: -.19, z: -3.9, s: .19, tilt: .16 },
+                { x: 1.05, y: -.17, z: -4, s: .2, tilt: .55 },
+                { x: 1.02, y: -.19, z: -3.8, s: .2, tilt: 1.15 },
+                { x: 1.05, y: -.15, z: -4, s: .19, tilt: -.3 },
+              ]);
         const stops = [0, .36, .68, 1];
         let seg = 0;
         while (seg < stops.length - 2 && currentScroll > stops[seg + 1]) seg++;
