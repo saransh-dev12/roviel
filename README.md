@@ -55,13 +55,13 @@ npm install && npm run dev       # web on :5173
 npm run test:unit        # minor-unit maths: JPY (1), KWD (1000), fees
 npm run test:api         # API integration (needs API + Postgres running locally)
 npm run test:e2e         # reseeds the demo, then 152 Playwright checks
-npm run test:responsive  # 16-viewport matrix × both themes (443 checks, incl. the currency converter and dropdowns at phone widths)
+npm run test:responsive  # 16-viewport matrix × both themes (449 checks, incl. the currency converter, dropdowns and mobile list toolbars at phone widths)
 npm run test:journey     # recorded user-journey walkthrough (reseeds first)
 npm run smoke:prod       # production smoke, read-only
 npm run lint             # oxlint
 ```
 
-The E2E suite asserts exact values, not labels: a ₹250 expense raises spending by exactly ₹250, a ₹2,000 budget reports 0% spend, a ₹1,000 contribution moves a goal by exactly ₹1,000, a ₹100 transfer debits ₹100, recovery codes are single-use, forgot-password is non-enumerating, CSV escapes formulas. The responsive suite covers both themes with page errors failing the run; on 320px and 390px phones it also drives the public converter end to end (search by name, code and symbol, no-results state, swap, provider-quote retention, sticky close) and checks the custom dashboard dropdowns open inside the viewport with touch-sized options. CI runs unit + E2E + responsive as release gates; the seed refuses non-local `DATABASE_URL` targets unless `ALLOW_NONLOCAL_SEED=1`.
+The E2E suite asserts exact values, not labels: a ₹250 expense raises spending by exactly ₹250, a ₹2,000 budget reports 0% spend, a ₹1,000 contribution moves a goal by exactly ₹1,000, a ₹100 transfer debits ₹100, recovery codes are single-use, forgot-password is non-enumerating, CSV escapes formulas. The responsive suite covers both themes with page errors failing the run; on 320px and 390px phones it also drives the public converter end to end (search by name, code and symbol, no-results state, swap, provider-quote retention, sticky close) checks the custom dashboard dropdowns open inside the viewport with touch-sized options, and keeps the transaction toolbar from reserving blank space above the ledger. CI runs unit + E2E + responsive as release gates; the seed refuses non-local `DATABASE_URL` targets unless `ALLOW_NONLOCAL_SEED=1`.
 
 ## API surface
 
