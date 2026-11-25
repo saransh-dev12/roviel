@@ -55,7 +55,7 @@ npm install && npm run dev       # web on :5173
 npm run test:unit        # minor-unit maths: JPY (1), KWD (1000), fees
 npm run test:api         # API integration (needs API + Postgres running locally)
 npm run test:e2e         # reseeds the demo, then 152 Playwright checks
-npm run test:responsive  # 16-viewport matrix × both themes (449 checks, incl. the currency converter, dropdowns and mobile list toolbars at phone widths)
+npm run test:responsive  # 16-viewport matrix × both themes (473 checks, incl. the currency converter, dropdowns, mobile list toolbars and transaction row alignment)
 npm run test:journey     # recorded user-journey walkthrough (reseeds first)
 npm run smoke:prod       # production smoke, read-only
 npm run lint             # oxlint

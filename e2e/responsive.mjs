@@ -363,6 +363,27 @@ for (const theme of THEMES) {
         const nameBox = await row.locator('.dash-transaction-name').evaluate(element => element.getBoundingClientRect().width);
         check(`${tag} transaction description keeps useful width`, nameBox >= 72, `name ${Math.round(nameBox)}px`);
         check(`${tag} transaction row fits its card`, rowBox.left >= 0 && rowBox.right <= viewport.width + 1, JSON.stringify(rowBox));
+
+      const layout = await row.evaluate(node => {
+        const box = selector => {
+          const el = node.querySelector(selector);
+          if (!el) return null;
+          const r = el.getBoundingClientRect();
+          return { l: Math.round(r.left), r: Math.round(r.right), t: Math.round(r.top), b: Math.round(r.bottom) };
+        };
+        const r = node.getBoundingClientRect();
+        return {
+          row: { l: Math.round(r.left), r: Math.round(r.right), t: Math.round(r.top), b: Math.round(r.bottom) },
+          name: box('.dash-transaction-name'),
+          amount: box('.dash-amount'),
+          del: box('.row-del'),
+          sub: box('.dash-mobile-sub'),
+        };
+      });
+      check(`${tag} amount sits on the description line`, layout.amount && layout.name && Math.abs(layout.amount.t - layout.name.t) <= 6, JSON.stringify({ name: layout.name && layout.name.t, amount: layout.amount && layout.amount.t }));
+      check(`${tag} amount never overlaps the description`, layout.amount && layout.name && layout.name.r <= layout.amount.l + 1, JSON.stringify({ nameR: layout.name && layout.name.r, amountL: layout.amount && layout.amount.l }));
+      check(`${tag} row action is anchored to its own row`, layout.del && layout.del.t >= layout.row.t - 8 && layout.del.b <= layout.row.b + 8 && layout.del.r <= layout.row.r + 8, JSON.stringify({ del: layout.del, row: layout.row }));
+      check(`${tag} row meta clears the delete control`, layout.sub && layout.del && layout.sub.r <= layout.del.l, JSON.stringify({ subR: layout.sub && layout.sub.r, delL: layout.del && layout.del.l }));
       } else {
         check(`${tag} transaction row available for responsive checks`, false, 'no transaction rows rendered');
       }
