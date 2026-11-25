@@ -5,6 +5,7 @@ dist/
 !.env.example
 .DS_Store
 e2e/screenshots/
+.taste-skill/
 artifacts/
 .vercel/
 .vercel
