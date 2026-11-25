@@ -79,6 +79,192 @@ async function overflow(page) {
   }));
 }
 
+// Phone widths where the converter's controls are checked in full. The
+// smallest and a current iPhone cover both the stacked layout and the roomier
+// one without doubling the suite's runtime across every viewport.
+const PHONE_CONVERTER_VIEWPORTS = ['320x568', '390x844'];
+
+async function converterChecks(page, viewport, tag) {
+  const state = () => page.evaluate(() => {
+    const el = id => document.getElementById(id);
+    const box = node => {
+      const rect = node.getBoundingClientRect();
+      return { left: Math.round(rect.left), right: Math.round(rect.right), top: Math.round(rect.top), bottom: Math.round(rect.bottom), width: Math.round(rect.width), height: Math.round(rect.height) };
+    };
+    const dialog = el('currency-tools-dialog');
+    return {
+      from: el('currency-from').value,
+      to: el('currency-to').value,
+      fromOptions: el('currency-from').options.length,
+      toOptions: el('currency-to').options.length,
+      fromBox: box(el('currency-from')),
+      toBox: box(el('currency-to')),
+      swapBox: box(el('currency-swap')),
+      closeBox: box(el('close-currency-tools')),
+      fromFont: parseFloat(getComputedStyle(el('currency-from')).fontSize),
+      message: el('currency-search-message').hidden ? '' : el('currency-search-message').textContent,
+      pairLabel: el('provider-pair-label').textContent,
+      feeLabel: el('fee-currency-label').textContent,
+      dialogBox: box(dialog),
+      horizontal: dialog.scrollWidth - dialog.clientWidth,
+    };
+  });
+
+  const openConverter = async () => {
+    await page.locator('#open-currency-tools-mobile').click();
+    await page.waitForSelector('#currency-tools-dialog[open]');
+    await page.waitForTimeout(350);
+  };
+  const settle = (ms = 260) => page.waitForTimeout(ms);
+
+  check(`${tag} converter entry point is reachable`, await page.locator('#open-currency-tools-mobile').isVisible());
+  await openConverter();
+
+  const initial = await state();
+  check(`${tag} converter dialog fits the viewport`,
+    initial.dialogBox.top >= 0 && initial.dialogBox.bottom <= viewport.height + 1 && initial.dialogBox.left >= 0 && initial.dialogBox.right <= viewport.width + 1,
+    JSON.stringify(initial.dialogBox));
+  check(`${tag} converter dialog has no horizontal overflow`, initial.horizontal <= 1, `${initial.horizontal}px`);
+  check(`${tag} both currency selectors are readable and tappable`,
+    initial.fromBox.width >= 140 && initial.toBox.width >= 140 && initial.fromBox.height >= 44 && initial.toBox.height >= 44,
+    JSON.stringify({ from: initial.fromBox, to: initial.toBox }));
+  check(`${tag} currency selectors avoid iOS zoom`, initial.fromFont >= 16, `${initial.fromFont}px`);
+  check(`${tag} swap control is a comfortable tap target`, initial.swapBox.height >= 44 && initial.swapBox.width >= 44, JSON.stringify(initial.swapBox));
+  check(`${tag} converter close control is a comfortable tap target`, initial.closeBox.height >= 44 && initial.closeBox.width >= 44, JSON.stringify(initial.closeBox));
+
+  await page.fill('#currency-search', 'Indian Rupee');
+  await settle(180);
+  const byName = await state();
+  const nameMatch = await page.locator('#currency-from option[value="INR"]').count();
+  check(`${tag} converter search matches a currency name`, nameMatch === 1 && byName.fromOptions <= 4, `${byName.fromOptions} options`);
+
+  await page.fill('#currency-search', '₹');
+  await settle(180);
+  check(`${tag} converter search matches a currency symbol`, await page.locator('#currency-from option[value="INR"]').count() === 1);
+
+  await page.fill('#currency-search', 'usd');
+  await settle(180);
+  check(`${tag} converter search is case-insensitive`, await page.locator('#currency-from option[value="USD"]').count() === 1);
+
+  await page.fill('#currency-search', 'Rupee');
+  await settle(180);
+  await page.selectOption('#currency-from', 'INR');
+  await settle(320);
+  const picked = await state();
+  check(`${tag} picking a filtered result keeps it and restores both lists`,
+    picked.from === 'INR' && picked.fromOptions > 4 && picked.toOptions > 4,
+    JSON.stringify({ from: picked.from, fromOptions: picked.fromOptions, toOptions: picked.toOptions }));
+  check(`${tag} pair labels follow the picked currency`, picked.pairLabel === 'INR → ' + picked.to, picked.pairLabel);
+
+  await page.fill('#currency-search', 'zzzzqq');
+  await settle(200);
+  const missing = await state();
+  check(`${tag} converter explains a search with no matches`, missing.message.length > 0, missing.message.slice(0, 60));
+  check(`${tag} a search with no matches keeps usable selectors`, missing.fromOptions > 4 && missing.toOptions > 4, `${missing.fromOptions}/${missing.toOptions} options`);
+  check(`${tag} a search with no matches keeps the selected pair`, missing.from === 'INR' && missing.to === picked.to, `${missing.from}/${missing.to}`);
+
+  await page.fill('#currency-search', '');
+  await settle(200);
+  const restored = await state();
+  check(`${tag} clearing the search restores the directory`, restored.fromOptions === initial.fromOptions, `${restored.fromOptions} vs ${initial.fromOptions}`);
+
+  await page.selectOption('#currency-to', restored.from === 'EUR' ? 'GBP' : 'EUR');
+  await settle(320);
+  const beforeSwap = await state();
+  await page.click('#currency-swap');
+  await settle(320);
+  const swapped = await state();
+  check(`${tag} swap exchanges both currencies`, swapped.from === beforeSwap.to && swapped.to === beforeSwap.from, `${beforeSwap.from}/${beforeSwap.to} → ${swapped.from}/${swapped.to}`);
+  check(`${tag} swap updates the pair labels`, swapped.pairLabel === swapped.from + ' → ' + swapped.to && swapped.feeLabel === swapped.to, `${swapped.pairLabel} / ${swapped.feeLabel}`);
+  const facts = await page.locator('#currency-rate-facts p').first().innerText();
+  check(`${tag} rate facts describe the selected pair`, facts.includes(swapped.from + ' =') || /Unavailable/.test(facts), facts.replace(/\s+/g, ' '));
+  const resultText = await page.locator('#currency-result').innerText();
+  check(`${tag} result names the destination currency`, resultText.includes(swapped.to) || /unavailable|valid amount/i.test(resultText), resultText.replace(/\s+/g, ' ').slice(0, 50));
+
+  await page.fill('#provider-rate', '0.0115');
+  await page.click('#refresh-currency-rate');
+  await settle(600);
+  check(`${tag} refreshing a rate keeps the provider quote for the same pair`, await page.inputValue('#provider-rate') === '0.0115');
+  await page.selectOption('#currency-to', swapped.to === 'GBP' ? 'JPY' : 'GBP');
+  await settle(600);
+  check(`${tag} changing the pair clears the stale provider quote`, await page.inputValue('#provider-rate') === '');
+
+  // Popular pairs, favourites and recents are local-only, so drive them
+  // through their handlers rather than through the sticky header above them.
+  const popular = await page.locator('#currency-popular-list button').first().innerText();
+  await page.evaluate(() => document.querySelector('#currency-popular-list button')?.click());
+  await settle(450);
+  const [popularFrom, popularTo] = popular.split('/').map(part => part.trim());
+  const popularState = await state();
+  check(`${tag} popular pair applies both currencies`,
+    popularState.from === popularFrom && popularState.to === popularTo,
+    `${popular} → ${popularState.from}/${popularState.to}`);
+
+  await page.evaluate(() => document.getElementById('save-pair').click());
+  await settle(200);
+  check(`${tag} favourite pair can be saved`, await page.getAttribute('#save-pair', 'aria-pressed') === 'true');
+  await page.evaluate(() => document.getElementById('save-pair').click());
+  await settle(200);
+  check(`${tag} favourite pair can be removed`, await page.getAttribute('#save-pair', 'aria-pressed') === 'false');
+
+  if (await page.isEnabled('#save-conversion')) {
+    await page.evaluate(() => document.getElementById('save-conversion').click());
+    await settle(250);
+    check(`${tag} saving a conversion lists it as recent`, await page.locator('#currency-recents-list button').count() >= 1);
+  }
+
+  await page.evaluate(() => {
+    const dialog = document.getElementById('currency-tools-dialog');
+    dialog.scrollTop = dialog.scrollHeight;
+  });
+  await settle(260);
+  const scrolled = await state();
+  check(`${tag} converter close stays reachable while scrolled`,
+    scrolled.closeBox.top >= 0 && scrolled.closeBox.bottom <= viewport.height + 1,
+    JSON.stringify(scrolled.closeBox));
+
+  await page.click('#close-currency-tools');
+  await settle(200);
+  check(`${tag} converter closes from its close button`, await page.evaluate(() => !document.getElementById('currency-tools-dialog').open));
+}
+
+async function dropdownChecks(page, viewport, tag) {
+  await page.evaluate(() => window.RovielShowView('transactions'));
+  await page.waitForTimeout(350);
+  const menu = await page.evaluate(() => new Promise(resolve => {
+    const select = document.getElementById('transaction-filter');
+    if (!select) return resolve(null);
+    const trigger = select.parentElement.querySelector('.select-trigger');
+    trigger.scrollIntoView({ block: 'center' });
+    trigger.click();
+    setTimeout(() => {
+      const open = document.querySelector('.select-menu:not([hidden])');
+      if (!open) return resolve(null);
+      const first = open.querySelector('.select-option');
+      const rect = open.getBoundingClientRect();
+      resolve({
+        top: Math.round(rect.top),
+        bottom: Math.round(rect.bottom),
+        left: Math.round(rect.left),
+        right: Math.round(rect.right),
+        options: open.querySelectorAll('.select-option').length,
+        optionHeight: first ? Math.round(first.getBoundingClientRect().height) : 0,
+      });
+    }, 400);
+  }));
+  check(`${tag} dashboard dropdown stays inside the viewport`,
+    !!menu && menu.left >= -1 && menu.right <= viewport.width + 1 && menu.top >= -1 && menu.bottom <= viewport.height + 1,
+    JSON.stringify(menu));
+  check(`${tag} dashboard dropdown lists selectable options`, !!menu && menu.options > 1, menu ? `${menu.options} options` : 'no menu');
+  check(`${tag} dashboard dropdown options are touch sized`, !!menu && menu.optionHeight >= 40, menu ? `${Math.round(menu.optionHeight)}px` : 'no menu');
+  await page.evaluate(() => {
+    document.querySelectorAll('.select-menu').forEach(node => { node.hidden = true; });
+    document.querySelectorAll('.select.open').forEach(node => node.classList.remove('open'));
+  });
+  await page.evaluate(() => window.RovielShowView('overview'));
+  await page.waitForTimeout(250);
+}
+
 async function rect(page, selector) {
   return page.locator(selector).first().evaluate(element => {
     const box = element.getBoundingClientRect();
@@ -121,6 +307,10 @@ for (const theme of THEMES) {
       await page.waitForFunction(() => !document.getElementById('currency-tools-dialog').open);
     }
 
+    if (PHONE_CONVERTER_VIEWPORTS.includes(viewport.name)) {
+      await converterChecks(page, viewport, tag);
+    }
+
     if (CAPTURE) {
       fs.mkdirSync('artifacts/responsive/after', { recursive: true });
       await page.screenshot({ path: `artifacts/responsive/after/landing-${theme}-${viewport.name}.png` });
@@ -129,6 +319,10 @@ for (const theme of THEMES) {
     await openDashboard(page);
     const dashOverflow = await overflow(page);
     check(`${tag} dashboard has no horizontal overflow`, dashOverflow.doc <= 1 && dashOverflow.body <= 1, JSON.stringify(dashOverflow));
+
+    if (PHONE_CONVERTER_VIEWPORTS.includes(viewport.name)) {
+      await dropdownChecks(page, viewport, tag);
+    }
 
     if (CAPTURE) await page.screenshot({ path: `artifacts/responsive/after/dashboard-${theme}-${viewport.name}.png` });
 
