@@ -384,6 +384,7 @@ for (const theme of THEMES) {
       check(`${tag} amount never overlaps the description`, layout.amount && layout.name && layout.name.r <= layout.amount.l + 1, JSON.stringify({ nameR: layout.name && layout.name.r, amountL: layout.amount && layout.amount.l }));
       check(`${tag} row action is anchored to its own row`, layout.del && layout.del.t >= layout.row.t - 8 && layout.del.b <= layout.row.b + 8 && layout.del.r <= layout.row.r + 8, JSON.stringify({ del: layout.del, row: layout.row }));
       check(`${tag} row meta clears the delete control`, layout.sub && layout.del && layout.sub.r <= layout.del.l, JSON.stringify({ subR: layout.sub && layout.sub.r, delL: layout.del && layout.del.l }));
+      check(`${tag} row content is inset from its own border`, layout.amount && layout.name && layout.row.r - layout.amount.r >= 8 && layout.name.l - layout.row.l >= 8, JSON.stringify({ amountInset: layout.amount && layout.row.r - layout.amount.r, nameInset: layout.name && layout.name.l - layout.row.l }));
       } else {
         check(`${tag} transaction row available for responsive checks`, false, 'no transaction rows rendered');
       }

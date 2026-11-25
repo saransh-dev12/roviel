@@ -2724,7 +2724,9 @@
         align-items: start;
         gap: 0 10px;
         min-height: 0;
-        padding: 13px 0;
+        /* The row is its own bordered card; its content needs the same inset
+           the controls above have, or the value sits on the border. */
+        padding: 13px 14px;
       }
       html[data-theme] .dash-row:not(.head) > .dash-transaction { grid-area: desc; align-items: flex-start; }
       html[data-theme] .dash-row:not(.head) > .dash-amount { grid-area: amount; align-self: start; justify-self: end; padding-right: 0; font-size: 12.5px; font-weight: 550; }
@@ -2733,8 +2735,10 @@
       html[data-theme] .dash-row:not(.head) > .row-del {
         position: absolute;
         top: auto;
-        right: -6px;
-        bottom: -7px;
+        /* The glyph is centred in a 44px target, so the target sits on the
+           row's edge and the glyph lands on the amount's edge above it. */
+        right: 0;
+        bottom: 0;
         width: 44px;
         height: 44px;
         min-width: 44px;
@@ -2743,7 +2747,7 @@
         display: grid;
         place-items: center;
       }
-      html[data-theme] .dash-row:not(.head) .dash-mobile-sub { padding-right: 26px; }
+      html[data-theme] .dash-row:not(.head) .dash-mobile-sub { padding-right: 18px; }
       html[data-theme] .dash-row:not(.head) > .dash-category,
       html[data-theme] .dash-row:not(.head) > .dash-date { display: none; }
       html[data-theme] .dash-transaction > div { min-width: 0; }
@@ -2933,6 +2937,8 @@
        needs that width more. */
     @media (max-width: 360px) {
       html[data-theme] .dash-row:not(.head) .dash-transaction-icon { display: none; }
+      html[data-theme] .dash-row:not(.head) .dash-mobile-sub { padding-right: 0; }
+      html[data-theme] .dash-row:not(.head) > .dash-amount { font-size: 12px; }
     }
 
     @media (pointer: coarse) {
@@ -4287,8 +4293,10 @@
       if (transfer && item.transfer) {
         const tr = item.transfer;
         // The pair already names both accounts; repeating one read as a duplicate.
+        // The rate lives in the transfer drawer; the row carries the pair and
+        // the date, which are what a scan of the ledger needs.
         subtitle.textContent = `${tr.fromAccount.name} → ${tr.toAccount.name}`;
-        transferRateLabel = `1 ${tr.fromAccount.currency} = ${formatRate(tr.rate)} ${tr.toAccount.currency}`;
+        transferRateLabel = '';
       } else {
         const context = [];
         if (account) context.push(account);
@@ -4298,9 +4306,12 @@
         nameWrap.append(name, subtitle);
         const mobileSub = document.createElement('div');
         mobileSub.className = 'dash-mobile-sub';
+        // A non-breaking date keeps the meta from splitting as "Nov / 25" when
+        // the row is narrow; it wraps before the separator instead.
+        const shortDate = transactionShortDate(item).replace(/ /g, '\u00A0');
         mobileSub.textContent = transfer
-          ? [transferRateLabel, transactionShortDate(item)].filter(Boolean).join(' · ')
-          : `${item.category} · ${transactionShortDate(item)}`;
+          ? [transferRateLabel, shortDate].filter(Boolean).join(' · ')
+          : `${item.category} · ${shortDate}`;
         nameWrap.append(mobileSub);
         description.append(icon, nameWrap);
       const category = document.createElement('span');
